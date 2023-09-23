@@ -8,9 +8,9 @@ Apache Maven 3.9.1
 
 ## Project Description:
 
-Implement a Dynamic Analysis for  testing a (Passing/Failing) using pacthes as input: 
+Implement a Dynamic Analysis for  testing a (Passing/Failing) test cases using pacthes as input: 
 - Input can be a manually inserted patches.
 
 The expected output: calculate the patches (to find the changes) for below:
-- Control Flow
+- ControlFlow
 - Variables
