@@ -1,21 +1,15 @@
-package org.passau;
+package org.passau.SourceCode;
 
-import org.passau.SourceCode.Packet;
+public class SourceCode {
 
-public class Main {
-    public static void main(String[] args) {
-        method(1);
-
-    }
-
-    public static void method(int a)
+    public void method ( int a )
     {
         Packet packet = new Packet(a);
         int valueInt = 1;
         float valueFloat = 1.0f;
         if ( a == 0 )
         {
-            packet = null;
+            packet = null; // Faulty Localization that will cause Null pointer exception if (a != 0) later
             valueInt = -1;
             valueFloat = -1.0f;
         }
