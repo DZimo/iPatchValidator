@@ -1,6 +1,6 @@
 package org.passau.SourceCode;
 
-public class SourceCode {
+public class MainCode {
 
     public void method ( int a )
     {
