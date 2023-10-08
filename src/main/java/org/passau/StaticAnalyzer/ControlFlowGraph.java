@@ -10,32 +10,25 @@ import soot.toolkits.graph.UnitGraph;
 public class ControlFlowGraph {
 
     String scriptCode;
+    private ExceptionalUnitGraph cfg;
 
-    /**
-     *
-     * @param className - source code or patched code
-     *
-     */
-    public ControlFlowGraph (String className){
-        this.scriptCode=className;
-        CFGBuilder(this.scriptCode);
+
+    public UnitGraph getCfg() {
+        return cfg;
     }
 
-    /**
-     *
-     * @param scriptCode - source code or patched code
-     * @Return CFG
-     */
-    public UnitGraph CFGBuilder(String scriptCode) {
-        String mainClass = "MainCode";
+    public void buildCFG(String className, String methodName) {
         String cp = "target/classes";
         Scene.v().setSootClassPath(cp);
-        SootClass sootClass = Scene.v().loadClassAndSupport(mainClass);
+        SootClass sootClass = Scene.v().loadClassAndSupport(className);
         sootClass.setApplicationClass();
         Scene.v().setMainClass(sootClass);
-        SootMethod method = sootClass.getMethodByName("add");
+
+
+        SootMethod method = sootClass.getMethodByName(methodName);
         Body body = method.retrieveActiveBody();
 
-        return new ExceptionalUnitGraph(body);
+        cfg = new ExceptionalUnitGraph(body);
+
     }
 }

@@ -8,7 +8,7 @@ public class PatchCode {
 
     public PatchCode (String patchScript) {
         this.patchScript=patchScript;
-        this.controlFlowGraph = new ControlFlowGraph(patchScript);
+        this.controlFlowGraph = new ControlFlowGraph();
 
     }
 
