@@ -18,7 +18,7 @@ public class ControlFlowGraph {
     }
 
     public void buildCFG(String className, String methodName) {
-        String cp = "target/classes";
+        String cp = "target/classes"; // classpath
         Scene.v().setSootClassPath(cp);
         SootClass sootClass = Scene.v().loadClassAndSupport(className);
         sootClass.setApplicationClass();
