@@ -46,7 +46,7 @@ public class Main {
 
         }
         if (!file.exists()) {
-            throw new IllegalStateException("iPatchValidator is set to a wrong path Shifat.");
+            throw new IllegalStateException("iPatchValidator is set to a wrong path Shifat :D");
         }
 
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(inputLocationPath); // Input for binary code
