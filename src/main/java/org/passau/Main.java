@@ -10,6 +10,7 @@ import sootup.core.Project;
 import sootup.core.graph.StmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -21,6 +22,7 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
+import sootup.analysis.interprocedural.icfg.*;
 
 import java.io.File;
 import java.util.Collections;
@@ -68,13 +70,23 @@ public class Main {
         SootMethod method = opt.get();
         List<Stmt> allStatements = method.getBody().getStmts();
         StmtGraph statementGraph = method.getBody().getStmtGraph();
-        System.out.println(allStatements);
 
         CallGraphAlgorithm cha =
                 new ClassHierarchyAnalysisAlgorithm(view, view.getTypeHierarchy());
 
         CallGraph cg =
                 cha.initialize(Collections.singletonList(methodSignature));
+
+        System.out.println(allStatements);
+
+        Body body = method.getBody();
+
+        //CalleeMethodSignature abs = new CalleeMethodSignature(methodSignature, cg. , method.getBody().getThisStmt()));
+
+
+        // Create a CFG for the method
+        //UnitGraph graph = new BriefUnitGraph(body);
+
 
         System.out.println(cg);
 
