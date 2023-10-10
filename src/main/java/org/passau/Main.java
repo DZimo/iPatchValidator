@@ -33,21 +33,22 @@ import java.util.Optional;
 public class Main {
 
     // PATH TO JAVA SOURCE CODE
-    private static final String INPUT_LOCATION_ENV = "iPatchValidator";
+    private static final String INPUT_LOCATION_ENV = "iPatchValidator"; // Please add your target/classes to path with the name of this variable ( compiled ones )
 
     public static void main(String[] args) {
         // Retrieve the input location path from the environment variable
         String inputLocationPath = System.getenv(INPUT_LOCATION_ENV);
+        File file = new File(inputLocationPath);
 
         // Check if the environment variable is set
         if (inputLocationPath == null) {
             throw new IllegalStateException("Environment variable " + INPUT_LOCATION_ENV + " is not set.");
+
+        }
+        if (!file.exists()) {
+            throw new IllegalStateException("iPatchValidator is set to a wrong path Shifat.");
         }
 
-        File file = new File(inputLocationPath);
-        if (!file.exists()) {
-            throw new IllegalStateException("Fix your path Shifat :D");
-        }
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(inputLocationPath); // Input for binary code
         JavaLanguage language = new JavaLanguage(17);
         Project project =  JavaProject.builder(language).addInputLocation(inputLocation).build();
