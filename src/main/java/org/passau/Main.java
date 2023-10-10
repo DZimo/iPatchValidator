@@ -10,9 +10,7 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.Project;
-import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.*;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -74,10 +72,13 @@ public class Main {
 
         MutableStmtGraph graph = new MutableBlockStmtGraph();
         graph.setStartingStmt(statementGraph.getStartingStmt());
-        
+
+
         Iterator<Stmt> iterator = statementGraph.iterator();
 
+        int indexOfNode = 0;
         while(iterator.hasNext()){
+
             graph.addNode(iterator.next());
         }
 
@@ -94,6 +95,22 @@ public class Main {
         System.out.println(allStatements);
 
         Body body = method.getBody();
+
+        Stmt stmt1, stmt2, stmt3, stmt4, stmt5;
+        MutableStmtGraph controlFlowGraph = new MutableBlockStmtGraph();
+        int i = 0;
+        for(Stmt statement:allStatements)
+        {
+            if (i==0){
+                graph.setStartingStmt(statement);
+            }
+            else{
+           //     if(statement.)
+                graph.addNode(statement);
+            }
+        }
+       // graph.addNode(stmt2);
+
 
         //CalleeMethodSignature abs = new CalleeMethodSignature(methodSignature, cg. , method.getBody().getThisStmt()));
 
