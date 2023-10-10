@@ -44,7 +44,7 @@ public class Main {
 
         File file = new File(inputLocationPath);
         if (!file.exists()) {
-            throw new IllegalStateException("Fix your path Shifat");
+            throw new IllegalStateException("Fix your path Shifat :D");
         }
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(inputLocationPath); // Input for binary code
         JavaLanguage language = new JavaLanguage(17);
