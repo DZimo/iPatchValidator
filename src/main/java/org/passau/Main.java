@@ -3,6 +3,9 @@ package org.passau;
 import org.passau.CodeExamples.SourceCodeNullPointer;
 import org.passau.SourceCode.Packet;
 import org.passau.StaticAnalyzer.ControlFlowGraph;
+import sootup.callgraph.CallGraph;
+import sootup.callgraph.CallGraphAlgorithm;
+import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.Project;
 import sootup.core.graph.StmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -65,9 +68,15 @@ public class Main {
         SootMethod method = opt.get();
         List<Stmt> allStatements = method.getBody().getStmts();
         StmtGraph statementGraph = method.getBody().getStmtGraph();
+        System.out.println(allStatements);
 
+        CallGraphAlgorithm cha =
+                new ClassHierarchyAnalysisAlgorithm(view, view.getTypeHierarchy());
 
+        CallGraph cg =
+                cha.initialize(Collections.singletonList(methodSignature));
 
+        System.out.println(cg);
 
 
     }
