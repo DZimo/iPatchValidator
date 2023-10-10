@@ -32,6 +32,13 @@ public class Main {
     // PATH TO JAVA SOURCE CODE
     private static final String INPUT_LOCATION_ENV = "iPatchValidator"; // Please add your target/classes to path with the name of this variable ( // compiled ones )
 
+    private static final String classToBuildName = "org.passau.CodeExamples.SourceCodeSimple"; // Class that we want to build CFG for
+
+    private static final String methodToBuildName = "method"; // Name of method we want to build
+
+    private static final String typeToBuildName = "void"; // Type of method we want to build
+
+
     public static void main(String[] args) {
         // Retrieve the input location path from the environment variable
         String inputLocationPath = System.getenv(INPUT_LOCATION_ENV);
@@ -51,9 +58,9 @@ public class Main {
         Project project =  JavaProject.builder(language).addInputLocation(inputLocation).build();
 
         ClassType classType =
-                project.getIdentifierFactory().getClassType("org.passau.CodeExamples.SourceCodeNullPointer"); // Set the class we want to work on
+                project.getIdentifierFactory().getClassType(classToBuildName); // Set the class we want to work on
 
-        MethodSignature methodSignature = project.getIdentifierFactory().getMethodSignature( "method", "org.passau.CodeExamples.SourceCodeNullPointer", "void", Collections.singletonList("int")); // Set the method we want to work on
+        MethodSignature methodSignature = project.getIdentifierFactory().getMethodSignature( methodToBuildName , classToBuildName, typeToBuildName, Collections.singletonList("int")); // Set the method we want to work on
 
         View view = project.createView();// Create a view for the created project
 
