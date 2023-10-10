@@ -18,3 +18,10 @@ Apache Maven 3.9.1
 # VERSION:
 V1.0
 
+# How to run 
+
+- git clone https://github.com/DZimo/iPatchValidator.git
+
+- mvn install
+- set the env with name "iPatchValidator" and source path (PATH TO ~\iPatchValidator\target\classes)
+
