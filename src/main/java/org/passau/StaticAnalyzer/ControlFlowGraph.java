@@ -8,33 +8,29 @@ import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.UnitGraph;
  */
 
-
-
 public class ControlFlowGraph {
 
-    String scriptCode;
+  String scriptCode;
 
-    //private ExceptionalUnitGraph cfg;
+  // private ExceptionalUnitGraph cfg;
 
-    public ControlFlowGraph() {
+  public ControlFlowGraph() {}
 
-    }
+  /*public UnitGraph getCfg() {
+      return cfg;
+  }*/
 
-    /*public UnitGraph getCfg() {
-        return cfg;
-    }*/
+  public void buildCFG(String className, String methodName, String inputPath) {
+    /*
+           Scene.v().setSootClassPath(inputPath);
+           SootClass sootClass = Scene.v().loadClassAndSupport(className);
+           sootClass.setApplicationClass();
+           Scene.v().setMainClass(sootClass);
+           SootMethod method = sootClass.getMethodByName(methodName);
+           Body body = method.retrieveActiveBody();
 
-    public void buildCFG(String className, String methodName, String inputPath) {
-/*
-        Scene.v().setSootClassPath(inputPath);
-        SootClass sootClass = Scene.v().loadClassAndSupport(className);
-        sootClass.setApplicationClass();
-        Scene.v().setMainClass(sootClass);
-        SootMethod method = sootClass.getMethodByName(methodName);
-        Body body = method.retrieveActiveBody();
+           cfg = new ExceptionalUnitGraph(body);
 
-        cfg = new ExceptionalUnitGraph(body);
-
- */
-    }
+    */
+  }
 }
