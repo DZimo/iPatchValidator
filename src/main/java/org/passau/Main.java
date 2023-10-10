@@ -31,20 +31,16 @@ import java.util.Optional;
 public class Main {
 
     // PATH TO JAVA SOURCE CODE
-    private static String inputLocationPath = "C:\\Users\\Admin\\Desktop\\iPatchValidator\\target\\classes";
-
+    private static final String INPUT_LOCATION_ENV = "iPatchValidator";
 
     public static void main(String[] args) {
+        // Retrieve the input location path from the environment variable
+        String inputLocationPath = System.getenv(INPUT_LOCATION_ENV);
 
-        //SourceCodeNullPointer srcCodeNullPointerInstance = new SourceCodeNullPointer();
-        // OLD SOOT
-        /*
-        ControlFlowGraph controlFlowGraph = new ControlFlowGraph();
-        controlFlowGraph.buildCFG("SourceCodeNullPointer","method", inputLocationPath);
-        //System.out.println(controlFlowGraph.getCfg());
-        */
-
-        // NEW SOOT
+        // Check if the environment variable is set
+        if (inputLocationPath == null) {
+            throw new IllegalStateException("Environment variable " + INPUT_LOCATION_ENV + " is not set.");
+        }
 
         File file = new File(inputLocationPath);
         if (!file.exists()) {
