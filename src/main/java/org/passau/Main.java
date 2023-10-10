@@ -7,6 +7,8 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.Project;
+import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -67,6 +69,19 @@ public class Main {
         SootMethod method = opt.get();
         List<Stmt> allStatements = method.getBody().getStmts();
         StmtGraph statementGraph = method.getBody().getStmtGraph();
+
+        MutableStmtGraph graph = new MutableBlockStmtGraph();
+        graph.setStartingStmt(statementGraph.getStartingStmt());
+        
+        Iterator<Stmt> iterator = statementGraph.iterator();
+
+        while(iterator.hasNext()){
+            graph.addNode(iterator.next());
+        }
+
+        System.out.println("====== Start ======");
+        System.out.println(statementGraph);
+        System.out.println("====== End ======");
 
         CallGraphAlgorithm cha =
                 new ClassHierarchyAnalysisAlgorithm(view, view.getTypeHierarchy());
