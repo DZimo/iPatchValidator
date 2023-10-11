@@ -7,15 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.passau.StaticAnalyzer.ControlFlowGraph;
-import sootup.analysis.interprocedural.icfg.*;
-import sootup.callgraph.CallGraph;
-import sootup.callgraph.CallGraphAlgorithm;
-import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.Project;
 import sootup.core.graph.*;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -26,17 +21,16 @@ import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.language.JavaLanguage;
-import sootup.java.core.views.JavaView;
 
 public class Main {
     // PATH TO JAVA SOURCE CODE
     private static final String INPUT_LOCATION_ENV = "iPatchValidator"; // Please add your target/classes to path with the name of this variable ( // compiled ones )
 
-    private static final String classToBuildName = "org.passau.CodeExamples.SourceCodeSimple"; // Class that we want to build CFG for
+    private static String classToBuildName; // Class that we want to build CFG for
 
-    private static final String methodToBuildName = "method"; // Name of method we want to build
+    private static String methodToBuildName; // Name of method we want to build
 
-    private static final String typeToBuildName = "void"; // Type of method we want to build
+    private static String typeToBuildName; // Type of method we want to build
 
     private static ControlFlowGraph controlFlowGraph; // Class that build CFG
 
@@ -48,8 +42,15 @@ public class Main {
 
 
     // Constructor
-    public Main() {
+    public Main(String className, String methodName, String typeName) {
+        constructMethodInformation(className, methodName, typeName);
         initializeVariables(); // Constructor for main to initialize variables
+    }
+
+    public void constructMethodInformation(String classToBuildName, String methodToBuildName, String typeToBuildName){
+        this.classToBuildName = classToBuildName;
+        this.methodToBuildName= methodToBuildName;
+        this.typeToBuildName = typeToBuildName;
     }
 
     private void initializeVariables() {
@@ -89,13 +90,20 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Main mainInstance = new Main();  // This will initialize the variables
+
+        // Build CFG for source code
+        Main mainInstanceSourceCode = new Main("org.passau.CodeExamples.SourceCodeNullPointer", "method", "void");  // This will initialize the variables
         MutableStmtGraph graph = new MutableBlockStmtGraph();
         graph.setStartingStmt(statementGraph.getStartingStmt());
         Iterator<Stmt> iterator = statementGraph.iterator();
-        System.out.println("CFG for : " + sootClass.getName());
-
+        System.out.println("CFG for SOURCE CODE : " + sootClass.getName());
         controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
 
+
+        // Build CFG for patch code
+        Main mainInstancePatchCode = new Main("org.passau.CodeExamples.PatchIFcondition", "method", "void");  // This will initialize the variables
+        graph.setStartingStmt(statementGraph.getStartingStmt());
+        System.out.println("CFG for PATCH CODE : " + sootClass.getName());
+        controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
   }
 }
