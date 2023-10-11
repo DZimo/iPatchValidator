@@ -105,5 +105,12 @@ public class Main {
         graph.setStartingStmt(statementGraph.getStartingStmt());
         System.out.println("CFG for PATCH CODE : " + sootClass.getName());
         controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
+
+
+        // Build CFG for test case code
+        Main mainInstanceTestCase = new Main("org.passau.CodeExamples.PatchIFcondition", "method", "void");  // This will initialize the variables
+        graph.setStartingStmt(statementGraph.getStartingStmt());
+        System.out.println("CFG for PATCH CODE : " + sootClass.getName());
+        controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
   }
 }
