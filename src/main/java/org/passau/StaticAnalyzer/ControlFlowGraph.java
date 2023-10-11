@@ -8,13 +8,28 @@ import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.UnitGraph;
  */
 
+import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.common.stmt.Stmt;
+
+import java.util.List;
+
 public class ControlFlowGraph {
+
+  private static ControlFlowGraph controlFlowGraph; // Class that build CFG
+
+  private static StmtGraph statementGraph; // Statement graph that contains predecessors and successors
+
+  private static List<Stmt> allStatements; // All retrieved statements
 
   String scriptCode;
 
   // private ExceptionalUnitGraph cfg;
 
-  public ControlFlowGraph() {}
+  public ControlFlowGraph(ControlFlowGraph controlFlowGraph, StmtGraph statementGraph, List<Stmt> allStatements) {
+    this.controlFlowGraph = controlFlowGraph;
+    this.statementGraph = statementGraph;
+    this.allStatements = allStatements;
+  }
 
   /*public UnitGraph getCfg() {
       return cfg;
@@ -32,5 +47,22 @@ public class ControlFlowGraph {
            cfg = new ExceptionalUnitGraph(body);
 
     */
+  }
+
+  public void printTheControlFlowGraph()
+  {
+    System.out.println("====== Start ======");
+    System.out.println("====== JIMPL CODE ======");
+
+    System.out.println(statementGraph);
+
+    System.out.println("====== GRAPH DEPENDENCE ======");
+
+    for (int i = 0; i < allStatements.size(); i++) {
+      Stmt statement = allStatements.get(i);
+      System.out.println("V" + i + ": " + "Successors : " + statementGraph.getAllSuccessors(statement));
+    }
+
+    System.out.println("====== End ======");
   }
 }
