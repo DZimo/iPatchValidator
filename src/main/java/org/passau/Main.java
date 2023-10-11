@@ -78,14 +78,22 @@ public class Main {
 
         int indexOfNode = 0;
         while(iterator.hasNext()){
-
             graph.addNode(iterator.next());
         }
 
         System.out.println("====== Start ======");
-        System.out.println(statementGraph);
-        System.out.println("====== End ======");
+        System.out.println("====== JIMPL CODE ======");
 
+        System.out.println(statementGraph);
+
+        System.out.println("====== GRAPH DEPENDENCE ======");
+
+        for (int i = 0; i < allStatements.size(); i++) {
+            Stmt statement = allStatements.get(i);
+            System.out.println("V" + i + ": " + "Successors : " + statementGraph.getAllSuccessors(statement));
+        }
+
+        System.out.println("====== End ======");
         CallGraphAlgorithm cha =
                 new ClassHierarchyAnalysisAlgorithm(view);
 
