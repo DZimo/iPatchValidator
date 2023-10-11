@@ -10,6 +10,8 @@ import soot.toolkits.graph.UnitGraph;
 
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootClass;
+import sootup.java.core.JavaSootClassSource;
 
 import java.util.List;
 
@@ -21,14 +23,17 @@ public class ControlFlowGraph {
 
   private static List<Stmt> allStatements; // All retrieved statements
 
+  private static SootClass<JavaSootClassSource> sootClass;
+
   String scriptCode;
 
   // private ExceptionalUnitGraph cfg;
 
-  public ControlFlowGraph(ControlFlowGraph controlFlowGraph, StmtGraph statementGraph, List<Stmt> allStatements) {
+  public ControlFlowGraph(ControlFlowGraph controlFlowGraph, StmtGraph statementGraph, List<Stmt> allStatements, SootClass<JavaSootClassSource> sootClass) {
     this.controlFlowGraph = controlFlowGraph;
     this.statementGraph = statementGraph;
     this.allStatements = allStatements;
+    this.sootClass= sootClass;
   }
 
   /*public UnitGraph getCfg() {

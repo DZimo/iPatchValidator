@@ -44,11 +44,12 @@ public class Main {
 
     private static List<Stmt> allStatements; // All retrieved statements
 
+    private static SootClass<JavaSootClassSource> sootClass; // The class that we want to build CFG for
 
 
     // Constructor
     public Main() {
-        initializeVariables();
+        initializeVariables(); // Constructor for main to initialize variables
     }
 
     private void initializeVariables() {
@@ -69,13 +70,12 @@ public class Main {
 
         View view = project.createView(); // Create a view for the created project
 
-        SootClass<JavaSootClassSource> sootClass = (SootClass<JavaSootClassSource>) view.getClass(classType).get(); // Get the class itself
-
+        sootClass = (SootClass<JavaSootClassSource>) view.getClass(classType).get(); // Get the class itself
         Optional<? extends SootMethod> opt = sootClass.getMethod(methodSignature.getSubSignature());
         SootMethod method = opt.get();
         allStatements = method.getBody().getStmts();
         statementGraph = method.getBody().getStmtGraph();
-        controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements);  // Class that build CFG
+        controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);  // Class that build CFG
     }
 
     private void validatePath(String path) {
@@ -88,13 +88,13 @@ public class Main {
         }
     }
 
-
     public static void main(String[] args) {
         Main mainInstance = new Main();  // This will initialize the variables
         MutableStmtGraph graph = new MutableBlockStmtGraph();
         graph.setStartingStmt(statementGraph.getStartingStmt());
         Iterator<Stmt> iterator = statementGraph.iterator();
-        System.out.println(allStatements);
+        System.out.println("CFG for : " + sootClass.getName());
+
         controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
 
   }
