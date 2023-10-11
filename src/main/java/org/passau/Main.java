@@ -1,10 +1,7 @@
 package org.passau;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.passau.StaticAnalyzer.ControlFlowGraph;
 import sootup.core.Project;
@@ -42,9 +39,9 @@ public class Main {
 
 
     // Constructor
-    public Main(String className, String methodName, String typeName) {
+    public Main(String className, String methodName, String typeName, boolean methodWithParameters) {
         constructMethodInformation(className, methodName, typeName);
-        initializeVariables(); // Constructor for main to initialize variables
+        initializeVariables(methodWithParameters); // Constructor for main to initialize variables
     }
 
     public void constructMethodInformation(String classToBuildName, String methodToBuildName, String typeToBuildName){
@@ -53,10 +50,11 @@ public class Main {
         this.typeToBuildName = typeToBuildName;
     }
 
-    private void initializeVariables() {
+    private void initializeVariables(boolean methodWithParameters) {
 
         // Retrieve the input location path from the environment variable
         String inputLocationPath = System.getenv(INPUT_LOCATION_ENV);
+        //inputLocationPath = "C:/Users/Admin/Desktop/iPatchValidator/target";
         validatePath(inputLocationPath);
 
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(inputLocationPath);  // Input for binary code
@@ -65,9 +63,15 @@ public class Main {
 
         ClassType classType = project.getIdentifierFactory().getClassType(classToBuildName);  // Set the class we want to work on
 
+        List<String> paramTypes; // We must fix the parameters problem that we always have to pass ! maybe try to get the parameters
+        if (methodWithParameters) {
+            paramTypes = Collections.singletonList("int");
+        } else{
+            paramTypes = Collections.emptyList();
+        }
         MethodSignature methodSignature =
                 project.getIdentifierFactory().
-                        getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, Collections.singletonList("int")); // Set the method we want to work on
+                        getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramTypes); // Set the method we want to work on
 
         View view = project.createView(); // Create a view for the created project
 
@@ -92,7 +96,7 @@ public class Main {
     public static void main(String[] args) {
 
         // Build CFG for source code
-        Main mainInstanceSourceCode = new Main("org.passau.CodeExamples.SourceCodeNullPointer", "method", "void");  // This will initialize the variables
+        Main mainInstanceSourceCode = new Main("classes.org.passau.CodeExamples.SourceCodeNullPointer", "method", "void", true);  // This will initialize the variables
         MutableStmtGraph graph = new MutableBlockStmtGraph();
         graph.setStartingStmt(statementGraph.getStartingStmt());
         Iterator<Stmt> iterator = statementGraph.iterator();
@@ -101,16 +105,16 @@ public class Main {
 
 
         // Build CFG for patch code
-        Main mainInstancePatchCode = new Main("org.passau.CodeExamples.PatchIFcondition", "method", "void");  // This will initialize the variables
+        Main mainInstancePatchCode = new Main("classes.org.passau.CodeExamples.PatchIFcondition", "method", "void", true);  // This will initialize the variables
         graph.setStartingStmt(statementGraph.getStartingStmt());
         System.out.println("CFG for PATCH CODE : " + sootClass.getName());
         controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
 
 
         // Build CFG for test case code
-        Main mainInstanceTestCase = new Main("org.passau.CodeExamples.PatchIFcondition", "method", "void");  // This will initialize the variables
+        Main mainInstanceTestCase = new Main("test-classes.CodeExamples.SourceCodeSimpleTest", "testMethodWithAEqualsOne", "void", false);  // This will initialize the variables
         graph.setStartingStmt(statementGraph.getStartingStmt());
-        System.out.println("CFG for PATCH CODE : " + sootClass.getName());
+        System.out.println("CFG for TEST CASE : " + sootClass.getName());
         controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
   }
 }

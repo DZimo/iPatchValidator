@@ -2,7 +2,7 @@ package org.passau.CodeExamples;
 
 public class SourceCodeSimple {
 
-    private void method(int a)
+    public void method(int a)
     {
         int b = 0;
         int c = 0;
