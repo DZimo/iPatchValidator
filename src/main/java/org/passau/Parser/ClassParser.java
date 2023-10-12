@@ -71,4 +71,17 @@ public class ClassParser {
         }
     }
 
+    public static String extractClassName(String path) {
+        // Check if the path is valid and ends with ".java".
+        if (path != null && path.endsWith(".java")) {
+            // Find the last slash in the path.
+            int lastSlashIndex = path.lastIndexOf('/');
+            // Extract the class name without ".java".
+            return path.substring(lastSlashIndex + 1, path.length() - ".java".length());
+        } else {
+            // Handle the case where the input path is not valid.
+            throw new IllegalArgumentException("The path is not a valid Java file path");
+        }
+    }
+
 }
