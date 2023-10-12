@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParseTest {
-    static String ClassName ;
+    static String className ;
     // Test MethodExtractor functionality
     public static void main(String[] args) throws Exception {
         ClassParser classParser = new ClassParser();
@@ -22,8 +22,8 @@ public class ParseTest {
         for (String filePath : classPaths){
             List<MethodModel> methods = classParser.extractMethods(filePath);
 
-           ClassName =   ClassParser.extractClassName(filePath);;
-            ClassModel classModel = new ClassModel(methods,ClassName);
+           className =   ClassParser.extractClassName(filePath);;
+            ClassModel classModel = new ClassModel(methods,className);
             /**
              * Print extracted method info
              */

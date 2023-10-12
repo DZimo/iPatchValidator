@@ -3,34 +3,34 @@ package org.passau.Parser;
 import java.util.List;
 
 public class MethodModel {
-    private final String MethodName;
-    private final String MethodReturnType;
-    private final List<String> ListOfParamType;
+    private final String methodName;
+    private final String methodReturnType;
+    private final List<String> listOfParamType;
 
     public MethodModel(String methodName, String methodReturnType, List<String> listOfParamType) {
-        MethodName = methodName;
-        MethodReturnType = methodReturnType;
-        ListOfParamType = listOfParamType;
+        this.methodName = methodName;
+        this.methodReturnType = methodReturnType;
+        this.listOfParamType = listOfParamType;
     }
 
     public String getMethodName() {
-        return MethodName;
+        return this.methodName;
     }
 
     public String getMethodReturnType() {
-        return MethodReturnType;
+        return this.methodReturnType;
     }
 
     public List<String> getListOfParamType() {
-        return ListOfParamType;
+        return this.listOfParamType;
     }
 
     @Override
     public String toString() {
         return "MethodModel{" +
-                "MethodName='" + MethodName + '\'' +
-                ", MethodReturnType='" + MethodReturnType + '\'' +
-                ", ListOfParamType=" + ListOfParamType +
+                "MethodName='" + this.methodName + '\'' +
+                ", MethodReturnType='" + this.methodReturnType + '\'' +
+                ", ListOfParamType=" + this.listOfParamType +
                 '}';
     }
 }
