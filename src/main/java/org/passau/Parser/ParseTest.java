@@ -1,7 +1,12 @@
 package org.passau.Parser;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ParseTest {
     static String ClassName ;
@@ -10,14 +15,13 @@ public class ParseTest {
         ClassParser classParser = new ClassParser();
         // make a loop for the set of classes
         // so for each class if iterate over the given path and store all methods infos as MethodModel to the List
-        /**
-         *          // go to a folder
-         *         // take each filepath as item
-         *         // add that filepath in this list
-         */
-        List<String>  classPaths = new ArrayList<>();
-        classPaths.add("src/main/java/org/passau/Parser/Test/TestClass.java");
 
+        FilePathFinder filePathFinder = new FilePathFinder();
+        /**
+         * We Have to Change this FOLDER_PATH according our need.
+         */
+        String FOLDER_PATH = "src/main/java/org/passau/Parser/Test";
+        List<String> classPaths = filePathFinder.findJavaFilePaths(FOLDER_PATH);
 
         for (String filePath : classPaths){
             List<MethodModel> methods = classParser.extractMethods(filePath);
