@@ -1,6 +1,5 @@
 package org.passau;
 
-import java.io.File;
 import java.util.*;
 
 import org.passau.Parser.ClassModel;
@@ -23,6 +22,7 @@ import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 public class Main {
     // PATH TO JAVA SOURCE CODE
@@ -70,10 +70,10 @@ public class Main {
      * Constructor for main to initialize variables that we will use to build CFG of Sootup
      */
     public void constructMethodInformation(String classToBuildName, String methodToBuildName, String typeToBuildName, List<String> typeParameters){
-        this.classToBuildName = classToBuildName;
-        this.methodToBuildName= methodToBuildName;
-        this.typeToBuildName = typeToBuildName;
-        this.paramToBuildType = typeParameters;
+        Main.classToBuildName = classToBuildName;
+        Main.methodToBuildName = methodToBuildName;
+        Main.typeToBuildName = typeToBuildName;
+        paramToBuildType = typeParameters;
     }
 
 
@@ -82,45 +82,70 @@ public class Main {
      */
 
     private void buildGraph() {
+       // INPUT_LOCATION_PATH ="/Users/shifatsahariar/Downloads/java/iPatchValidator/target/classes/spoon/compiler/builder/AnnotationProcessingOptions.class";
 
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(INPUT_LOCATION_PATH);  // Input for binary code
         JavaLanguage language = new JavaLanguage(17);
-        Project project =  JavaProject.builder(language).addInputLocation(inputLocation).build();
+        Project<JavaSootClass, JavaView> project =  JavaProject.builder(language).addInputLocation(inputLocation).build();
         ClassType classType = project.getIdentifierFactory().getClassType(classToBuildName);  // Set the class we want to work on
-        MethodSignature methodSignature =
-                project.getIdentifierFactory().
-                        getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType); // Set the method we want to work on
+//        MethodSignature methodSignature =
+//                project.getIdentifierFactory().
+//                        getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType); // Set the method we want to work on
 
-        View view = project.createView(); // Create a view for the created project
-        sootClass = (SootClass<JavaSootClassSource>) view.getClass(classType).get(); // Get the class itself
-        // Sometimes we cannot find the method ( empty )
-        Optional<? extends SootMethod> opt = sootClass.getMethod(methodSignature.getSubSignature());
-        SootMethod method = opt.get();
-        allStatements = method.getBody().getStmts();
-        statementGraph = method.getBody().getStmtGraph();
-        controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);  // Class that build CFG
+        View<JavaSootClass> view = project.createView(); // Create a view for the created project
+        Optional<JavaSootClass> optClass = view.getClass(classType);
+        if (optClass.isPresent()) {
+            sootClass = optClass.get(); // Get the class itself
+            /**
+             * OUR CURRENT ISSUE STARTS HERE
+             */
+            MethodSignature methodSignature =
+                    project.getIdentifierFactory().
+                            getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType);
+            Optional<? extends SootMethod> optMethod = sootClass.getMethod(methodSignature.getSubSignature());
+            // HERE WE ALREADY GETTING NO METHOD
+            if (optMethod.isPresent()) {
+                SootMethod method = optMethod.get();
+                allStatements = method.getBody().getStmts();
+                statementGraph = method.getBody().getStmtGraph();
+                controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);// Class that build CFG
+            }
+            else {
+                System.err.println("Method not found: " + methodSignature.getSubSignature());
+            }
+        }
+        else {
+            System.err.println("Class not found: " + classType.getClassName());
+        }
+
     }
 
     public static void main(String[] args) throws Exception {
         MutableStmtGraph graph = new MutableBlockStmtGraph();
         SootPathSetter sootPathSetter = new SootPathSetter();  // We first set the path and then validate it
-        INPUT_LOCATION_PATH = sootPathSetter.INPUT_LOCATION_PATH;
+        INPUT_LOCATION_PATH = SootPathSetter.INPUT_LOCATION_PATH;
         ClassParser classParser = new ClassParser();
         FilePathFinder filePathFinder = new FilePathFinder();
         List<String> classPaths = filePathFinder.findJavaFilePaths(INPUT_LOCATION_PATH + pathToClasses);
         for (String filePath : classPaths) {
             List<MethodModel> methods = classParser.extractMethods(filePath);
-            classToBuildName = classParser.extractPackageName(filePath) + "." + classParser.extractClassNameFromPath(filePath); // We concatenate package name with class name
+            classToBuildName = ClassParser.extractPackageName(filePath) + "." + ClassParser.extractClassNameFromPath(filePath); // We concatenate package name with class name
             ClassModel classModel = new ClassModel(methods, classToBuildName);
             for (MethodModel method : methods) {
                 methodToBuildName = method.getMethodName() ;
                 typeToBuildName = method.getMethodReturnType();
                 paramToBuildType = method.getListOfParamType();
-                Main mainInstanceSourceCode = new Main("target.classes." + classToBuildName , methodToBuildName, typeToBuildName, paramToBuildType);  // This will initialize the variables
-                graph.setStartingStmt(statementGraph.getStartingStmt());
-                Iterator<Stmt> iterator = statementGraph.iterator();
-                System.out.println("CFG for SOURCE CODE : " + sootClass.getName());
-                controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
+                new Main("target.classes." + classToBuildName , methodToBuildName, typeToBuildName, paramToBuildType);  // This will initialize the variables
+                if (statementGraph != null) {
+                    graph.setStartingStmt(statementGraph.getStartingStmt());
+                    Iterator<Stmt> iterator = statementGraph.iterator();
+                    System.out.println("CFG for SOURCE CODE : " + sootClass.getName());
+                    controlFlowGraph.printTheControlFlowGraph(); // Print the CFG
+                }
+//                else {
+//                    System.err.println("Error: statementGraph is null for " + methodToBuildName + " in class " + classToBuildName);
+//                }
+
             }
         }
   }
