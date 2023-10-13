@@ -30,6 +30,8 @@ public class Main {
 
     private static String INPUT_LOCATION_PATH; // The path that we will get from the INPUT_LOCATION_ENV
 
+    private static final String pathToClasses = "/src/main/java/org/passau/CodeExamples";
+
     private static String classToBuildName; // Class that we want to build CFG for
 
     private static String methodToBuildName; // Name of method we want to build
@@ -101,7 +103,7 @@ public class Main {
         INPUT_LOCATION_PATH = sootPathSetter.INPUT_LOCATION_PATH;
         ClassParser classParser = new ClassParser();
         FilePathFinder filePathFinder = new FilePathFinder();
-        List<String> classPaths = filePathFinder.findJavaFilePaths("C:\\Users\\Admin\\Desktop\\iPatchValidator\\src\\main\\java\\org\\passau\\CodeExamples");
+        List<String> classPaths = filePathFinder.findJavaFilePaths(INPUT_LOCATION_PATH + pathToClasses);
         for (String filePath : classPaths) {
             List<MethodModel> methods = classParser.extractMethods(filePath);
             classToBuildName = classParser.extractPackageName(filePath) + "." + classParser.extractClassNameFromPath(filePath); // We concatenate package name with class name
@@ -110,7 +112,7 @@ public class Main {
                 methodToBuildName = method.getMethodName() ;
                 typeToBuildName = method.getMethodReturnType();
                 paramToBuildType = method.getListOfParamType();
-                Main mainInstanceSourceCode = new Main("classes." + classToBuildName , methodToBuildName, typeToBuildName, paramToBuildType);  // This will initialize the variables
+                Main mainInstanceSourceCode = new Main("target.classes." + classToBuildName , methodToBuildName, typeToBuildName, paramToBuildType);  // This will initialize the variables
                 graph.setStartingStmt(statementGraph.getStartingStmt());
                 Iterator<Stmt> iterator = statementGraph.iterator();
                 System.out.println("CFG for SOURCE CODE : " + sootClass.getName());
