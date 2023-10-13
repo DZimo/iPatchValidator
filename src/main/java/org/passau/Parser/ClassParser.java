@@ -10,6 +10,8 @@ import org.objectweb.asm.MethodVisitor;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ClassParser {
@@ -85,6 +87,25 @@ public class ClassParser {
             return path.substring(lastSlashIndex + 1, path.length() - ".java".length());
         } else {
             // Handle the case where the input path is not valid.
+            throw new IllegalArgumentException("The path is not a valid Java file path");
+        }
+    }
+
+    public static String extractPackageName(String filePath) throws Exception {
+        CompilationUnit cu;
+        try (FileInputStream in = new FileInputStream(filePath)) {
+            // Parse the file
+            cu = StaticJavaParser.parse(in);
+        }
+        return cu.getPackageDeclaration().get().getName().toString();
+    }
+
+    public static String extractClassNameFromPath(String filePath) {
+        if (filePath != null && filePath.endsWith(".java")) {
+            int lastSeparatorIndex = Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\'));
+            // Extract the class name without ".java".
+            return filePath.substring(lastSeparatorIndex + 1, filePath.length() - ".java".length());
+        } else {
             throw new IllegalArgumentException("The path is not a valid Java file path");
         }
     }

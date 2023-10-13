@@ -103,18 +103,13 @@ public class Main {
         List<String> classPaths = filePathFinder.findJavaFilePaths("C:\\Users\\Admin\\Desktop\\iPatchValidator\\src\\main\\java\\org\\passau\\CodeExamples");
         for (String filePath : classPaths) {
             List<MethodModel> methods = classParser.extractMethods(filePath);
-
-            classToBuildName = ClassParser.extractClassName(filePath);
-            ;
+            classToBuildName = classParser.extractPackageName(filePath) + "." + classParser.extractClassNameFromPath(filePath); // We concatenate package name with class name
             ClassModel classModel = new ClassModel(methods, classToBuildName);
-            /**
-             * Print extracted method info
-             */
             for (MethodModel method : methods) {
                 methodToBuildName = method.getMethodName() ;
                 typeToBuildName = method.getMethodReturnType();
                 paramToBuildType = method.getListOfParamType();
-                Main mainInstanceSourceCode = new Main("classes.org.passau.CodeExamples.SourceCodeNullPointer", methodToBuildName, typeToBuildName, paramToBuildType);  // This will initialize the variables
+                Main mainInstanceSourceCode = new Main("classes." + classToBuildName , methodToBuildName, typeToBuildName, paramToBuildType);  // This will initialize the variables
                 graph.setStartingStmt(statementGraph.getStartingStmt());
                 Iterator<Stmt> iterator = statementGraph.iterator();
                 System.out.println("CFG for SOURCE CODE : " + sootClass.getName());
