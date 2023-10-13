@@ -30,7 +30,10 @@ public class Main {
 
     private static String INPUT_LOCATION_PATH; // The path that we will get from the INPUT_LOCATION_ENV
 
-    private static final String pathToClasses = "/src/main/java/org/passau/CodeExamples";
+    //private static final String pathToClasses = "/src/main/java/org/passau/CodeExamples";
+
+    private static final String pathToClasses = "/SpoonLibrary/main/java/spoon";
+
 
     private static String classToBuildName; // Class that we want to build CFG for
 
@@ -90,6 +93,7 @@ public class Main {
 
         View view = project.createView(); // Create a view for the created project
         sootClass = (SootClass<JavaSootClassSource>) view.getClass(classType).get(); // Get the class itself
+        // Sometimes we cannot find the method ( empty )
         Optional<? extends SootMethod> opt = sootClass.getMethod(methodSignature.getSubSignature());
         SootMethod method = opt.get();
         allStatements = method.getBody().getStmts();
