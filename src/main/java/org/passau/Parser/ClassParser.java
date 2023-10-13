@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClassParser {
+
+    public List<Class> classes = new ArrayList<Class>();
+    public List<MethodModel> methods = new ArrayList<MethodModel>();
+
+
     /**
      * Extracts and returns method information from a specified Java file.
      *
@@ -83,5 +88,4 @@ public class ClassParser {
             throw new IllegalArgumentException("The path is not a valid Java file path");
         }
     }
-
 }
