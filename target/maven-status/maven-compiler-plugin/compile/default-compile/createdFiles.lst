@@ -1,0 +1,10 @@
+org\passau\StaticAnalyzer\VariablesLister.class
+org\passau\SourceCode\MainCode.class
+org\passau\CodeExamples\PatchDelete.class
+org\passau\CodeExamples\SourceCodeSimple.class
+org\passau\CodeExamples\PatchIFcondition.class
+org\passau\CodeExamples\SourceCodeNullPointer.class
+org\passau\SourceCode\Packet.class
+org\passau\StaticAnalyzer\ControlFlowGraph.class
+org\passau\Main.class
+org\passau\Patcher\PatchCode.class

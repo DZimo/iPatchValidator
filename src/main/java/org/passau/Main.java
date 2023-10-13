@@ -32,7 +32,7 @@ public class Main {
 
     //private static final String pathToClasses = "/src/main/java/org/passau/CodeExamples";
 
-    private static final String pathToClasses = "/SpoonLibrary/main/java/spoon";
+    private static final String pathToClasses = "/SpoonLibrary/main/java/spoon/compiler/builder";
 
 
     private static String classToBuildName; // Class that we want to build CFG for
