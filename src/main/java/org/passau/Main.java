@@ -30,9 +30,9 @@ public class Main {
 
     private static String INPUT_LOCATION_PATH; // The path that we will get from the INPUT_LOCATION_ENV
 
-    //private static final String pathToClasses = "/src/main/java/org/passau/CodeExamples";
+    private static final String pathToClasses = "/src/main/java/org/passau/CodeExamples";
 
-    private static final String pathToClasses = "/SpoonLibrary/main/java/spoon/compiler/builder";
+    //private static final String pathToClasses = "/SpoonLibrary/main/java/spoon";
 
 
     private static String classToBuildName; // Class that we want to build CFG for
@@ -70,10 +70,10 @@ public class Main {
      * Constructor for main to initialize variables that we will use to build CFG of Sootup
      */
     public void constructMethodInformation(String classToBuildName, String methodToBuildName, String typeToBuildName, List<String> typeParameters){
-        Main.classToBuildName = classToBuildName;
-        Main.methodToBuildName = methodToBuildName;
-        Main.typeToBuildName = typeToBuildName;
-        paramToBuildType = typeParameters;
+        this.classToBuildName = classToBuildName;
+        this.methodToBuildName = methodToBuildName;
+        this.typeToBuildName = typeToBuildName;
+        this.paramToBuildType = typeParameters;
     }
 
 
@@ -88,10 +88,6 @@ public class Main {
         JavaLanguage language = new JavaLanguage(17);
         Project<JavaSootClass, JavaView> project =  JavaProject.builder(language).addInputLocation(inputLocation).build();
         ClassType classType = project.getIdentifierFactory().getClassType(classToBuildName);  // Set the class we want to work on
-//        MethodSignature methodSignature =
-//                project.getIdentifierFactory().
-//                        getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType); // Set the method we want to work on
-
         View<JavaSootClass> view = project.createView(); // Create a view for the created project
         Optional<JavaSootClass> optClass = view.getClass(classType);
         if (optClass.isPresent()) {
@@ -101,7 +97,7 @@ public class Main {
              */
             MethodSignature methodSignature =
                     project.getIdentifierFactory().
-                            getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType);
+                            getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType);  // Set the method we want to work on
             Optional<? extends SootMethod> optMethod = sootClass.getMethod(methodSignature.getSubSignature());
             // HERE WE ALREADY GETTING NO METHOD
             if (optMethod.isPresent()) {
