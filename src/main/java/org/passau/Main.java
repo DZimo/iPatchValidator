@@ -84,7 +84,7 @@ public class Main {
        // INPUT_LOCATION_PATH ="/Users/shifatsahariar/Downloads/java/iPatchValidator/target/classes/spoon/compiler/builder/AnnotationProcessingOptions.class";
 
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(INPUT_LOCATION_PATH);  // Input for binary code
-        JavaLanguage language = new JavaLanguage(21);
+        JavaLanguage language = new JavaLanguage(17);
         Project<JavaSootClass, JavaView> project =  JavaProject.builder(language).addInputLocation(inputLocation).build();
         ClassType classType = project.getIdentifierFactory().getClassType(classToBuildName);  // Set the class we want to work on
         JavaView view = project.createView(); // Create a view for the created project
@@ -103,14 +103,15 @@ public class Main {
                 SootMethod method = opt.get();
                 if(method.isConcrete())
                 {
-                allStatements = method.getBody().getStmts();
-                statementGraph = method.getBody().getStmtGraph();
-                controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);// Class that build CFG
+
+                    allStatements = method.getBody().getStmts();
+                    statementGraph = method.getBody().getStmtGraph();
+                    controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);// Class that build CFG
                 }
             }
             Optional<? extends SootMethod> optMethod = sootClass.getMethod(methodSignature.getSubSignature());
             // HERE WE ALREADY GETTING NO METHOD
-            if (optMethod.isPresent()) {
+            if (optMethod.isPresent() && ( allStatements == null || statementGraph == null || controlFlowGraph == null) ) { // We try to get them again if null
                 SootMethod method = optMethod.get();
                 if(method.isConcrete())
                 {
@@ -133,12 +134,18 @@ public class Main {
         MutableStmtGraph graph = new MutableBlockStmtGraph();
         SootPathSetter sootPathSetter = new SootPathSetter();  // We first set the path and then validate it
         INPUT_LOCATION_PATH = SootPathSetter.INPUT_LOCATION_PATH;
+        String lastClassName = null;
         ClassParser classParser = new ClassParser();
         FilePathFinder filePathFinder = new FilePathFinder();
         List<String> classPaths = filePathFinder.findJavaFilePaths(INPUT_LOCATION_PATH + pathToClasses);
         for (String filePath : classPaths) {
             List<MethodModel> methods = classParser.extractMethods(filePath);
             classToBuildName = ClassParser.extractPackageName(filePath) + "." + ClassParser.extractClassNameFromPath(filePath); // We concatenate package name with class name
+            if (classToBuildName != lastClassName )
+            {
+                lastClassName = classToBuildName; // We only print the package when it changes
+                System.out.println("WORKING ON THIS PACKAGE :" + lastClassName + " ............");
+            }
             ClassModel classModel = new ClassModel(methods, classToBuildName);
             for (MethodModel method : methods) {
                 methodToBuildName = method.getMethodName() ;
