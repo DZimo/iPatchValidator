@@ -101,17 +101,23 @@ public class Main {
 
             if(opt.isPresent()){
                 SootMethod method = opt.get();
+                if(method.isConcrete())
+                {
                 allStatements = method.getBody().getStmts();
                 statementGraph = method.getBody().getStmtGraph();
                 controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);// Class that build CFG
+                }
             }
             Optional<? extends SootMethod> optMethod = sootClass.getMethod(methodSignature.getSubSignature());
             // HERE WE ALREADY GETTING NO METHOD
             if (optMethod.isPresent()) {
                 SootMethod method = optMethod.get();
-                allStatements = method.getBody().getStmts();
-                statementGraph = method.getBody().getStmtGraph();
-                controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);// Class that build CFG
+                if(method.isConcrete())
+                {
+                    allStatements = method.getBody().getStmts();
+                    statementGraph = method.getBody().getStmtGraph();
+                    controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);// Class that build CFG
+                }
             }
             else {
                // System.err.println("Method not found: " + methodSignature.getSubSignature());
