@@ -30,7 +30,7 @@ public class Main {
 
     private static String INPUT_LOCATION_PATH; // The path that we will get from the INPUT_LOCATION_ENV
 
-    private static final String pathToClasses = "/src/main/java/org";
+    private static final String pathToClasses = "/src/main/java";
 
     //private static final String pathToClasses = "/src/main/java/spoon";
 
@@ -84,7 +84,7 @@ public class Main {
        // INPUT_LOCATION_PATH ="/Users/shifatsahariar/Downloads/java/iPatchValidator/target/classes/spoon/compiler/builder/AnnotationProcessingOptions.class";
 
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(INPUT_LOCATION_PATH);  // Input for binary code
-        JavaLanguage language = new JavaLanguage(17);
+        JavaLanguage language = new JavaLanguage(21);
         Project<JavaSootClass, JavaView> project =  JavaProject.builder(language).addInputLocation(inputLocation).build();
         ClassType classType = project.getIdentifierFactory().getClassType(classToBuildName);  // Set the class we want to work on
         JavaView view = project.createView(); // Create a view for the created project
@@ -114,11 +114,11 @@ public class Main {
                 controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);// Class that build CFG
             }
             else {
-                System.err.println("Method not found: " + methodSignature.getSubSignature());
+               // System.err.println("Method not found: " + methodSignature.getSubSignature());
             }
         }
         else {
-            System.err.println("Class not found: " + classType.getClassName());
+           // System.err.println("Class not found: " + classType.getClassName());
         }
 
     }

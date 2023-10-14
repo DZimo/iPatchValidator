@@ -29,6 +29,7 @@ public class ClassParser {
      */
 
     public List<MethodModel> extractMethods(String filePath) throws Exception {
+        FilePathFinder finder = new FilePathFinder( );
         CompilationUnit cu;
 
         try (FileInputStream in = new FileInputStream(filePath)) {
