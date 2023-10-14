@@ -30,10 +30,9 @@ public class Main {
 
     private static String INPUT_LOCATION_PATH; // The path that we will get from the INPUT_LOCATION_ENV
 
-    private static final String pathToClasses = "/src/main/java/org/passau/CodeExamples";
+    private static final String pathToClasses = "/src/main/java/org";
 
-    //private static final String pathToClasses = "/SpoonLibrary/main/java/spoon";
-
+    //private static final String pathToClasses = "/src/main/java/spoon";
 
     private static String classToBuildName; // Class that we want to build CFG for
 
@@ -88,16 +87,24 @@ public class Main {
         JavaLanguage language = new JavaLanguage(17);
         Project<JavaSootClass, JavaView> project =  JavaProject.builder(language).addInputLocation(inputLocation).build();
         ClassType classType = project.getIdentifierFactory().getClassType(classToBuildName);  // Set the class we want to work on
-        View<JavaSootClass> view = project.createView(); // Create a view for the created project
+        JavaView view = project.createView(); // Create a view for the created project
         Optional<JavaSootClass> optClass = view.getClass(classType);
         if (optClass.isPresent()) {
             sootClass = optClass.get(); // Get the class itself
+            MethodSignature methodSignature =
+                    project.getIdentifierFactory().
+                            getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType.stream().toList());  // Set the method we want to work on
             /**
              * OUR CURRENT ISSUE STARTS HERE
              */
-            MethodSignature methodSignature =
-                    project.getIdentifierFactory().
-                            getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType);  // Set the method we want to work on
+            Optional<SootMethod> opt = (Optional<SootMethod>) view.getMethod(methodSignature);
+
+            if(opt.isPresent()){
+                SootMethod method = opt.get();
+                allStatements = method.getBody().getStmts();
+                statementGraph = method.getBody().getStmtGraph();
+                controlFlowGraph = new ControlFlowGraph(controlFlowGraph, statementGraph, allStatements, sootClass);// Class that build CFG
+            }
             Optional<? extends SootMethod> optMethod = sootClass.getMethod(methodSignature.getSubSignature());
             // HERE WE ALREADY GETTING NO METHOD
             if (optMethod.isPresent()) {
