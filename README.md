@@ -2,10 +2,10 @@
 A tool that calculate the differences between source code and patch, a sort of validating a patch to rank it.
 
 # How to run ?
-1) Put your desired source code in CodeExamples.
+1) Put your desired source code in src/main/java.
 2) Compile the codes with "mvn compile".
-2) Create a new environment variable "iPatchValidator" and set the path to target ( where your compiled codes are located in this project PATH TO ~\iPatchValidator\target)
-3) Run the tool and you will get the output in a log file and terminal.
+2) Create a new environment variable "iPatchValidator" and set the path to target ( where your project is located PATH TO ~HOME\iPatchValidator)
+3) Run the tool then you will get the output in a log file and terminal.
 
 ## Project Description:
 
