@@ -198,26 +198,26 @@ public class Main implements Runnable {
     public static void main (String[] args) {
         try {
 
-            //Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples","OriginalCodeLogPassau"); // Instance for the original code
-            //Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCode");
+            Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples","OriginalCodeLogPassau"); // Instance for the original code
+            Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCodePassau");
 
-            //Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples","PatchedlCodeLogPassau"); // Instance for the original code
-            //Thread t2 = new Thread(mainInstancePatchedPassau, "originalCode");
+            Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples","PatchedlCodeLogPassau"); // Instance for the original code
+            Thread t2 = new Thread(mainInstancePatchedPassau, "patchedCodePassau");
 
             Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","SourceCodeLogSpoon"); // Instance for the patched code
-            Thread t3 = new Thread(mainInstanceOriginaldSpoon, "patchedCode");
+            Thread t3 = new Thread(mainInstanceOriginaldSpoon, "originalCodeSpoon");
 
             Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon","PatchedCodeLogSpoon"); // Instance for the patched code
-            Thread t4 = new Thread(mainInstancePatchedSpoon, "patchedCode");
+            Thread t4 = new Thread(mainInstancePatchedSpoon, "patchedCodeSpoon");
 
-            //t1.start(); // Start Original code passau thread
-            //t2.start(); // Start Patched code passau thread
+            t1.start(); // Start Original code passau thread
+            t2.start(); // Start Patched code passau thread
 
             t3.start(); // Start Original code spoon thread
             t4.start(); // Start Patched code spoon thread
 
-            //t1.join();
-            //t2.join();
+            t1.join();
+            t2.join();
 
             t3.join();
             t4.join();
