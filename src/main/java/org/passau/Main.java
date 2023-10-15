@@ -23,6 +23,7 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaLanguage;
 
 public class Main implements Runnable {
@@ -91,7 +92,7 @@ public class Main implements Runnable {
         if(typeToBuildName.equals("T"))
         {
             // WE HAVE TO DO SOMETHING TO CHANGE THE NAME OF THE TYPE AS IT IS GENERIC
-            typeToBuildName = "TT";
+            //typeToBuildName = "classB";
         }
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(INPUT_LOCATION_PATH);  // Input for binary code
         JavaLanguage language = new JavaLanguage(17);
@@ -108,12 +109,18 @@ public class Main implements Runnable {
         View view = project.createView(); // Create a view for the created project
         Optional<JavaSootClass> optClass = view.getClass(classType);
 
+
         if (optClass.isPresent()) {
             sootClass = optClass.get();
+
             /**
              * OUR CURRENT ISSUE STARTS HERE
              */
-            Optional<SootMethod> opt = (Optional<SootMethod>) view.getMethod(methodSignature);
+            Optional<SootMethod> opt = (Optional<SootMethod>) sootClass.getMethods().stream()
+                    .filter(a -> a.getSignature().getSubSignature().getName().toString().equals(methodToBuildName))
+                    .findFirst();
+
+
 
             if(opt.isPresent()){
                 SootMethod method = opt.get();
