@@ -1,4 +1,4 @@
-package org.passau.CodeExamples;
+package org.passau.PatchExamples;
 
 public class classA <T extends classB> {
     int a;

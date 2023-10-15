@@ -91,7 +91,7 @@ public class Main implements Runnable {
         if(typeToBuildName.equals("T"))
         {
             // WE HAVE TO DO SOMETHING TO CHANGE THE NAME OF THE TYPE AS IT IS GENERIC
-            //typeToBuildName = "";
+            typeToBuildName = "TT";
         }
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(INPUT_LOCATION_PATH);  // Input for binary code
         JavaLanguage language = new JavaLanguage(17);
@@ -193,7 +193,7 @@ public class Main implements Runnable {
                 }
             }
             System.out.println("WORK DONE!");
-            //iPatchWriter.closeFiles();
+            iPatchWriter.closeFiles();
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -203,13 +203,13 @@ public class Main implements Runnable {
     public static void main (String[] args) {
         try {
 
-            Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples","OriginalCodeLogPassau"); // Instance for the original code
+            Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples","OriginallCodeLogPassau"); // Instance for the original code
             Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCodePassau");
 
-            Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples","PatchedlCodeLogPassau"); // Instance for the original code
+            Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/PatchExamples","PatchedlCodeLogPassau"); // Instance for the original code
             Thread t2 = new Thread(mainInstancePatchedPassau, "patchedCodePassau");
 
-            Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","SourceCodeLogSpoon"); // Instance for the patched code
+            Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","OriginalLogSpoon"); // Instance for the patched code
             Thread t3 = new Thread(mainInstanceOriginaldSpoon, "originalCodeSpoon");
 
             Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon","PatchedCodeLogSpoon"); // Instance for the patched code
