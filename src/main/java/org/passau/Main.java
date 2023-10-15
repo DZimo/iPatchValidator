@@ -88,6 +88,11 @@ public class Main implements Runnable {
 
     private boolean buildGraph() {
        // INPUT_LOCATION_PATH ="/Users/shifatsahariar/Downloads/java/iPatchValidator/target/classes/spoon/compiler/builder/AnnotationProcessingOptions.class";
+        if(typeToBuildName.equals("T"))
+        {
+            // WE HAVE TO DO SOMETHING TO CHANGE THE NAME OF THE TYPE AS IT IS GENERIC
+            //typeToBuildName = "";
+        }
         AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation(INPUT_LOCATION_PATH);  // Input for binary code
         JavaLanguage language = new JavaLanguage(17);
         Project project =
