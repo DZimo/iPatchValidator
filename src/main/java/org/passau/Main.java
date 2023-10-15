@@ -98,7 +98,7 @@ public class Main implements Runnable {
         //paramToBuildType.stream().toList()
         MethodSignature methodSignature =
                 project.getIdentifierFactory().
-                        getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType.stream().toList());  // Define the method we want to work on
+                        getMethodSignature(methodToBuildName, classToBuildName, typeToBuildName, paramToBuildType);  // Define the method we want to work on
 
         View view = project.createView(); // Create a view for the created project
         Optional<JavaSootClass> optClass = view.getClass(classType);
@@ -198,16 +198,29 @@ public class Main implements Runnable {
     public static void main (String[] args) {
         try {
 
-            Main mainInstanceOriginal = new Main("/src/main/java/org","OriginalCodeLog"); // Instance for the original code
-            Thread t1 = new Thread(mainInstanceOriginal, "originalCode");
+            Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples","OriginalCodeLogPassau"); // Instance for the original code
+            Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCode");
 
-            Main mainInstancePatched = new Main("/src/main/java/spoon","PatchedCodeLog"); // Instance for the patched code
-            Thread t2 = new Thread(mainInstancePatched, "patchedCode");
+            Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples","PatchedlCodeLogPassau"); // Instance for the original code
+            Thread t2 = new Thread(mainInstancePatchedPassau, "originalCode");
 
-            t1.start(); // Start Original code thread
-            t2.start(); // Start Patched code thread
-            t1.join();
-            t2.join();
+            Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","SourceCodeLogSpoon"); // Instance for the patched code
+            Thread t3 = new Thread(mainInstanceOriginaldSpoon, "patchedCode");
+
+            Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon","PatchedCodeLogSpoon"); // Instance for the patched code
+            Thread t4 = new Thread(mainInstancePatchedSpoon, "patchedCode");
+
+            //t1.start(); // Start Original code passau thread
+            //t2.start(); // Start Patched code passau thread
+
+            t3.start(); // Start Original code spoon thread
+            t4.start(); // Start Patched code spoon thread
+
+            //t1.join();
+            //t2.join();
+
+            t3.join();
+            t4.join();
         } catch (InterruptedException e) {
             System.out.println("Error with threads:" + e.getMessage());
         }
