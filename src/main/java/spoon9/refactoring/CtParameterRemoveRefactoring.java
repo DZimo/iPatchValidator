@@ -1,26 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.refactoring;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import spoon9.SpoonException;
-import spoon9.reflect.code.CtAnnotationFieldAccess;
-import spoon9.reflect.code.CtArrayRead;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFieldRead;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.code.CtNewArray;
-import spoon9.reflect.code.CtThisAccess;
-import spoon9.reflect.code.CtVariableRead;
+import spoon9.reflect.code.*;
 import spoon9.reflect.declaration.CtElement;
 import spoon9.reflect.declaration.CtExecutable;
 import spoon9.reflect.declaration.CtParameter;
@@ -31,6 +19,10 @@ import spoon9.reflect.visitor.chain.CtConsumer;
 import spoon9.reflect.visitor.filter.AllMethodsSameSignatureFunction;
 import spoon9.reflect.visitor.filter.ExecutableReferenceFilter;
 import spoon9.reflect.visitor.filter.ParameterReferenceFunction;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Removes target {@link CtParameter} from the parent target {@link CtExecutable}
@@ -193,7 +185,7 @@ public class CtParameterRemoveRefactoring implements CtRefactoring {
 
 	private void checkInvocation(CtInvocation<?> invocation) {
 		final CtExpression<?> toBeRemovedExpression = invocation.getArguments().get(this.parameterIndex);
-		if (!canRemoveExpression(toBeRemovedExpression)) {
+		if (canRemoveExpression(toBeRemovedExpression) == false) {
 			createExpressionCannotBeRemovedIssue(invocation, toBeRemovedExpression);
 		}
 	}

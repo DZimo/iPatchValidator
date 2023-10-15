@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.code;
 
@@ -15,7 +15,7 @@ import static spoon.reflect.path.CtRole.EXPRESSION;
 /**
  * This code element defines a one-dimensional array access. When
  * multi-dimensional, array accesses are applied to other one-dimensional array
- * accesses. The target of {@link spoon.reflect.code.CtTargetedExpression}
+ * accesses. The target of {@link CtTargetedExpression}
  * defines the expression that represents the accessed array.
  *
  * @param <T>

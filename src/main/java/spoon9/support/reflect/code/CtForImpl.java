@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.code;
 
@@ -19,9 +19,7 @@ import java.util.List;
 
 import static spoon9.reflect.ModelElementContainerDefaultCapacities.FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon9.reflect.ModelElementContainerDefaultCapacities.FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon9.reflect.path.CtRole.EXPRESSION;
-import static spoon9.reflect.path.CtRole.FOR_INIT;
-import static spoon9.reflect.path.CtRole.FOR_UPDATE;
+import static spoon9.reflect.path.CtRole.*;
 
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
@@ -76,11 +74,11 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public <T extends CtFor> T setForInit(List<CtStatement> statements) {
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
 		if (statements == null || statements.isEmpty()) {
 			this.forInit = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
 		this.forInit.clear();
 		for (CtStatement stmt : statements) {
 			addForInit(stmt);
@@ -118,11 +116,11 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public <T extends CtFor> T setForUpdate(List<CtStatement> statements) {
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
 		if (statements == null || statements.isEmpty()) {
 			this.forUpdate = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
 		this.forUpdate.clear();
 		for (CtStatement stmt : statements) {
 			addForUpdate(stmt);

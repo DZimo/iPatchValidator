@@ -1,11 +1,12 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.visitor.clone;
+
 /**
  * Used to clone a given element.
  *
@@ -198,7 +199,6 @@ public class CloneVisitor extends spoon9.reflect.visitor.CtScanner {
 		aCtClass.setSuperInterfaces(this.cloneHelper.clone(ctClass.getSuperInterfaces()));
 		aCtClass.setFormalCtTypeParameters(this.cloneHelper.clone(ctClass.getFormalCtTypeParameters()));
 		aCtClass.setTypeMembers(this.cloneHelper.clone(ctClass.getTypeMembers()));
-		aCtClass.setPermittedTypes(this.cloneHelper.clone(ctClass.getPermittedTypes()));
 		aCtClass.setComments(this.cloneHelper.clone(ctClass.getComments()));
 		this.cloneHelper.tailor(ctClass, aCtClass);
 		this.other = aCtClass;
@@ -405,7 +405,6 @@ public class CloneVisitor extends spoon9.reflect.visitor.CtScanner {
 		aCtInterface.setSuperInterfaces(this.cloneHelper.clone(intrface.getSuperInterfaces()));
 		aCtInterface.setFormalCtTypeParameters(this.cloneHelper.clone(intrface.getFormalCtTypeParameters()));
 		aCtInterface.setTypeMembers(this.cloneHelper.clone(intrface.getTypeMembers()));
-		aCtInterface.setPermittedTypes(this.cloneHelper.clone(intrface.getPermittedTypes()));
 		aCtInterface.setComments(this.cloneHelper.clone(intrface.getComments()));
 		this.cloneHelper.tailor(intrface, aCtInterface);
 		this.other = aCtInterface;
@@ -1104,45 +1103,5 @@ public class CloneVisitor extends spoon9.reflect.visitor.CtScanner {
 		aCtYieldStatement.setComments(this.cloneHelper.clone(statement.getComments()));
 		this.cloneHelper.tailor(statement, aCtYieldStatement);
 		this.other = aCtYieldStatement;
-	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@Override
-	public void visitCtTypePattern(spoon9.reflect.code.CtTypePattern pattern) {
-		spoon9.reflect.code.CtTypePattern aCtTypePattern = pattern.getFactory().Core().createTypePattern();
-		this.builder.copy(pattern, aCtTypePattern);
-		aCtTypePattern.setVariable(this.cloneHelper.clone(pattern.getVariable()));
-		aCtTypePattern.setAnnotations(this.cloneHelper.clone(pattern.getAnnotations()));
-		aCtTypePattern.setType(this.cloneHelper.clone(pattern.getType()));
-		aCtTypePattern.setComments(this.cloneHelper.clone(pattern.getComments()));
-		this.cloneHelper.tailor(pattern, aCtTypePattern);
-		this.other = aCtTypePattern;
-	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@Override
-	public void visitCtRecord(spoon9.reflect.declaration.CtRecord recordType) {
-		spoon9.reflect.declaration.CtRecord aCtRecord = recordType.getFactory().Core().createRecord();
-		this.builder.copy(recordType, aCtRecord);
-		aCtRecord.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
-		aCtRecord.setSuperInterfaces(this.cloneHelper.clone(recordType.getSuperInterfaces()));
-		aCtRecord.setTypeMembers(this.cloneHelper.clone(recordType.getTypeMembers()));
-		aCtRecord.setFormalCtTypeParameters(this.cloneHelper.clone(recordType.getFormalCtTypeParameters()));
-		aCtRecord.setRecordComponents(this.cloneHelper.clone(recordType.getRecordComponents()));
-		aCtRecord.setComments(this.cloneHelper.clone(recordType.getComments()));
-		this.cloneHelper.tailor(recordType, aCtRecord);
-		this.other = aCtRecord;
-	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@Override
-	public void visitCtRecordComponent(spoon9.reflect.declaration.CtRecordComponent recordType) {
-		spoon9.reflect.declaration.CtRecordComponent aCtRecordComponent = recordType.getFactory().Core().createRecordComponent();
-		this.builder.copy(recordType, aCtRecordComponent);
-		aCtRecordComponent.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
-		aCtRecordComponent.setType(this.cloneHelper.clone(recordType.getType()));
-		aCtRecordComponent.setComments(this.cloneHelper.clone(recordType.getComments()));
-		this.cloneHelper.tailor(recordType, aCtRecordComponent);
-		this.other = aCtRecordComponent;
 	}
 }

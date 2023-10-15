@@ -1,16 +1,16 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.code;
 
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.reference.CtExecutableReference;
 import spoon9.reflect.annotations.PropertyGetter;
 import spoon9.reflect.annotations.PropertySetter;
+import spoon9.reflect.declaration.CtElement;
+import spoon9.reflect.reference.CtExecutableReference;
 
 import java.util.List;
 
@@ -38,16 +38,6 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	 */
 	@PropertySetter(role = ARGUMENT)
 	<C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument);
-
-	/**
-	 * Adds an argument expression to the invocation at the specified position.
-	 *
-	 * @param position position to add the argument at.
-	 * @param argument argument to add.
-	 * @return the receiver.
-	 */
-	@PropertySetter(role = ARGUMENT)
-	<C extends CtAbstractInvocation<T>> C addArgumentAt(int position, CtExpression<?> argument);
 
 	/**
 	 * Removes an argument expression from the invocation.

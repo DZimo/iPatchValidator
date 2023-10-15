@@ -1,18 +1,15 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spoon.support.compiler.SpoonPom;
 
 import java.io.File;
-import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -20,13 +17,10 @@ import java.util.regex.Pattern;
  * Create a Spoon launcher from a maven pom file
  */
 public class MavenLauncher extends Launcher {
-	private static final Logger LOGGER  = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
 	private String mvnHome;
 	private SOURCE_TYPE sourceType;
 	private SpoonPom model;
 	private boolean forceRefresh = false;
-	private final SpoonPom.MavenOptions mavenOptions = SpoonPom.MavenOptions.empty();
 
 	/**
 	 * @return SpoonPom corresponding to the pom file used by the launcher
@@ -168,19 +162,6 @@ public class MavenLauncher extends Launcher {
 		init(mavenProject, classpath, profileFilter);
 	}
 
-	/**
-	 * Adds an environment variable to the maven invocation.
-	 * <p>
-	 * <br><strong>Note that you need to call {@link #rebuildClasspath()} after calling this method for changes to take effect.</strong>
-	 *
-	 * @param key the name of the environment variable
-	 * @param value its value
-	 * @see #rebuildClasspath() #rebuildClasspath() for changes to take effect
-	 */
-	public void setEnvironmentVariable(String key, String value) {
-		mavenOptions.setEnvironmentVariable(key, value);
-	}
-
 	private void init(String mavenProject, String[] classpath, Pattern profileFilter) {
 		File mavenProjectFile = new File(mavenProject);
 		if (!mavenProjectFile.exists()) {
@@ -210,30 +191,21 @@ public class MavenLauncher extends Launcher {
 		}
 
 		if (classpath == null) {
-			classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, forceRefresh, mavenOptions);
-			LOGGER.info("Running in FULLCLASSPATH mode. Source folders and dependencies are inferred from the pom.xml file (doc: http://spoon.gforge.inria.fr/launcher.html).");
-		} else {
-			LOGGER.info("Running in FULLCLASSPATH mode. Classpath is manually set (doc: http://spoon.gforge.inria.fr/launcher.html).");
+			classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, forceRefresh);
 		}
 
 		// dependencies
-		factory.getEnvironment().setNoClasspath(false);
 		this.getModelBuilder().setSourceClasspath(classpath);
 
 		// compliance level
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
 	}
 
-	@Override
-	protected void reportClassPathMode() {
-		// skip classpath mode logs from Launcher
-	}
-
 	/**
 	 * Triggers regeneration of the classpath that is used for building the model, based on pom.xml
 	 */
 	public void rebuildClasspath() {
-		String[] classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, true, mavenOptions);
+		String[] classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, true);
 		this.getModelBuilder().setSourceClasspath(classpath);
 	}
 }

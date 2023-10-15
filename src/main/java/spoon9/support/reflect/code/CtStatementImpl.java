@@ -1,22 +1,15 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.code;
 
 import spoon9.SpoonException;
 import spoon9.reflect.annotations.MetamodelPropertyField;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtCase;
-import spoon9.reflect.code.CtIf;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtLoop;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtStatementList;
-import spoon9.reflect.code.CtSwitch;
+import spoon9.reflect.code.*;
 import spoon9.reflect.declaration.CtConstructor;
 import spoon9.reflect.declaration.CtElement;
 import spoon9.reflect.declaration.CtExecutable;
@@ -64,10 +57,14 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		if (targetParent instanceof CtExecutable) {
 			throw new SpoonException("cannot insert in this context (use insertEnd?)");
 		}
-		if (target.getParent(CtConstructor.class) != null) {
-			if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith(CtExecutableReference.CONSTRUCTOR_NAME)) {
-				throw new SpoonException("cannot insert a statement before a super or this invocation.");
+		try {
+			if (target.getParent(CtConstructor.class) != null) {
+				if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith(CtExecutableReference.CONSTRUCTOR_NAME)) {
+					throw new SpoonException("cannot insert a statement before a super or this invocation.");
+				}
 			}
+		} catch (ParentNotInitializedException ignore) {
+			// no parent set somewhere
 		}
 		new InsertVisitor(target, statementsToBeInserted, InsertType.BEFORE).scan(targetParent);
 	}

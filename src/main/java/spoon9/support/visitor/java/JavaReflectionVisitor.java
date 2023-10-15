@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.visitor.java;
 
@@ -12,14 +12,7 @@ import spoon9.support.visitor.java.reflect.RtMethod;
 import spoon9.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
+import java.lang.reflect.*;
 
 /**
  * Internal, package-visible interface for building shadow classes.
@@ -85,12 +78,4 @@ interface JavaReflectionVisitor {
 	/** Visits a class as an array reference
 	 * @param role {@link CtRole} which this reference plays*/
 	<T> void visitArrayReference(CtRole role, Type typeArray);
-
-	/** Visits a {@link Class} representing an record, see {@code Class#isRecord()} */
-	<T> void visitRecord(Class<T> clazz);
-
-	/** Visits a record component.
-	 * @param recordComponent a record component
-	*/
-	void visitRecordComponent(AnnotatedElement recordComponent);
 }

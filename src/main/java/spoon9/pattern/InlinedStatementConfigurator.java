@@ -1,36 +1,26 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.pattern;
 
-import static spoon9.pattern.PatternBuilder.bodyToStatements;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
-
 import spoon9.SpoonException;
-import spoon9.pattern.internal.node.ForEachNode;
-import spoon9.pattern.internal.node.ListOfNodes;
-import spoon9.pattern.internal.node.ParameterNode;
-import spoon9.pattern.internal.node.PrimitiveMatcher;
-import spoon9.pattern.internal.node.RootNode;
-import spoon9.pattern.internal.node.SwitchNode;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtForEach;
-import spoon9.reflect.code.CtIf;
-import spoon9.reflect.code.CtLocalVariable;
-import spoon9.reflect.code.CtStatement;
+import spoon9.pattern.internal.node.*;
+import spoon9.reflect.code.*;
 import spoon9.reflect.declaration.CtElement;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtVariableReference;
 import spoon9.reflect.visitor.CtAbstractVisitor;
 import spoon9.support.Experimental;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
+
+import static spoon9.pattern.PatternBuilder.bodyToStatements;
 
 /**
  * Builds inline statements of Pattern
@@ -122,7 +112,7 @@ public class InlinedStatementConfigurator {
 	public InlinedStatementConfigurator markAsInlined(CtForEach foreach) {
 		//detect meta elements by different way - e.g. comments?
 		RootNode vr = patternBuilder.getPatternNode(foreach.getExpression());
-		if (!(vr instanceof PrimitiveMatcher)) {
+		if ((vr instanceof PrimitiveMatcher) == false) {
 			throw new SpoonException("Each inline `for(x : iterable)` statement must have defined pattern parameter for `iterable` expression");
 		}
 		PrimitiveMatcher parameterOfExpression = (PrimitiveMatcher) vr;
@@ -159,7 +149,7 @@ public class InlinedStatementConfigurator {
 			if (expression != null) {
 				//expression is not null, it is: if(expression) {}
 				RootNode vrOfExpression = patternBuilder.getPatternNode(expression);
-				if (!(vrOfExpression instanceof ParameterNode)) {
+				if (vrOfExpression instanceof ParameterNode == false) {
 					if (failOnMissingParameter) {
 						throw new SpoonException("Each inline `if` statement must have defined pattern parameter in expression. If you want to ignore this, then call InlinedStatementConfigurator#setFailOnMissingParameter(false) first.");
 					} else {

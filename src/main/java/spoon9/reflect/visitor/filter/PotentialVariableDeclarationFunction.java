@@ -1,37 +1,18 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor.filter;
 
-import spoon9.reflect.code.CaseKind;
-import spoon9.reflect.code.CtBodyHolder;
-import spoon9.reflect.code.CtCase;
-import spoon9.reflect.code.CtCatch;
-import spoon9.reflect.code.CtCatchVariable;
-import spoon9.reflect.code.CtLocalVariable;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtStatementList;
-import spoon9.reflect.code.CtSwitch;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtModifiable;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtVariable;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.visitor.chain.CtConsumableFunction;
 import spoon9.reflect.visitor.chain.CtConsumer;
 import spoon9.reflect.visitor.chain.CtQuery;
 import spoon9.reflect.visitor.chain.CtQueryAware;
-
-import java.util.List;
 
 /**
  * This mapping function searches for all {@link CtVariable} instances,
@@ -104,7 +85,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				//visit each CtField of `parent` CtType
 				CtQuery q = parent.map(new AllTypeMembersFunction(CtField.class));
 				q.forEach((CtField<?> field) -> {
-					if (isInStaticScope && !field.hasModifier(ModifierKind.STATIC)) {
+					if (isInStaticScope && field.hasModifier(ModifierKind.STATIC) == false) {
 						/*
 						 * the variable reference is used in static scope,
 						 * but the field is not static - ignore it
@@ -119,23 +100,6 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				});
 				if (query.isTerminated()) {
 					return;
-				}
-			} else if (parent instanceof CtSwitch
-					&& scopeElement instanceof CtCase && ((CtCase<?>) scopeElement).getCaseKind() == CaseKind.COLON) {
-				SiblingsFunction siblingsFunction = new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS);
-				List<CtCase<?>> list = input.getFactory().createQuery()
-						.map(siblingsFunction)
-						.setInput(scopeElement)
-						.filterChildren(new TypeFilter<>(CtCase.class))
-						.list();
-
-				for (CtCase<?> c : list) {
-					for (CtStatement statement : c.getStatements()) {
-						if (statement instanceof CtLocalVariable && ((CtLocalVariable<?>) statement).getSimpleName().equals(variableName)) {
-							sendToOutput((CtVariable<?>) statement, outputConsumer);
-							return;
-						}
-					}
 				}
 			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList) {
 				//visit all previous CtVariable siblings of scopeElement element in parent BodyHolder or Statement list

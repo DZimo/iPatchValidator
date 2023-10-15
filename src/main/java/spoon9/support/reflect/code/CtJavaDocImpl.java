@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.code;
 
@@ -85,25 +85,15 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 	@Override
 	public String getShortDescription() {
-		int indexOfFirstSentenceEnd = indexOfFirstSentenceEnd(this.getContent());
-		if (indexOfFirstSentenceEnd == -1) {
-			indexOfFirstSentenceEnd = this.getContent().indexOf('\n');
+		int indexEndSentence = this.getContent().indexOf('.');
+		if (indexEndSentence == -1) {
+			indexEndSentence = this.getContent().indexOf('\n');
 		}
-		if (indexOfFirstSentenceEnd != -1) {
-			return this.getContent().substring(0, indexOfFirstSentenceEnd + 1).trim();
+		if (indexEndSentence != -1) {
+			return this.getContent().substring(0, indexEndSentence + 1).trim();
 		} else {
 			return this.getContent().trim();
 		}
-	}
-
-	private int indexOfFirstSentenceEnd(String content) {
-		int index = content.indexOf('.');
-		while (index < content.length() - 1
-				&& !Character.isWhitespace(content.charAt(index + 1))
-				&& index != -1) {
-			index = content.indexOf('.', index + 1);
-		}
-		return index;
 	}
 
 	/**

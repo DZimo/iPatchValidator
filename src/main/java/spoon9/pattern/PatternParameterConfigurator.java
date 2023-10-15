@@ -1,60 +1,29 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.pattern;
 
 import spoon9.SpoonException;
 import spoon9.metamodel.Metamodel;
 import spoon9.pattern.internal.ValueConvertor;
-import spoon9.pattern.internal.node.ListOfNodes;
-import spoon9.pattern.internal.node.MapEntryNode;
-import spoon9.pattern.internal.node.ParameterNode;
-import spoon9.pattern.internal.node.RootNode;
-import spoon9.pattern.internal.node.StringNode;
-import spoon9.pattern.internal.parameter.AbstractParameterInfo;
-import spoon9.pattern.internal.parameter.ComputedParameterInfo;
-import spoon9.pattern.internal.parameter.ListParameterInfo;
-import spoon9.pattern.internal.parameter.MapParameterInfo;
-import spoon9.pattern.internal.parameter.ParameterInfo;
-import spoon9.pattern.internal.parameter.SimpleNameOfTypeReferenceParameterComputer;
-import spoon9.reflect.code.CtArrayAccess;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFieldRead;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.code.CtReturn;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtVariableAccess;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.declaration.CtVariable;
+import spoon9.pattern.internal.node.*;
+import spoon9.pattern.internal.parameter.*;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.factory.Factory;
 import spoon9.reflect.meta.ContainerKind;
 import spoon9.reflect.meta.RoleHandler;
 import spoon9.reflect.meta.impl.RoleHandlerHelper;
 import spoon9.reflect.path.CtRole;
-import spoon9.reflect.reference.CtArrayTypeReference;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtReference;
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.reference.CtVariableReference;
+import spoon9.reflect.reference.*;
 import spoon9.reflect.visitor.CtScanner;
 import spoon9.reflect.visitor.Filter;
 import spoon9.reflect.visitor.chain.CtQueryable;
-import spoon9.reflect.visitor.filter.AllTypeMembersFunction;
-import spoon9.reflect.visitor.filter.InvocationFilter;
-import spoon9.reflect.visitor.filter.NamedElementFilter;
-import spoon9.reflect.visitor.filter.PotentialVariableDeclarationFunction;
-import spoon9.reflect.visitor.filter.VariableReferenceFunction;
+import spoon9.reflect.visitor.filter.*;
 import spoon9.support.Experimental;
 import spoon9.template.Parameter;
 import spoon9.template.Template;
@@ -107,9 +76,12 @@ public class PatternParameterConfigurator {
 	}
 
 	private AbstractParameterInfo getParameterInfo(String parameterName, boolean createIfNotExist) {
-		return parameterInfos.computeIfAbsent(parameterName, k -> {
-			return new MapParameterInfo(k).setValueConvertor(patternBuilder.getDefaultValueConvertor());
-		});
+		AbstractParameterInfo pi = parameterInfos.get(parameterName);
+		if (pi == null) {
+			pi = new MapParameterInfo(parameterName).setValueConvertor(patternBuilder.getDefaultValueConvertor());
+			parameterInfos.put(parameterName, pi);
+		}
+		return pi;
 	}
 
 	/**
@@ -129,7 +101,7 @@ public class PatternParameterConfigurator {
 	}
 
 	public PatternParameterConfigurator setMaxOccurrence(int maxOccurrence) {
-		if (maxOccurrence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurrence > 1 && !currentParameter.isMultiple()) {
+		if (maxOccurrence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurrence > 1 && currentParameter.isMultiple() == false) {
 			throw new SpoonException("Cannot set maxOccurrences > 1 for single value parameter. Call setMultiple(true) first.");
 		}
 		currentParameter.setMaxOccurrences(maxOccurrence);
@@ -530,7 +502,7 @@ public class PatternParameterConfigurator {
 			CtType<?> templateType = patternBuilder.getTemplateTypeRef().getTypeDeclaration();
 			//configure template parameters based on parameter values only - these without any declaration in Template
 			parameterValues.forEach((paramName, paramValue) -> {
-				if (!isSubstituted(paramName)) {
+				if (isSubstituted(paramName) == false) {
 					//and only these parameters whose name isn't already handled by explicit template parameters
 					//replace types whose name fits to name of parameter
 					parameter(paramName)
@@ -982,7 +954,7 @@ public class PatternParameterConfigurator {
 		CtElement element = pep.element;
 		while (element.isParentInitialized()) {
 			CtElement parent = element.getParent();
-			if (!(parent instanceof CtBlock) || !parent.isImplicit()) {
+			if ((parent instanceof CtBlock) == false || parent.isImplicit() == false) {
 				break;
 			}
 			element = parent;

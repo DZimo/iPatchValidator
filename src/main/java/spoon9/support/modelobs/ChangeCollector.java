@@ -1,21 +1,12 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.modelobs;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.jspecify.annotations.Nullable;
 import spoon9.compiler.Environment;
 import spoon9.reflect.CtModel;
 import spoon9.reflect.declaration.CtElement;
@@ -24,6 +15,8 @@ import spoon9.reflect.path.CtRole;
 import spoon9.reflect.visitor.EarlyTerminatingScanner;
 import spoon9.reflect.visitor.chain.CtScannerListener;
 import spoon9.reflect.visitor.chain.ScanningMode;
+
+import java.util.*;
 
 /**
  * Listens on changes  on the spoon model and remembers them
@@ -36,7 +29,7 @@ public class ChangeCollector {
 	 * @param env to be checked {@link Environment}
 	 * @return {@link ChangeCollector} attached to the `env` or null if there is none
 	 */
-	public static @Nullable ChangeCollector getChangeCollector(Environment env) {
+	public static ChangeCollector getChangeCollector(Environment env) {
 		FineModelChangeListener mcl = env.getModelChangeListener();
 		if (mcl instanceof ChangeListener) {
 			return ((ChangeListener) mcl).getChangeCollector();
@@ -208,11 +201,6 @@ public class ChangeCollector {
 
 		@Override
 		public <K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue) {
-			onChange(currentElement, role);
-		}
-
-		@Override
-		public <K, V> void onMapDelete(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement oldValue) {
 			onChange(currentElement, role);
 		}
 

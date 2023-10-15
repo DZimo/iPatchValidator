@@ -1,135 +1,15 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
-import spoon9.reflect.code.CtAbstractInvocation;
-import spoon9.reflect.code.CtAbstractSwitch;
-import spoon9.reflect.code.CtAnnotationFieldAccess;
-import spoon9.reflect.code.CtArrayAccess;
-import spoon9.reflect.code.CtArrayRead;
-import spoon9.reflect.code.CtArrayWrite;
-import spoon9.reflect.code.CtAssert;
-import spoon9.reflect.code.CtAssignment;
-import spoon9.reflect.code.CtBinaryOperator;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtBodyHolder;
-import spoon9.reflect.code.CtBreak;
-import spoon9.reflect.code.CtCFlowBreak;
-import spoon9.reflect.code.CtCase;
-import spoon9.reflect.code.CtCatch;
-import spoon9.reflect.code.CtCatchVariable;
-import spoon9.reflect.code.CtCodeElement;
-import spoon9.reflect.code.CtCodeSnippetExpression;
-import spoon9.reflect.code.CtCodeSnippetStatement;
-import spoon9.reflect.code.CtComment;
-import spoon9.reflect.code.CtConditional;
-import spoon9.reflect.code.CtConstructorCall;
-import spoon9.reflect.code.CtContinue;
-import spoon9.reflect.code.CtDo;
-import spoon9.reflect.code.CtExecutableReferenceExpression;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFieldAccess;
-import spoon9.reflect.code.CtFieldRead;
-import spoon9.reflect.code.CtFieldWrite;
-import spoon9.reflect.code.CtFor;
-import spoon9.reflect.code.CtForEach;
-import spoon9.reflect.code.CtIf;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtJavaDoc;
-import spoon9.reflect.code.CtJavaDocTag;
-import spoon9.reflect.code.CtLabelledFlowBreak;
-import spoon9.reflect.code.CtLambda;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.code.CtLocalVariable;
-import spoon9.reflect.code.CtLoop;
-import spoon9.reflect.code.CtNewArray;
-import spoon9.reflect.code.CtNewClass;
-import spoon9.reflect.code.CtOperatorAssignment;
-import spoon9.reflect.code.CtPattern;
-import spoon9.reflect.code.CtRHSReceiver;
-import spoon9.reflect.code.CtResource;
-import spoon9.reflect.code.CtReturn;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtStatementList;
-import spoon9.reflect.code.CtSuperAccess;
-import spoon9.reflect.code.CtSwitch;
-import spoon9.reflect.code.CtSwitchExpression;
-import spoon9.reflect.code.CtSynchronized;
-import spoon9.reflect.code.CtTargetedExpression;
-import spoon9.reflect.code.CtTextBlock;
-import spoon9.reflect.code.CtThisAccess;
-import spoon9.reflect.code.CtThrow;
-import spoon9.reflect.code.CtTry;
-import spoon9.reflect.code.CtTryWithResource;
-import spoon9.reflect.code.CtTypeAccess;
-import spoon9.reflect.code.CtTypePattern;
-import spoon9.reflect.code.CtUnaryOperator;
-import spoon9.reflect.code.CtVariableAccess;
-import spoon9.reflect.code.CtVariableRead;
-import spoon9.reflect.code.CtVariableWrite;
-import spoon9.reflect.code.CtWhile;
-import spoon9.reflect.code.CtYieldStatement;
-import spoon9.reflect.declaration.CtAnnotation;
-import spoon9.reflect.declaration.CtAnnotationMethod;
-import spoon9.reflect.declaration.CtAnnotationType;
-import spoon9.reflect.declaration.CtAnonymousExecutable;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtCodeSnippet;
-import spoon9.reflect.declaration.CtCompilationUnit;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtEnum;
-import spoon9.reflect.declaration.CtEnumValue;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtInterface;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModifiable;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtModuleDirective;
-import spoon9.reflect.declaration.CtPackageExport;
-import spoon9.reflect.declaration.CtProvidedService;
-import spoon9.reflect.declaration.CtRecord;
-import spoon9.reflect.declaration.CtRecordComponent;
-import spoon9.reflect.declaration.CtModuleRequirement;
-import spoon9.reflect.declaration.CtMultiTypedElement;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtPackageDeclaration;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtSealable;
-import spoon9.reflect.declaration.CtShadowable;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeInformation;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.reflect.declaration.CtTypedElement;
-import spoon9.reflect.declaration.CtUsedService;
-import spoon9.reflect.declaration.CtVariable;
-import spoon9.reflect.reference.CtActualTypeContainer;
-import spoon9.reflect.reference.CtArrayTypeReference;
-import spoon9.reflect.reference.CtCatchVariableReference;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.reference.CtIntersectionTypeReference;
-import spoon9.reflect.reference.CtLocalVariableReference;
-import spoon9.reflect.reference.CtModuleReference;
-import spoon9.reflect.reference.CtPackageReference;
-import spoon9.reflect.reference.CtParameterReference;
-import spoon9.reflect.reference.CtReference;
-import spoon9.reflect.reference.CtTypeParameterReference;
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.reference.CtUnboundVariableReference;
-import spoon9.reflect.reference.CtVariableReference;
-import spoon9.reflect.reference.CtWildcardReference;
-import spoon9.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
+import spoon9.reflect.reference.*;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -287,14 +167,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	/**
-	 * Scans an abstract resource in try-with-resource statement.
-	 * @param resource The resource
-	 */
-	public void scanCtResource(CtResource<?> resource) {
-
-	}
-
-	/**
 	 * Scans an abstract statement.
 	 */
 	public void scanCtStatement(CtStatement s) {
@@ -360,20 +232,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans a body holder
 	 */
 	public void scanCtBodyHolder(CtBodyHolder ctBodyHolder) {
-	}
-
-	/**
-	 * Scans a pattern
-	 * @param pattern the pattern to scan
-	*/
-	public void scanCtPattern(CtPattern pattern) {
-	}
-
-	/**
-	 * Scans a sealable type
-	 * @param sealable the sealable type to scan
-	 */
-	public void scanCtSealable(CtSealable sealable) {
 	}
 
 	@Override
@@ -528,7 +386,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtClass(CtClass<T> e) {
 		scanCtType(e);
-		scanCtSealable(e);
 		scanCtStatement(e);
 		scanCtTypeInformation(e);
 		scanCtFormalTypeDeclarer(e);
@@ -664,11 +521,8 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtInterface(CtInterface<T> e) {
 		scanCtType(e);
-		scanCtSealable(e);
-		scanCtStatement(e);
 		scanCtTypeInformation(e);
 		scanCtFormalTypeDeclarer(e);
-		scanCtCodeElement(e);
 		scanCtNamedElement(e);
 		scanCtTypeMember(e);
 		scanCtElement(e);
@@ -706,7 +560,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVariable(e);
 		scanCtCodeElement(e);
 		scanCtNamedElement(e);
-		scanCtResource(e);
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtModifiable(e);
@@ -1077,30 +930,5 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
-
-
-	@Override
-	public void visitCtTypePattern(CtTypePattern pattern) {
-		scanCtPattern(pattern);
-		scanCtExpression(pattern);
-		scanCtTypedElement(pattern);
-		scanCtCodeElement(pattern);
-		scanCtElement(pattern);
-		scanCtVisitable(pattern);
-	}
-	@Override
-	public void visitCtRecord(CtRecord recordType) {
-		visitCtClass(recordType);
-	}
-
-	@Override
-	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
-		scanCtElement(recordComponent);
-		scanCtTypedElement(recordComponent);
-		scanCtNamedElement(recordComponent);
-		scanCtVisitable(recordComponent);
-		scanCtShadowable(recordComponent);
-	}
-
 
 }

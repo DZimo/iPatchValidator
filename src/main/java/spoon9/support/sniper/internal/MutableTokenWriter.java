@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.sniper.internal;
 
@@ -22,38 +22,8 @@ public class MutableTokenWriter implements TokenWriter {
 	private final TokenWriter delegate;
 	private boolean muted = false;
 
-	// indentation style to use for new elements
-	private boolean originSourceUsesTabulations;
-	private int originSourceTabulationSize;
-
 	public MutableTokenWriter(Environment env) {
-		this.delegate = new DefaultTokenWriter(new SniperPrinterHelper(env));
-		originSourceUsesTabulations = true;
-		originSourceTabulationSize = 1;
-	}
-
-	private class SniperPrinterHelper extends PrinterHelper {
-		private final Environment env;
-
-		SniperPrinterHelper(Environment env) {
-			super(env);
-			this.env = env;
-		}
-
-		/**
-		 * We override this method to use the correct style of indentation for new elements.
-		 */
-		@Override
-		protected void autoWriteTabs() {
-			int setTabulationSize = env.getTabulationSize();
-			env.useTabulations(originSourceUsesTabulations);
-			env.setTabulationSize(originSourceTabulationSize);
-
-			super.autoWriteTabs();
-
-			env.setTabulationSize(setTabulationSize);
-			env.useTabulations(true);
-		}
+		this.delegate = new DefaultTokenWriter(new PrinterHelper(env));
 	}
 
 	/**
@@ -68,20 +38,6 @@ public class MutableTokenWriter implements TokenWriter {
 	 */
 	public void setMuted(boolean muted) {
 		this.muted = muted;
-	}
-
-	/**
-	 * @param originSourceUsesTabulations whether or not the origin source uses tabs for indentation.
-	 */
-	public void setOriginSourceUsesTabulations(boolean originSourceUsesTabulations) {
-		this.originSourceUsesTabulations = originSourceUsesTabulations;
-	}
-
-	/**
-	 * @param originSourceTabulationSize the amount of indentation used in the origin source.
-	 */
-	public void setOriginSourceTabulationSize(int originSourceTabulationSize) {
-		this.originSourceTabulationSize = originSourceTabulationSize;
 	}
 
 	@Override

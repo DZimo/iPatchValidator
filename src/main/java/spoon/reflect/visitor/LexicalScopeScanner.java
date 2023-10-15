@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -23,8 +23,6 @@ import spoon.reflect.declaration.CtMethod;
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A {@link CtScanner} which provides current lexical scope
@@ -32,15 +30,13 @@ import java.util.Map;
  */
 public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 	private final Deque<LexicalScope> scopes = new ArrayDeque<>();
-	private final Map<String, String> encounteredImportedQualifiedNames = new HashMap<>();
-
-	protected void enter(spoon.reflect.declaration.CtElement e) {
+	protected void enter(CtElement e) {
 		LexicalScope newFinder = onElement(scopes.peek(), e);
 		if (newFinder != null) {
 			scopes.push(newFinder);
 		}
 	}
-	protected void exit(spoon.reflect.declaration.CtElement e) {
+	protected void exit(CtElement e) {
 		LexicalScope topFinder = scopes.peek();
 		if (topFinder != null && topFinder.getScopeElement() == e) {
 			//we are living scope of this ConflictFinder. Pop it
@@ -55,10 +51,6 @@ public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 	public LexicalScope getCurrentLexicalScope() {
 		LexicalScope ns = scopes.peek();
 		return ns == null ? EMPTY : ns;
-	}
-
-	Map<String, String> getEncounteredImportedQualifiedNames() {
-		return encounteredImportedQualifiedNames;
 	}
 
 	/**

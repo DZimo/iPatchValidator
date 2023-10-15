@@ -1,15 +1,16 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.reference;
 
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -29,15 +30,18 @@ public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 		CtElement element = this;
 		String name = getSimpleName();
 		CtCatchVariable var;
-		do {
-			CtCatch catchBlock = element.getParent(CtCatch.class);
-			if (catchBlock == null) {
-				return null;
-			}
-			var = catchBlock.getParameter();
-			element = catchBlock;
-		} while (!name.equals(var.getSimpleName()));
-
+		try {
+			do {
+				CtCatch catchBlock = element.getParent(CtCatch.class);
+				if (catchBlock == null) {
+					return null;
+				}
+				var = catchBlock.getParameter();
+				element = catchBlock;
+			} while (!name.equals(var.getSimpleName()));
+		} catch (ParentNotInitializedException e) {
+			return null;
+		}
 		return var;
 	}
 

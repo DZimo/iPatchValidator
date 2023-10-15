@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.code;
 
@@ -21,7 +21,6 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.STATEMENT;
@@ -84,10 +83,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 	@Override
 	public <T extends CtStatementList> T insertBegin(CtStatementList statements) {
 		ensureModifiableStatementsList();
-		List<CtStatement> list = statements.getStatements();
-		ListIterator listIterator = list.listIterator(list.size());
-		while (listIterator.hasPrevious()) {
-			CtStatement statement = (CtStatement) listIterator.previous();
+		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
 			this.addStatement(0, statement);
 		}

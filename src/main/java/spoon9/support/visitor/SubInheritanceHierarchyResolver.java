@@ -1,20 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.visitor;
 
 import spoon9.SpoonException;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtEnum;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeInformation;
-import spoon9.reflect.declaration.CtTypeParameter;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.reflect.visitor.Filter;
 import spoon9.reflect.visitor.chain.CtConsumer;
@@ -73,7 +67,7 @@ public class SubInheritanceHierarchyResolver {
 	 */
 	public SubInheritanceHierarchyResolver addSuperType(CtTypeInformation superType) {
 		targetSuperTypes.add(superType.getQualifiedName());
-		if (!hasSuperInterface) {
+		if (hasSuperInterface == false) {
 			hasSuperInterface = superType.isInterface();
 		}
 		return this;
@@ -164,7 +158,7 @@ public class SubInheritanceHierarchyResolver {
 						//but continue visiting of siblings (do not terminate query)
 						return ScanningMode.SKIP_ALL;
 					}
-					if (!allVisitedTypeNames.add(qName)) {
+					if (allVisitedTypeNames.add(qName) == false) {
 						/*
 						 * this type was already visited, by another way. So it is not sub type of `targetSuperTypes`.
 						 * Stop visiting it's inheritance hierarchy.
@@ -182,7 +176,7 @@ public class SubInheritanceHierarchyResolver {
 				@Override
 				public void exit(CtElement element) {
 					CtTypeInformation type = (CtTypeInformation) element;
-					if (!currentSubTypes.isEmpty()) {
+					if (currentSubTypes.isEmpty() == false) {
 						//remove current type, which is not a sub type of targetSuperTypes from the currentSubTypes
 						CtTypeInformation stackType = currentSubTypes.pop();
 						if (stackType != type) {

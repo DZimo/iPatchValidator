@@ -1,23 +1,18 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.sniper;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -40,7 +35,6 @@ import spoon.support.sniper.internal.ChangeResolver;
 import spoon.support.sniper.internal.CollectionSourceFragment;
 import spoon.support.sniper.internal.ElementPrinterEvent;
 import spoon.support.sniper.internal.ElementSourceFragment;
-import spoon.support.sniper.internal.IndentationDetector;
 import spoon.support.sniper.internal.ModificationStatus;
 import spoon.support.sniper.internal.MutableTokenWriter;
 import spoon.support.sniper.internal.PrinterEvent;
@@ -82,9 +76,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 		// newly added elements are not fully qualified
 		this.setIgnoreImplicit(false);
-
-		// don't print redundant parentheses
-		this.setMinimizeRoundBrackets(true);
 	}
 
 	/**
@@ -93,9 +84,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	private ChangeCollector getChangeCollector() {
 		ChangeCollector changeCollector = ChangeCollector.getChangeCollector(env);
 		if (changeCollector == null) {
-			throw new SpoonException(ChangeCollector.class.getSimpleName() + " was not attached to the Environment. "
-					+ "This typically means that the Sniper printer was set after building the model. "
-					+ "It must be set before building the model.");
+			throw new SpoonException(ChangeCollector.class.getSimpleName() + " was not attached to the Environment");
 		}
 		return changeCollector;
 	}
@@ -139,18 +128,10 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 	@Override
 	public void calculate(CtCompilationUnit compilationUnit, List<CtType<?>> types) {
-		checkGivenTypesMatchDeclaredTypes(compilationUnit, types);
-
 		sourceCompilationUnit = compilationUnit;
 
 		//use line separator of origin source file
 		setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
-
-		// use indentation style of origin source file for new elements
-		Pair<Integer, Boolean> indentationInfo = IndentationDetector.detectIndentation(compilationUnit);
-		mutableTokenWriter.setOriginSourceTabulationSize(indentationInfo.getLeft());
-		mutableTokenWriter.setOriginSourceUsesTabulations(indentationInfo.getRight());
-
 		runInContext(new SourceFragmentContextList(mutableTokenWriter,
 				compilationUnit,
 				Collections.singletonList(compilationUnit.getOriginalSourceFragment()),
@@ -158,27 +139,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		() -> {
 			super.calculate(sourceCompilationUnit, types);;
 		});
-	}
-
-	/** Throws an {@link IllegalArgumentException} if the given types do not exactly match the types of the CU. */
-	private static void checkGivenTypesMatchDeclaredTypes(CtCompilationUnit cu, List<CtType<?>> types) {
-		Set<CtType<?>> givenTypes = toIdentityHashSet(types);
-		Set<CtType<?>> declaredTypes = toIdentityHashSet(cu.getDeclaredTypes());
-		if (!givenTypes.equals(declaredTypes)) {
-			throw new IllegalArgumentException(
-					"Can only sniper print exactly all declared types of the compilation unit. Given types: "
-							+ toNameList(givenTypes) + ". Declared types: " + toNameList(declaredTypes));
-		}
-	}
-
-	private static List<String> toNameList(Collection<CtType<?>> types) {
-		return types.stream().map(CtType::getQualifiedName).collect(Collectors.toList());
-	}
-
-	private static <T> Set<T> toIdentityHashSet(Collection<T> items) {
-		Set<T> idHashSet = Collections.newSetFromMap(new IdentityHashMap<>());
-		idHashSet.addAll(items);
-		return idHashSet;
 	}
 
 	private static final String CR = "\r";
@@ -374,7 +334,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 */
 	private SourceFragmentPrinter detectCurrentContext(PrinterEvent event) {
 		SourceFragmentPrinter sfc;
-		while ((sfc = sourceFragmentContextStack.peek()) != null && !sfc.knowsHowToPrint(event)) {
+		while ((sfc = sourceFragmentContextStack.peek()) != null && sfc.knowsHowToPrint(event) == false) {
 			//this context handles only subset of roles, which just finished
 			//leave it and return back to parent context
 			sfc = popSourceFragmentContext();

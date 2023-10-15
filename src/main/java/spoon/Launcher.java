@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon;
 
@@ -17,8 +17,9 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
@@ -35,7 +36,6 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
-import spoon.support.Level;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
@@ -46,9 +46,7 @@ import spoon.support.gui.SpoonModelTree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -236,7 +234,7 @@ public class Launcher implements SpoonAPI {
 			// Level logging.
 			opt2 = new FlaggedOption("level");
 			opt2.setLongFlag("level");
-			opt2.setHelp("Level of the output messages about what spoon is doing.");
+			opt2.setHelp("Level of the ouput messages about what spoon is doing.");
 			opt2.setStringParser(JSAP.STRING_PARSER);
 			opt2.setDefault(Level.ERROR.toString());
 			jsap.registerParameter(opt2);
@@ -377,14 +375,6 @@ public class Launcher implements SpoonAPI {
 			opt2.setDefault(CLASSPATH_MODE.NOCLASSPATH.name());
 			jsap.registerParameter(opt2);
 
-			// remove files with syntax errors from the compilation batch
-			sw1 = new Switch("ignore-syntax-errors");
-			sw1.setShortFlag('n');
-			sw1.setLongFlag("ignore-syntax-errors");
-			sw1.setHelp("If an input resource has any syntax errors, it will be removed from the compilation batch.");
-			sw1.setDefault("false");
-			jsap.registerParameter(sw1);
-
 			// show GUI
 			sw1 = new Switch("gui");
 			sw1.setShortFlag('g');
@@ -459,7 +449,7 @@ public class Launcher implements SpoonAPI {
 		}
 
 		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
-		reportClassPathMode();
+		Launcher.LOGGER.info("Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
 		CLASSPATH_MODE classpath_mode = CLASSPATH_MODE.valueOf(cpmode);
 		switch (classpath_mode) {
 			case NOCLASSPATH:
@@ -471,7 +461,6 @@ public class Launcher implements SpoonAPI {
 				break;
 		}
 
-		environment.setIgnoreSyntaxErrors(jsapActualArgs.getBoolean("ignore-syntax-errors"));
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
@@ -549,16 +538,11 @@ public class Launcher implements SpoonAPI {
 
 	}
 
-	protected void reportClassPathMode() {
-		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
-		factory.getEnvironment().report(null, Level.DEBUG, "Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
-	}
-
 	/**
 	 * Gets the list of processor types to be initially applied during the
 	 * processing (-p option).
 	 */
-	protected java.util.List<String> getProcessorTypes() {
+	protected List<String> getProcessorTypes() {
 		return processorTypes;
 	}
 
@@ -602,7 +586,7 @@ public class Launcher implements SpoonAPI {
 	/**
 	 * A default logger to be used by Spoon.
 	 */
-	public static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	public static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Creates a new Spoon Java compiler in order to process and compile Java
@@ -723,9 +707,10 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public void run() {
 		Environment env = modelBuilder.getFactory().getEnvironment();
-		env.debugMessage(getVersionMessage());
-		env.reportProgressMessage("Running Spoon...");
-		env.debugMessage("Start processing...");
+		env.reportProgressMessage(getVersionMessage());
+		env.reportProgressMessage("running Spoon...");
+
+		env.reportProgressMessage("start processing...");
 
 		long tstart = System.currentTimeMillis();
 
@@ -742,7 +727,7 @@ public class Launcher implements SpoonAPI {
 
 		long t = System.currentTimeMillis();
 
-		env.debugMessage("Program spooning done in " + (t - tstart) + " ms");
+		env.debugMessage("program spooning done in " + (t - tstart) + " ms");
 		env.reportEnd();
 
 	}
@@ -807,18 +792,16 @@ public class Launcher implements SpoonAPI {
 			}
 		}
 
-		final Path outputPath = getEnvironment().getDefaultFileGenerator().getOutputDirectory().toPath();
 		if (!getEnvironment().getOutputType().equals(OutputType.NO_OUTPUT) && getEnvironment().isCopyResources()) {
 			for (File dirInputSource : modelBuilder.getInputSources()) {
 				if (dirInputSource.isDirectory()) {
-					final Path dirInputSourceAsPath = dirInputSource.toPath();
-					final Collection<File> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
-					for (File resource : resources) {
-						final Path resourcePath = resource.toPath();
-						final Path relativePath = dirInputSourceAsPath.relativize(resourcePath);
-						final Path targetPath = outputPath.resolve(relativePath).getParent();
+					final Collection<?> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
+					for (Object resource : resources) {
+						final String resourceParentPath = ((File) resource).getParent();
+						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());
+						final String targetDirectory = getEnvironment().getDefaultFileGenerator().getOutputDirectory() + packageDir;
 						try {
-							FileUtils.copyFileToDirectory(resource, targetPath.toFile());
+							FileUtils.copyFileToDirectory((File) resource, new File(targetDirectory));
 						} catch (IOException e) {
 							throw new SpoonException(e);
 						}

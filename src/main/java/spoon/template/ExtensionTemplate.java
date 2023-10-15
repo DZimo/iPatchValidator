@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.template;
 
@@ -19,7 +19,7 @@ import spoon.reflect.reference.CtTypeReference;
  * target is a class), inner types, and super interfaces (except
  * {@link Template}) from a given template by substituting all the template
  * parameters by their values. Members annotated with
- * {@link spoon.template.Local} or {@link Parameter} are not inserted.
+ * {@link Local} or {@link Parameter} are not inserted.
  */
 public class ExtensionTemplate extends AbstractTemplate<CtType<?>> {
 	@Override

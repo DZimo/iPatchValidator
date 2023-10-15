@@ -1,14 +1,16 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.declaration;
 
 import spoon9.compiler.Environment;
 import spoon9.processing.FactoryAccessor;
+import spoon9.reflect.annotations.PropertyGetter;
+import spoon9.reflect.annotations.PropertySetter;
 import spoon9.reflect.code.CtComment;
 import spoon9.reflect.cu.SourcePosition;
 import spoon9.reflect.cu.SourcePositionHolder;
@@ -20,23 +22,14 @@ import spoon9.reflect.visitor.Filter;
 import spoon9.reflect.visitor.Root;
 import spoon9.reflect.visitor.chain.CtQueryable;
 import spoon9.support.DerivedProperty;
-import spoon9.reflect.annotations.PropertyGetter;
-import spoon9.reflect.annotations.PropertySetter;
 import spoon9.support.Experimental;
 import spoon9.support.sniper.internal.ElementSourceFragment;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static spoon9.reflect.path.CtRole.ANNOTATION;
-import static spoon9.reflect.path.CtRole.COMMENT;
-import static spoon9.reflect.path.CtRole.IS_IMPLICIT;
-import static spoon9.reflect.path.CtRole.POSITION;
+import static spoon9.reflect.path.CtRole.*;
 
 /**
  * This interface is the root interface for the metamodel elements (any program
@@ -249,26 +242,22 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Gets the first parent that matches the given type.
-	 *
-	 * @return the nearest matching parent; null if no match is found or this element has no parent
 	 */
-	<P extends CtElement> P getParent(Class<P> parentType);
+	<P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException;
 
 	/**
 	 * Gets the first parent that matches the filter.
-	 *
-	 * @return the nearest matching parent; null if no match is found or this element has no parent
+	 * If the receiver (this) matches the filter, it is also returned
 	 */
-	<E extends CtElement> E getParent(Filter<E> filter);
+	<E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException;
 
 	/**
 	 * Manually sets the parent element of the current element.
 	 *
-	 * @param parent parent reference.
-	 * @param <E> this element's type
-	 * @return this element
+	 * @param parent
+	 * 		parent reference.
 	 */
-	<E extends CtElement> E setParent(CtElement parent);
+	<E extends CtElement> E setParent(E parent);
 
 	/**
 	 * Tells if this parent has been initialized.

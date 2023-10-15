@@ -1,27 +1,18 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.pattern.internal.matcher;
-
-import static java.util.stream.Collectors.toUnmodifiableList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.BiFunction;
-
-import org.jspecify.annotations.Nullable;
 
 import spoon9.SpoonException;
 import spoon9.reflect.meta.ContainerKind;
 import spoon9.support.util.ImmutableMap;
+
+import java.util.*;
+import java.util.function.BiFunction;
 
 /**
  * Describes what next has to be matched.
@@ -72,14 +63,14 @@ public class TobeMatched {
 	private TobeMatched(ImmutableMap parameters, Collection<?> targets, boolean ordered) {
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
-		this.targets = targets == null ? Collections.emptyList() : copyToListWithoutNullValues(targets);
+		this.targets = targets == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(targets));
 		this.ordered = ordered;
 	}
 
 	private TobeMatched(ImmutableMap parameters, Map<String, ?> targets) {
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
-		this.targets = targets == null ? Collections.emptyList() : copyToListWithoutNullValues(targets.entrySet());
+		this.targets = targets == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(targets.entrySet()));
 		this.ordered = false;
 	}
 
@@ -90,15 +81,6 @@ public class TobeMatched {
 			this.targets.remove(tobeRemovedIndex);
 		}
 		this.ordered = ordered;
-	}
-	/**
-	 * Converts the given collection of objects into a unmodifiable list without null values.
-	 * @param <T>  the type of the objects in the collection.
-	 * @param collection the collection of objects to be converted.
-	 * @return  the converted unmodifiable list without null values.
-	 */
-	private <T> List<T>  copyToListWithoutNullValues(Collection<T> collection) {
-		return collection.stream().filter(Objects::nonNull).collect(toUnmodifiableList());
 	}
 
 	/**
@@ -127,7 +109,7 @@ public class TobeMatched {
 			if (nrOfMatches == 0) {
 				return Collections.emptyList();
 			}
-			List<Object> matched = new ArrayList<>(nrOfMatches);
+			List<Object> matched = new ArrayList(nrOfMatches);
 			for (Object target : getTargets()) {
 				if (containsSame(tobeMatchedTargets.getTargets(), target)) {
 					//this origin target is still available in this to be matched targets
@@ -176,7 +158,7 @@ public class TobeMatched {
 	 * @param matcher a matching algorithm
 	 * @return {@link TobeMatched} with List of remaining (to be matched) targets or null if there is no match
 	 */
-	public @Nullable TobeMatched matchNext(BiFunction<Object, ImmutableMap, ImmutableMap> matcher) {
+	public TobeMatched matchNext(BiFunction<Object, ImmutableMap, ImmutableMap> matcher) {
 		if (targets.isEmpty()) {
 			//no target -> no match
 			return null;
@@ -208,7 +190,7 @@ public class TobeMatched {
 	 * @param remainingMatch the {@link TobeMatched} whose parameters has to be returned
 	 * @return parameters from `remainingMatch`, if it exists. Else returns null
 	 */
-	public static @Nullable ImmutableMap getMatchedParameters(TobeMatched remainingMatch) {
+	public static ImmutableMap getMatchedParameters(TobeMatched remainingMatch) {
 		return remainingMatch == null ? null : remainingMatch.getParameters();
 	}
 	/**

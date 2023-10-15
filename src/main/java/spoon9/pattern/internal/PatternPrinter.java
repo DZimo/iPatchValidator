@@ -1,27 +1,16 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.pattern.internal;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Consumer;
 
 import spoon9.metamodel.Metamodel;
 import spoon9.metamodel.MetamodelConcept;
 import spoon9.metamodel.MetamodelProperty;
-import spoon9.pattern.internal.node.ConstantNode;
-import spoon9.pattern.internal.node.ElementNode;
-import spoon9.pattern.internal.node.InlineNode;
-import spoon9.pattern.internal.node.ListOfNodes;
-import spoon9.pattern.internal.node.ParameterNode;
-import spoon9.pattern.internal.node.RootNode;
+import spoon9.pattern.internal.node.*;
 import spoon9.pattern.internal.parameter.ParameterInfo;
 import spoon9.reflect.code.CtComment.CommentType;
 import spoon9.reflect.code.CtInvocation;
@@ -35,6 +24,12 @@ import spoon9.reflect.visitor.PrinterHelper;
 import spoon9.support.DefaultCoreFactory;
 import spoon9.support.StandardEnvironment;
 import spoon9.support.util.ImmutableMap;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Consumer;
 
 /**
  * Generates the source code corresponding to a Pattern's RootNode
@@ -109,7 +104,7 @@ public class PatternPrinter extends DefaultGenerator {
 		if (obj instanceof CtElement) {
 			MetamodelConcept mmType = Metamodel.getInstance().getConcept((Class) obj.getClass());
 			MetamodelProperty mmCommentField = mmType.getProperty(CtRole.COMMENT);
-			return mmCommentField != null && !mmCommentField.isDerived();
+			return mmCommentField != null && mmCommentField.isDerived() == false;
 		}
 		return false;
 	}
@@ -132,7 +127,7 @@ public class PatternPrinter extends DefaultGenerator {
 
 	private void addParameterCommentTo(CtElement ele, ParamOnElement... paramsOnElement) {
 		for (ParamOnElement paramOnElement : paramsOnElement) {
-			if (!isNodeContained(paramOnElement.node)) {
+			if (isNodeContained(paramOnElement.node) == false) {
 				params.add(paramOnElement);
 			}
 		}

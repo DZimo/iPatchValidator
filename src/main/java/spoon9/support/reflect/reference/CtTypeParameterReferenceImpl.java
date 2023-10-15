@@ -1,18 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.reference;
 
 import spoon9.SpoonException;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeParameter;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtActualTypeContainer;
 import spoon9.reflect.reference.CtExecutableReference;
 import spoon9.reflect.reference.CtTypeParameterReference;
@@ -102,7 +98,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			return null;
 		}
 
-		CtElement typeDeclarer = this;
+		CtElement e = this;
 		CtElement parent = getParent();
 
 		if (parent instanceof CtTypeParameter && Objects.equals(getSimpleName(), ((CtTypeParameter) parent).getSimpleName())) {
@@ -119,8 +115,8 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 				// we might enter in that case because of a call
 				// of getSuperInterfaces() for example
 				CtTypeReference typeReference = (CtTypeReference) parent;
-				typeDeclarer = typeReference.getTypeDeclaration();
-				if (typeDeclarer == null) {
+				e = typeReference.getTypeDeclaration();
+				if (e == null) {
 					return null;
 				}
 			} else {
@@ -130,27 +126,31 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 		if (parent instanceof CtExecutableReference) {
 			CtExecutableReference parentExec = (CtExecutableReference) parent;
-			if (Objects.nonNull(parentExec.getDeclaringType()) && !parentExec.getDeclaringType().equals(typeDeclarer)) {
+			if (Objects.nonNull(parentExec.getDeclaringType()) && !parentExec.getDeclaringType().equals(e)) {
 				CtElement parent2 = parentExec.getExecutableDeclaration();
 				if (parent2 instanceof CtMethod) {
-					typeDeclarer = parent2;
+					e = parent2;
+				} else {
+					e = e.getParent(CtFormalTypeDeclarer.class);
 				}
+			} else {
+				e = e.getParent(CtFormalTypeDeclarer.class);
 			}
-		}
-
-		if (!(typeDeclarer instanceof CtFormalTypeDeclarer)) {
-			typeDeclarer = typeDeclarer.getParent(CtFormalTypeDeclarer.class);
+		} else {
+			if (!(e instanceof CtFormalTypeDeclarer)) {
+				e = e.getParent(CtFormalTypeDeclarer.class);
+			}
 		}
 
 		// case #1: we're a type of a method parameter, a local variable, ...
 		// the strategy is to look in the parents
 		// collecting all formal type declarers of the hierarchy
-		while (typeDeclarer != null) {
-			CtTypeParameter result = findTypeParamDeclaration((CtFormalTypeDeclarer) typeDeclarer, this.getSimpleName());
+		while (e != null) {
+			CtTypeParameter result = findTypeParamDeclaration((CtFormalTypeDeclarer) e, this.getSimpleName());
 			if (result != null) {
 				return result;
 			}
-			typeDeclarer = typeDeclarer.getParent(CtFormalTypeDeclarer.class);
+			e = e.getParent(CtFormalTypeDeclarer.class);
 		}
 		return null;
 	}

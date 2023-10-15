@@ -1,17 +1,11 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.pattern.internal.matcher;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import spoon9.SpoonException;
 import spoon9.pattern.Match;
@@ -22,6 +16,8 @@ import spoon9.reflect.path.CtRole;
 import spoon9.reflect.visitor.EarlyTerminatingScanner;
 import spoon9.reflect.visitor.chain.CtConsumer;
 import spoon9.support.util.ImmutableMapImpl;
+
+import java.util.*;
 
 /**
  * Represents a Match of TemplateMatcher

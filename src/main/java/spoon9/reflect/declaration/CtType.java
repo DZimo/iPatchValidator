@@ -1,27 +1,21 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.declaration;
 
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.support.DerivedProperty;
 import spoon9.reflect.annotations.PropertyGetter;
 import spoon9.reflect.annotations.PropertySetter;
+import spoon9.reflect.reference.CtTypeReference;
+import spoon9.support.DerivedProperty;
 
 import java.util.List;
 import java.util.Set;
 
-import static spoon9.reflect.path.CtRole.METHOD;
-import static spoon9.reflect.path.CtRole.FIELD;
-import static spoon9.reflect.path.CtRole.INTERFACE;
-import static spoon9.reflect.path.CtRole.NAME;
-import static spoon9.reflect.path.CtRole.NESTED_TYPE;
-import static spoon9.reflect.path.CtRole.SUPER_TYPE;
-import static spoon9.reflect.path.CtRole.TYPE_MEMBER;
+import static spoon9.reflect.path.CtRole.*;
 
 /**
  * This abstract element defines a super-type for classes and interfaces, which
@@ -59,10 +53,11 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 
 	/**
 	 *
-	 * This is a low-level feature, it should never been used by non advanced users.
+	 * NEVER USE THIS.
 	 *
-	 * See full documentation at {@link CtTypeReference#getActualClass()}.
+	 * See {@link CtTypeReference#getActualClass()}.
 	 *
+	 * @deprecated (since Spoon 7.0.0) this will be removed from the public API
 	 */
 	@DerivedProperty
 	Class<T> getActualClass();

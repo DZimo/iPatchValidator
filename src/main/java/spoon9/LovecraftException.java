@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9;
 
@@ -17,7 +17,7 @@ package spoon9;
 public class LovecraftException extends SpoonException {
 	private static final long serialVersionUID = 1L;
 
-	public static final String lovecraft =
+	public static String lovecraft =
 		"It was from the artists and poets that the pertinent answers came, and I\n"
 		+ "know that panic would have broken loose had they been able to compare notes.\n"
 		+ "As it was, lacking their original letters, I half suspected the compiler of\n"

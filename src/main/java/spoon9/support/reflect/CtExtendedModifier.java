@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect;
 
@@ -20,51 +20,17 @@ import java.io.Serializable;
  * ModifierKind in kept for sake of full backward-compatibility.
  */
 public class CtExtendedModifier implements SourcePositionHolder, Serializable {
-	private static final long serialVersionUID = 1L;
 	private boolean implicit;
 	private ModifierKind kind;
 	private SourcePosition position;
 
-	/**
-	 * Creates a new extended modifier of the given kind.
-	 *
-	 * @param kind the kind of this modifier.
-	 * @deprecated use {@link #explicit(ModifierKind)} to create an explicit modifier.
-	 */
-	@Deprecated(since = "9.2.0")
 	public CtExtendedModifier(ModifierKind kind) {
 		this.kind = kind;
 	}
 
-	/**
-	 * Creates a new extended modifier of the given kind with the given implicitness.
-	 *
-	 * @param kind the kind of this modifier.
-	 * @param implicit whether this modifier should be implicit.
-	 */
 	public CtExtendedModifier(ModifierKind kind, boolean implicit) {
 		this(kind);
 		this.implicit = implicit;
-	}
-
-	/**
-	 * Creates an extended modifier of the given kind that is explicit.
-	 *
-	 * @param kind the kind of the created modifier.
-	 * @return an explicit extended modifier.
-	 */
-	public static CtExtendedModifier explicit(ModifierKind kind) {
-		return new CtExtendedModifier(kind, false);
-	}
-
-	/**
-	 * Creates an extended modifier of the given kind that is implicit.
-	 *
-	 * @param kind the kind of the created modifier.
-	 * @return an implicit extended modifier.
-	 */
-	public static CtExtendedModifier implicit(ModifierKind kind) {
-		return new CtExtendedModifier(kind, true);
 	}
 
 	public boolean isImplicit() {
@@ -125,10 +91,5 @@ public class CtExtendedModifier implements SourcePositionHolder, Serializable {
 		} else {
 			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
 		}
-	}
-
-	@Override
-	public String toString() {
-		return "CtExtendedModifier(" + kind + ", " + implicit + ')';
 	}
 }

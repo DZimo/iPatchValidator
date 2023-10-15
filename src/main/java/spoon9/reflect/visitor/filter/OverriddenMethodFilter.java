@@ -1,22 +1,22 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor.filter;
 
 import spoon9.reflect.declaration.CtMethod;
 import spoon9.reflect.visitor.Filter;
-import spoon9.support.adaption.TypeAdaptor;
+import spoon9.support.visitor.ClassTypingContext;
 
 /**
  * Gets all overridden method from the method given.
  */
 public class OverriddenMethodFilter implements Filter<CtMethod<?>> {
 	private final CtMethod<?> method;
-	private final TypeAdaptor context;
+	private final ClassTypingContext context;
 	private boolean includingSelf = false;
 
 	/**
@@ -27,7 +27,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>> {
 	 */
 	public OverriddenMethodFilter(CtMethod<?> method) {
 		this.method = method;
-		context = new TypeAdaptor(method.getDeclaringType());
+		context = new ClassTypingContext(method.getDeclaringType());
 	}
 
 	/**

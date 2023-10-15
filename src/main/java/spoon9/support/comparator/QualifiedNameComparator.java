@@ -1,20 +1,20 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.comparator;
-
-import java.io.Serializable;
-import java.util.Comparator;
 
 import spoon9.reflect.declaration.CtElement;
 import spoon9.reflect.declaration.CtNamedElement;
 import spoon9.reflect.declaration.CtPackage;
 import spoon9.reflect.declaration.CtTypeInformation;
 import spoon9.reflect.reference.CtReference;
+
+import java.io.Serializable;
+import java.util.Comparator;
 
 /** compares based on names (with a preference for qualified names if available) */
 public class QualifiedNameComparator implements Comparator<CtElement>, Serializable {

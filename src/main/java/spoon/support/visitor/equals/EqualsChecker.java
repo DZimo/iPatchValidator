@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.equals;
 
@@ -16,7 +16,6 @@ import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
@@ -108,15 +107,6 @@ public class EqualsChecker extends CtInheritanceScanner {
 			setNotEqual(CtRole.MODIFIER);
 		}
 		super.scanCtModifiable(m);
-	}
-
-	@Override
-	public void scanCtCodeSnippet(CtCodeSnippet snippet) {
-		final CtCodeSnippet peek = (CtCodeSnippet) this.other;
-		if (!snippet.getValue().equals(peek.getValue())) {
-			setNotEqual(CtRole.SNIPPET);
-		}
-		super.scanCtCodeSnippet(snippet);
 	}
 
 	@Override

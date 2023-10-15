@@ -1,109 +1,22 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.factory;
 
-import java.lang.annotation.Annotation;
-
-import spoon9.reflect.code.CtAnnotationFieldAccess;
-import spoon9.reflect.code.CtArrayRead;
-import spoon9.reflect.code.CtArrayWrite;
-import spoon9.reflect.code.CtAssert;
-import spoon9.reflect.code.CtAssignment;
-import spoon9.reflect.code.CtBinaryOperator;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtBreak;
-import spoon9.reflect.code.CtCase;
-import spoon9.reflect.code.CtCatch;
-import spoon9.reflect.code.CtCatchVariable;
-import spoon9.reflect.code.CtCodeSnippetExpression;
-import spoon9.reflect.code.CtCodeSnippetStatement;
-import spoon9.reflect.code.CtComment;
-import spoon9.reflect.code.CtConditional;
-import spoon9.reflect.code.CtConstructorCall;
-import spoon9.reflect.code.CtContinue;
-import spoon9.reflect.code.CtDo;
-import spoon9.reflect.code.CtExecutableReferenceExpression;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFieldRead;
-import spoon9.reflect.code.CtFieldWrite;
-import spoon9.reflect.code.CtFor;
-import spoon9.reflect.code.CtForEach;
-import spoon9.reflect.code.CtIf;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtJavaDoc;
-import spoon9.reflect.code.CtJavaDocTag;
-import spoon9.reflect.code.CtLambda;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.code.CtLocalVariable;
-import spoon9.reflect.code.CtNewArray;
-import spoon9.reflect.code.CtNewClass;
-import spoon9.reflect.code.CtOperatorAssignment;
-import spoon9.reflect.code.CtReturn;
-import spoon9.reflect.code.CtStatementList;
-import spoon9.reflect.code.CtSuperAccess;
-import spoon9.reflect.code.CtSwitch;
-import spoon9.reflect.code.CtSwitchExpression;
-import spoon9.reflect.code.CtSynchronized;
-import spoon9.reflect.code.CtTextBlock;
-import spoon9.reflect.code.CtThisAccess;
-import spoon9.reflect.code.CtThrow;
-import spoon9.reflect.code.CtTry;
-import spoon9.reflect.code.CtTryWithResource;
-import spoon9.reflect.code.CtTypeAccess;
-import spoon9.reflect.code.CtTypePattern;
-import spoon9.reflect.code.CtUnaryOperator;
-import spoon9.reflect.code.CtVariableRead;
-import spoon9.reflect.code.CtVariableWrite;
-import spoon9.reflect.code.CtWhile;
-import spoon9.reflect.code.CtYieldStatement;
+import spoon9.reflect.code.*;
 import spoon9.reflect.cu.CompilationUnit;
 import spoon9.reflect.cu.SourcePosition;
 import spoon9.reflect.cu.position.BodyHolderSourcePosition;
 import spoon9.reflect.cu.position.CompoundSourcePosition;
 import spoon9.reflect.cu.position.DeclarationSourcePosition;
-import spoon9.reflect.declaration.CtAnnotation;
-import spoon9.reflect.declaration.CtAnnotationMethod;
-import spoon9.reflect.declaration.CtAnnotationType;
-import spoon9.reflect.declaration.CtAnonymousExecutable;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtEnum;
-import spoon9.reflect.declaration.CtEnumValue;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtInterface;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtPackageExport;
-import spoon9.reflect.declaration.CtProvidedService;
-import spoon9.reflect.declaration.CtRecord;
-import spoon9.reflect.declaration.CtRecordComponent;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtPackageDeclaration;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.reflect.declaration.CtUsedService;
-import spoon9.reflect.reference.CtArrayTypeReference;
-import spoon9.reflect.reference.CtCatchVariableReference;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.reference.CtIntersectionTypeReference;
-import spoon9.reflect.reference.CtLocalVariableReference;
-import spoon9.reflect.reference.CtModuleReference;
-import spoon9.reflect.declaration.CtModuleRequirement;
-import spoon9.reflect.reference.CtPackageReference;
-import spoon9.reflect.reference.CtParameterReference;
-import spoon9.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon9.reflect.reference.CtTypeParameterReference;
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.reference.CtUnboundVariableReference;
-import spoon9.reflect.reference.CtWildcardReference;
+import spoon9.reflect.declaration.*;
+import spoon9.reflect.reference.*;
+
+import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the core creation methods for the meta-model (to be
@@ -622,22 +535,4 @@ public interface CoreFactory {
 	 * Creates a TextBlock String Literal
 	 */
 	CtTextBlock createTextBlock();
-
-	/**
-	 * Creates a Type Pattern
-	 * @return a new Type Pattern instance.
-	 */
-	CtTypePattern createTypePattern();
-
-	/**
-	 * Creates a record.
-	 * @return the created record.
-	 */
-	CtRecord createRecord();
-
-	/**
-	 * Creates a record component.
-	 * @return  the created record component.
-	 */
-	CtRecordComponent createRecordComponent();
 }

@@ -1,19 +1,23 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.gui;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import spoon9.Launcher;
+import spoon9.reflect.declaration.CtElement;
+import spoon9.reflect.factory.Factory;
+import spoon9.support.SerializationModelStreamer;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -21,24 +25,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-
-import spoon9.Launcher;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.factory.Factory;
-import spoon9.support.SerializationModelStreamer;
 
 public class SpoonModelTree extends JFrame implements KeyListener,
 		MouseListener {
@@ -137,8 +123,9 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 					boolean cont = chooser.showSaveDialog(SpoonModelTree.this) == JFileChooser.APPROVE_OPTION;
 					if (cont) {
 						SerializationModelStreamer ser = new SerializationModelStreamer();
-						try (FileOutputStream out = new FileOutputStream(chooser.getSelectedFile())) {
-							ser.save(factory, out);
+						try {
+							ser.save(factory, new FileOutputStream(chooser
+									.getSelectedFile()));
 						} catch (IOException e1) {
 							Launcher.LOGGER.error(e1.getMessage(), e1);
 						}

@@ -1,23 +1,16 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.refactoring;
-
-import java.util.Collection;
-import java.util.regex.Pattern;
 
 import spoon9.SpoonException;
 import spoon9.reflect.code.CtCatchVariable;
 import spoon9.reflect.code.CtLocalVariable;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtVariable;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtFieldReference;
 import spoon9.reflect.reference.CtLocalVariableReference;
 import spoon9.reflect.reference.CtReference;
@@ -27,12 +20,11 @@ import spoon9.reflect.visitor.chain.CtConsumer;
 import spoon9.reflect.visitor.chain.CtQueryable;
 import spoon9.reflect.visitor.chain.CtScannerListener;
 import spoon9.reflect.visitor.chain.ScanningMode;
-import spoon9.reflect.visitor.filter.LocalVariableReferenceFunction;
-import spoon9.reflect.visitor.filter.LocalVariableScopeFunction;
-import spoon9.reflect.visitor.filter.PotentialVariableDeclarationFunction;
-import spoon9.reflect.visitor.filter.SiblingsFunction;
+import spoon9.reflect.visitor.filter.*;
 import spoon9.reflect.visitor.filter.SiblingsFunction.Mode;
-import spoon9.reflect.visitor.filter.VariableReferenceFunction;
+
+import java.util.Collection;
+import java.util.regex.Pattern;
 
 /**
  * Spoon model refactoring function which renames `target` local variable to `newName`<br>
@@ -184,7 +176,7 @@ public class CtRenameLocalVariableRefactoring extends AbstractRenameRefactoring<
 				}
 				if (element instanceof CtVariable<?>) {
 					CtVariable<?> variable = (CtVariable<?>) element;
-					if (!newName.equals(variable.getSimpleName())) {
+					if (newName.equals(variable.getSimpleName()) == false) {
 						//the variable with different name. Ignore it
 						return false;
 					}

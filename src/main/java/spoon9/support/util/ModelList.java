@@ -1,26 +1,21 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.util;
 
 
-import static spoon9.support.util.internal.ModelCollectionUtils.linkToParent;
-
-import java.io.Serializable;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.List;
-
-import spoon9.support.modelobs.FineModelChangeListener;
+import spoon9.SpoonException;
 import spoon9.reflect.declaration.CtElement;
 import spoon9.reflect.path.CtRole;
+import spoon9.support.modelobs.FineModelChangeListener;
 import spoon9.support.reflect.declaration.CtElementImpl;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * The implementation of the {@link List}, which is used by Spoon model objects.
@@ -54,7 +49,7 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 	public void set(Collection<T> elements) {
 		//TODO the best would be to detect added/removed statements and to fire modifications only for them
 		this.clear();
-		if (elements != null && !elements.isEmpty()) {
+		if (elements != null && elements.isEmpty() == false) {
 			this.addAll(elements);
 		}
 	}
@@ -79,6 +74,20 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 		list.set(index, element);
 		updateModCount();
 		return oldElement;
+	}
+
+	static void linkToParent(CtElement owner, CtElement element) {
+		if (owner.getFactory().getEnvironment().checksAreSkipped() == false && element.isParentInitialized() && element.getParent() != owner) {
+			//the `e` already has an different parent. Check if it is still linked to that parent
+			if (element.getRoleInParent() != null) {
+				throw new SpoonException("The default behavior has changed, a new check has been added! Don't worry, you can disable this check\n"
+							+ "with one of the following options:\n"
+							+ " - by configuring Spoon with getEnvironment().setSelfChecks(true)\n"							+ " - by removing the node from its previous parent (element.delete())\n"
+							+ " - by cloning the node before adding it here (element.clone())\n"
+							);
+			}
+		}
+		element.setParent(owner);
 	}
 
 	@Override
@@ -200,7 +209,6 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 	 * See https://docs.oracle.com/javase/7/docs/api/java/util/AbstractList.html#modCount
 	 */
 	private static class InternalList<T> extends ArrayList<T> {
-		private static final long serialVersionUID = 1L;
 		InternalList(int initialCapacity) {
 			super(initialCapacity);
 		}

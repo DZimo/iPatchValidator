@@ -1,22 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
 import spoon9.reflect.annotations.MetamodelPropertyField;
-import spoon9.reflect.code.CtNewClass;
-import spoon9.reflect.declaration.CtEnum;
-import spoon9.reflect.declaration.CtEnumValue;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.reflect.visitor.CtVisitor;
 import spoon9.support.DerivedProperty;
@@ -24,9 +16,7 @@ import spoon9.support.UnsettableProperty;
 import spoon9.support.util.SignatureBasedSortedSet;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -144,36 +134,6 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	@Override
 	public CtEnum<T> clone() {
 		return (CtEnum<T>) super.clone();
-	}
-
-	@Override
-	@DerivedProperty
-	public Set<CtTypeReference<?>> getPermittedTypes() {
-		LinkedHashSet<CtTypeReference<?>> refs = new LinkedHashSet<>();
-		for (CtEnumValue<?> value : enumValues) {
-			if (value.getDefaultExpression() instanceof CtNewClass) {
-				refs.add(((CtNewClass<?>) value.getDefaultExpression()).getAnonymousClass().getReference());
-			}
-		}
-		return Collections.unmodifiableSet(refs);
-	}
-
-	@Override
-	@UnsettableProperty
-	public CtEnum<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
-		return this;
-	}
-
-	@Override
-	@UnsettableProperty
-	public CtEnum<T> addPermittedType(CtTypeReference<?> type) {
-		return this;
-	}
-
-	@Override
-	@UnsettableProperty
-	public CtEnum<T> removePermittedType(CtTypeReference<?> type) {
-		return this;
 	}
 
 	@Override

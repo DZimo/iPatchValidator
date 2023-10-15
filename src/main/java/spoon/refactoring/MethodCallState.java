@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.refactoring;
 
@@ -40,7 +40,7 @@ public class MethodCallState {
 	 * method again doesn't change the state.
 	 *
 	 * @param method invoking the method.
-	 * @see java.util.Collection#add(java.lang.Object)
+	 * @see Collection#add(Object)
 	 */
 	public void add(CtExecutable<?> method) {
 		callerMethods.add(method);
@@ -51,7 +51,7 @@ public class MethodCallState {
 	 * again doesn't change the state.
 	 *
 	 * @param type invoking the method with an initializer.
-	 * @see java.util.Collection#add(java.lang.Object)
+	 * @see Collection#add(Object)
 	 */
 	public void add(CtType<?> type) {
 		callerFields.add(type);
@@ -95,7 +95,7 @@ public class MethodCallState {
 	 * Checks the call state for the method.
 	 *
 	 * @return True if the method has no known call, false otherwise.
-	 * @see java.util.Collection#isEmpty()
+	 * @see Collection#isEmpty()
 	 */
 	public boolean checkCallState() {
 		return callerMethods.isEmpty() && callerFields.isEmpty();

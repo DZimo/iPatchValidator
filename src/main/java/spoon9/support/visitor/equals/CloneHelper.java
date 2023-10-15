@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.visitor.equals;
 
@@ -14,13 +14,7 @@ import spoon9.support.util.EmptyClearableList;
 import spoon9.support.util.EmptyClearableSet;
 import spoon9.support.visitor.clone.CloneVisitor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * {@link CloneHelper} is responsible for creating clones of {@link CtElement} AST nodes including the whole subtree.
@@ -78,7 +72,7 @@ public class CloneHelper {
 		if (elements == null || elements.isEmpty()) {
 			return EmptyClearableSet.instance();
 		}
-		Set<T> others = new LinkedHashSet<>(elements.size());
+		Set<T> others = new HashSet<>(elements.size());
 		for (T element : elements) {
 			addClone(others, element);
 		}

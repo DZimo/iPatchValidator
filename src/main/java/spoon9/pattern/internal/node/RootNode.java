@@ -7,8 +7,6 @@
  */
 package spoon9.pattern.internal.node;
 
-import java.util.function.BiConsumer;
-
 import spoon9.pattern.Generator;
 import spoon9.pattern.internal.DefaultGenerator;
 import spoon9.pattern.internal.ResultHolder;
@@ -16,6 +14,8 @@ import spoon9.pattern.internal.matcher.Matchers;
 import spoon9.pattern.internal.matcher.TobeMatched;
 import spoon9.pattern.internal.parameter.ParameterInfo;
 import spoon9.support.util.ImmutableMap;
+
+import java.util.function.BiConsumer;
 
 /**
  * Represents a parameterized Pattern ValueResolver, which can be used

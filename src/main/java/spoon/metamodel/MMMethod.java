@@ -1,16 +1,16 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.metamodel;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.adaption.TypeAdaptor;
+import spoon.support.visitor.MethodTypingContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +37,8 @@ public class MMMethod {
 	MMMethod(MetamodelProperty field, CtMethod<?> method) {
 		this.ownerField = field;
 		//adapt method to scope of field.ownType
-		TypeAdaptor mtc = field.getOwner().getTypeContext();
-		this.method = mtc.adaptMethod(method);
+		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(field.getOwner().getTypeContext()).setMethod(method);
+		this.method = (CtMethod<?>) mtc.getAdaptationScope();
 		signature = this.method.getSignature();
 		methodKind = MMMethodKind.kindOf(this.method);
 		this.addRelatedMethod(method);

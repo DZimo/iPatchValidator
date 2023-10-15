@@ -1,26 +1,21 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spoon9.reflect.ModelElementContainerDefaultCapacities;
 import spoon9.reflect.annotations.MetamodelPropertyField;
 import spoon9.reflect.code.CtBlock;
 import spoon9.reflect.code.CtComment;
 import spoon9.reflect.code.CtStatement;
 import spoon9.reflect.cu.SourcePosition;
-import spoon9.reflect.declaration.CtAnnotation;
-import spoon9.reflect.declaration.CtCompilationUnit;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.ParentNotInitializedException;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.factory.Factory;
 import spoon9.reflect.factory.FactoryImpl;
 import spoon9.reflect.meta.RoleHandler;
@@ -30,14 +25,7 @@ import spoon9.reflect.path.CtPath;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtReference;
 import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.visitor.CtIterator;
-import spoon9.reflect.visitor.CtScanner;
-import spoon9.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon9.reflect.visitor.EarlyTerminatingScanner;
-import spoon9.reflect.visitor.Filter;
-import spoon9.reflect.visitor.ModelConsistencyChecker;
-import spoon9.reflect.visitor.PrettyPrinter;
-import spoon9.reflect.visitor.Query;
+import spoon9.reflect.visitor.*;
 import spoon9.reflect.visitor.chain.CtConsumableFunction;
 import spoon9.reflect.visitor.chain.CtFunction;
 import spoon9.reflect.visitor.chain.CtQuery;
@@ -53,16 +41,10 @@ import spoon9.support.visitor.TypeReferenceScanner;
 import spoon9.support.visitor.equals.CloneHelper;
 import spoon9.support.visitor.equals.EqualsVisitor;
 import spoon9.support.visitor.replace.ReplacementVisitor;
+
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static spoon9.reflect.visitor.CommentHelper.printComment;
 
@@ -70,9 +52,9 @@ import static spoon9.reflect.visitor.CommentHelper.printComment;
  * Contains the default implementation of most CtElement methods.
  *
  */
-public abstract class CtElementImpl implements CtElement {
+public abstract class CtElementImpl implements CtElement, Serializable {
 	private static final long serialVersionUID = 1L;
-	protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 
@@ -126,7 +108,7 @@ public abstract class CtElementImpl implements CtElement {
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
 		if (ret && !factory.getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
-			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this + "\nand\n" + o + "\n");
+			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this.toString() + "\nand\n" + o.toString() + "\n");
 		}
 		return ret;
 	}
@@ -167,6 +149,9 @@ public abstract class CtElementImpl implements CtElement {
 
 	@Override
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
+		if (this instanceof CtShadowable) {
+			CtShadowable shadowable = (CtShadowable) this;
+		}
 		return unmodifiableList(annotations);
 	}
 
@@ -198,7 +183,6 @@ public abstract class CtElementImpl implements CtElement {
 	@Override
 	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
 		if (annotations == null || annotations.isEmpty()) {
-			getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
 			this.annotations = emptyList();
 			return (E) this;
 		}
@@ -365,7 +349,7 @@ public abstract class CtElementImpl implements CtElement {
 	}
 
 	@Override
-	public <E extends CtElement> E setParent(CtElement parent) {
+	public <E extends CtElement> E setParent(E parent) {
 		this.parent = parent;
 		return (E) this;
 	}
@@ -376,33 +360,36 @@ public abstract class CtElementImpl implements CtElement {
 	}
 
 	@Override
-	public <P extends CtElement> P getParent(Class<P> parentType) {
-		CtElement current = this;
-		while (current.isParentInitialized()) {
-			current = current.getParent();
-			if (parentType.isAssignableFrom(current.getClass())) {
-				return parentType.cast(current);
-			}
+	@SuppressWarnings("unchecked")
+	public <P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException {
+		if (parent == null) {
+			return null;
 		}
-
-		return null;
+		if (parentType.isAssignableFrom(getParent().getClass())) {
+			return (P) getParent();
+		}
+		return getParent().getParent(parentType);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends CtElement> E getParent(Filter<E> filter) {
-		CtElement current = this;
-		while (current.isParentInitialized()) {
-			current = current.getParent();
+	public <E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException {
+		E current = (E) getParent();
+		while (true) {
 			try {
-				if (filter.matches((E) current)) {
-					return (E) current;
+				while (current != null && !filter.matches(current)) {
+					current = (E) current.getParent();
 				}
-			} catch (ClassCastException ignored) {
+				break;
+			} catch (ClassCastException e) {
 				// expected, some elements are not of type
+				current = (E) current.getParent();
 			}
 		}
 
+		if (current != null && filter.matches(current)) {
+			return current;
+		}
 		return null;
 	}
 
@@ -505,7 +492,7 @@ public abstract class CtElementImpl implements CtElement {
 	@Override
 	public Set<String> getMetadataKeys() {
 		if (metadata == null) {
-			return Collections.emptySet();
+			return Collections.EMPTY_SET;
 		}
 		return metadata.keySet();
 	}

@@ -1,27 +1,11 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.metamodel;
-
-import static spoon9.metamodel.Metamodel.addUniqueObject;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.jspecify.annotations.Nullable;
 
 import spoon9.SpoonException;
 import spoon9.reflect.declaration.CtField;
@@ -37,6 +21,13 @@ import spoon9.reflect.reference.CtTypeReference;
 import spoon9.support.DerivedProperty;
 import spoon9.support.UnsettableProperty;
 import spoon9.support.util.RtHelper;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+
+import static spoon9.metamodel.Metamodel.addUniqueObject;
+import static spoon9.metamodel.Metamodel.getOrCreate;
 
 /**
  * Represents a property of the Spoon metamodel.
@@ -77,7 +68,7 @@ public class MetamodelProperty {
 	private Boolean derived;
 	private Boolean unsettable;
 
-	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new EnumMap<>(MMMethodKind.class);
+	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new HashMap<>();
 	private Map<String, MMMethod> methodsBySignature;
 
 	/**
@@ -95,6 +86,8 @@ public class MetamodelProperty {
 	 * List of {@link MetamodelProperty} with same `role`, from super type of `ownerConcept` {@link MetamodelConcept}
 	 */
 	private final List<MetamodelProperty> superProperties = new ArrayList<>();
+
+	private List<MMMethodKind> ambiguousMethodKinds = new ArrayList<>();
 
 	MetamodelProperty(String name, CtRole role, MetamodelConcept ownerConcept) {
 		this.name = name;
@@ -122,7 +115,7 @@ public class MetamodelProperty {
 		if (createIfNotExist) {
 			MMMethod mmMethod = new MMMethod(this, method);
 			roleMethods.add(mmMethod);
-			methodsByKind.computeIfAbsent(mmMethod.getKind(), k -> new ArrayList<>()).add(mmMethod);
+			getOrCreate(methodsByKind, mmMethod.getKind(), () -> new ArrayList<>()).add(mmMethod);
 			MMMethod conflict = roleMethodsBySignature.put(mmMethod.getSignature(), mmMethod);
 			if (conflict != null) {
 				throw new SpoonException("Conflict on " + getOwner().getName() + "." + name + " method signature: " + mmMethod.getSignature());
@@ -300,9 +293,14 @@ public class MetamodelProperty {
 		List<MMMethod> methods = methodsByKind.get(key);
 		if (methods != null && methods.size() > 1) {
 			int idx = getIdxOfBestMatch(methods, key);
+			if (idx >= 0) {
 				if (idx > 0) {
 					//move the matching to the beginning
 					methods.add(0, methods.remove(idx));
+				}
+			} else {
+				//add all methods as ambiguous
+				ambiguousMethodKinds.add(key);
 			}
 		}
 	}
@@ -329,7 +327,7 @@ public class MetamodelProperty {
 
 	private int getIdxOfBestMatchByReturnType(List<MMMethod> methods, MMMethodKind key) {
 		if (methods.size() > 2) {
-			throw new SpoonException("Resolving of more then 2 conflicting getters is not supported. There are: " + methods);
+			throw new SpoonException("Resolving of more then 2 conflicting getters is not supported. There are: " + methods.toString());
 		}
 		// There is no input parameter. We are resolving getter field.
 		// choose the getter whose return value is a collection
@@ -407,7 +405,7 @@ public class MetamodelProperty {
 		}
 		CtTypeReference<?> itemValueType;
 		if (valueContainerType == ContainerKind.MAP) {
-			if (!String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName())) {
+			if (String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName()) == false) {
 				throw new SpoonException("Unexpected container of type: " + valueType.toString());
 			}
 			itemValueType = valueType.getActualTypeArguments().get(1);
@@ -437,7 +435,7 @@ public class MetamodelProperty {
 	 * @param realType
 	 * @return new expectedType or null if it is not matching
 	 */
-	private @Nullable MatchLevel getMatchLevel(CtTypeReference<?> expectedType, CtTypeReference<?> realType) {
+	private MatchLevel getMatchLevel(CtTypeReference<?> expectedType, CtTypeReference<?> realType) {
 		if (expectedType.equals(realType)) {
 			return MatchLevel.EQUALS;
 		}
@@ -553,7 +551,7 @@ public class MetamodelProperty {
 			CtTypeReference<?> expectedValueType = this.getTypeOfField().getTypeErasure();
 			for (int i = 1; i < potentialRootSuperFields.size(); i++) {
 				MetamodelProperty superField = potentialRootSuperFields.get(i);
-				if (!superField.getTypeOfField().getTypeErasure().equals(expectedValueType)) {
+				if (superField.getTypeOfField().getTypeErasure().equals(expectedValueType) == false) {
 					break;
 				}
 				if (needsSetter && superField.getMethod(MMMethodKind.SET) == null) {

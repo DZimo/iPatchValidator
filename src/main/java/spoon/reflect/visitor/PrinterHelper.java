@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -144,7 +144,9 @@ public class PrinterHelper {
 				if (env != null) {
 					indentationSize = env.getTabulationSize();
 				}
-				sbf.append(" ".repeat(indentationSize));
+				for (int j = 0; j < indentationSize; j++) {
+					sbf.append(' ');
+				}
 			}
 		}
 	}
@@ -228,11 +230,6 @@ public class PrinterHelper {
 		return this;
 	}
 
-	/**
-	 * writes as many newlines as needed for the current line to match the end line of the passed element
-	 * @param e element whose line number will be preserved by adding newlines
-	 * @return PrinterHelper
-	 */
 	public PrinterHelper adjustEndPosition(CtElement e) {
 		if (env != null && env.isPreserveLineNumbers() && e.getPosition().isValidPosition()) {
 			// let's add lines if required
@@ -253,7 +250,7 @@ public class PrinterHelper {
 		SourcePosition sp = e.getPosition();
 		if ((sp.isValidPosition())
 				&& (sp.getCompilationUnit() == unitExpected)
-				&& !(sp instanceof PartialSourcePositionImpl)) {
+				&& (sp instanceof PartialSourcePositionImpl) == false) {
 			// only map elements coming from the source CU
 			putLineNumberMapping(e.getPosition().getLine());
 		} else {

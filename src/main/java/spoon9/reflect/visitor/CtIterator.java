@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
@@ -11,9 +11,7 @@ import spoon9.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /**
  * A class to be able to iterate over the children elements in the tree of a given node, in depth-first order.
@@ -22,16 +20,16 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	/**
 	 * A deque containing the elements the iterator has seen but not expanded
 	 */
-	private Deque<CtElement> deque = new ArrayDeque<CtElement>() {
+	private ArrayDeque<CtElement> deque = new ArrayDeque<CtElement>() {
 		/**
 		 * add a collection of elements with addFirst instead of default add() which defaults to addLast()
 		 * @param c Collection of CtElements
 		 * @return true if this deque has changed, in accordance with original method
 		 */
 		@Override
-		public boolean addAll(Collection<? extends CtElement> c) {
-			for (CtElement aC : c) {
-				this.addFirst(aC);
+		public boolean addAll(Collection c) {
+			for (Object aC : c) {
+				this.addFirst((CtElement) aC);
 			}
 			return !c.isEmpty();
 		}
@@ -40,7 +38,7 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	/**
 	 * A deque to be used when scanning an element so that @deque preserves the elements in dfs without complete expansion
 	 */
-	private ArrayDeque<CtElement> currentChildren = new ArrayDeque<>();
+	private ArrayDeque<CtElement> current_children = new ArrayDeque<>();
 
 	/**
 	 * CtIterator constructor, prepares the iterator from the @root node
@@ -61,7 +59,7 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	@Override
 	public void scan(CtElement element) {
 		if (element != null) {
-			currentChildren.addFirst(element);
+			current_children.addFirst(element);
 		}
 	}
 
@@ -78,12 +76,12 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	@Override
 	public CtElement next() {
 		if (!hasNext()) {
-			throw new NoSuchElementException();
+			throw new java.util.NoSuchElementException();
 		}
 		CtElement next = deque.pollFirst(); // get the element to expand from the deque
-		currentChildren.clear(); // clear for this scan
+		current_children.clear(); // clear for this scan
 		next.accept(this); // call @scan for each direct child of the node
-		deque.addAll(currentChildren); // overridden method to add all to first
+		deque.addAll(current_children); // overridden method to add all to first
 		return next;
 	}
 }

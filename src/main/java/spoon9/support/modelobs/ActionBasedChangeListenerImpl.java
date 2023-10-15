@@ -1,24 +1,20 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.modelobs;
 
-import spoon9.support.modelobs.action.Action;
-import spoon9.support.modelobs.action.AddAction;
-import spoon9.support.modelobs.action.DeleteAction;
-import spoon9.support.modelobs.action.DeleteAllAction;
-import spoon9.support.modelobs.action.UpdateAction;
+import spoon9.reflect.declaration.CtElement;
+import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.path.CtRole;
+import spoon9.support.modelobs.action.*;
 import spoon9.support.modelobs.context.ListContext;
 import spoon9.support.modelobs.context.MapContext;
 import spoon9.support.modelobs.context.ObjectContext;
 import spoon9.support.modelobs.context.SetContext;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.ModifierKind;
-import spoon9.reflect.path.CtRole;
 
 import java.util.Collection;
 import java.util.List;
@@ -88,11 +84,6 @@ public abstract class ActionBasedChangeListenerImpl implements ActionBasedChange
 	@Override
 	public <K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue) {
 		propagateModelChange(new AddAction<>(new MapContext<>(currentElement, role, field, key), newValue));
-	}
-
-	@Override
-	public <K, V> void onMapDelete(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement oldValue) {
-		propagateModelChange(new DeleteAction<>(new MapContext<>(currentElement, role, field, key), oldValue));
 	}
 
 	@Override

@@ -1,46 +1,40 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.java;
 
+import spoon.SpoonException;
+import spoon.reflect.path.CtRole;
+import spoon.support.visitor.java.reflect.RtMethod;
+import spoon.support.visitor.java.reflect.RtParameter;
+
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
-import spoon.SpoonException;
-import spoon.reflect.path.CtRole;
-import spoon.support.visitor.java.reflect.RtMethod;
-import spoon.support.visitor.java.reflect.RtParameter;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
-	private static Class<?> recordClass = getRecordClass();
-
 	@Override
 	public void visitPackage(Package aPackage) {
-		for (Annotation annotation : aPackage.getDeclaredAnnotations()) {
-			visitAnnotation(annotation);
-		}
 	}
 
 	@Override
 	public <T> void visitClass(Class<T> clazz) {
-		if (isTopLevelType(clazz)) {
-			visitPackage(clazz.getPackage());
+		if (clazz.getPackage() != null) {
+			clazz.getPackage();
 		}
 		try {
 			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
@@ -107,7 +101,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
-		scanPermittedTypes(clazz);
 	}
 
 	protected final <T> void visitType(Class<T> aClass) {
@@ -125,8 +118,8 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T> void visitInterface(Class<T> clazz) {
 		assert clazz.isInterface();
-		if (isTopLevelType(clazz)) {
-			visitPackage(clazz.getPackage());
+		if (clazz.getPackage() != null) {
+			clazz.getPackage();
 		}
 		try {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
@@ -177,14 +170,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
-		scanPermittedTypes(clazz);
 	}
 
 	@Override
 	public <T> void visitEnum(Class<T> clazz) {
 		assert clazz.isEnum();
-		if (isTopLevelType(clazz)) {
-			visitPackage(clazz.getPackage());
+		if (clazz.getPackage() != null) {
+			clazz.getPackage();
 		}
 		try {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
@@ -251,14 +243,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
-		scanPermittedTypes(clazz);
 	}
 
 	@Override
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		assert clazz.isAnnotation();
-		if (isTopLevelType(clazz)) {
-			visitPackage(clazz.getPackage());
+		if (clazz.getPackage() != null) {
+			clazz.getPackage();
 		}
 		try {
 			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
@@ -312,14 +303,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : constructor.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		RtParameter[] parametersOf = RtParameter.parametersOf(constructor);
-		Parameter[] parameters = constructor.getParameters();
-		for (int i = 0; i < parametersOf.length; i++) {
-			RtParameter rtParameter = parametersOf[i];
-			if (isImplicitParameter(parameters[i], constructor, i == 0)) {
+		int nrEnclosingClasses = getNumberOfEnclosingClasses(constructor.getDeclaringClass());
+		for (RtParameter parameter : RtParameter.parametersOf(constructor)) {
+			//ignore implicit parameters of enclosing classes
+			if (nrEnclosingClasses > 0) {
+				nrEnclosingClasses--;
 				continue;
 			}
-			visitParameter(rtParameter);
+			visitParameter(parameter);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
@@ -329,24 +320,12 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 	}
 
-	/**
-	 * Check whether the constructor parameter is implicit.
-	 * It is not enough to simply use {@link Parameter#isImplicit()} as the class file format before Java 8
-	 * has no way to embed the required information. As of Java 8, the information is stored in the
-	 * MethodParameters attribute, however javac does not emit the attribute by default in current Java versions.
-	 */
-	private boolean isImplicitParameter(Parameter parameter, Constructor<?> constructor, boolean isFirstParameter) {
-		if (parameter.isImplicit()) {
-			return true;
+	private int getNumberOfEnclosingClasses(Class<?> clazz) {
+		int depth = 0;
+		while (Modifier.isStatic(clazz.getModifiers()) == false && (clazz = clazz.getEnclosingClass()) != null) {
+			depth++;
 		}
-		// best effort fallback for the implicit enclosing class parameter in non-static inner class constructors
-
-		// static inner classes have no implicit parameter
-		if (Modifier.isStatic(constructor.getDeclaringClass().getModifiers())) {
-			return false;
-		}
-
-		return isFirstParameter && parameter.getType() == constructor.getDeclaringClass().getEnclosingClass();
+		return depth;
 	}
 
 	@Override
@@ -482,7 +461,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public void visitTypeReference(CtRole role, WildcardType type) {
-		if (!type.getUpperBounds()[0].equals(Object.class)) {
+		if (type.getUpperBounds() != null && type.getUpperBounds().length > 0 && !type.getUpperBounds()[0].equals(Object.class)) {
 			for (Type upper : type.getUpperBounds()) {
 				visitTypeReference(CtRole.BOUNDING_TYPE, upper);
 			}
@@ -499,12 +478,18 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
-		if (isTopLevelType(clazz)) {
+		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
 			visitPackage(clazz.getPackage());
 		}
 		if (clazz.getEnclosingClass() != null) {
 			visitTypeReference(CtRole.DECLARING_TYPE, clazz.getEnclosingClass());
 		}
+// TODO in case of interfaces this was used!! But not in case of class?
+//		if (clazz.isInterface()) {
+//			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+//				visitTypeParameter(generic);
+//			}
+//		}
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {
@@ -518,115 +503,5 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			rtMethods.add(RtMethod.create(method));
 		}
 		return rtMethods;
-	}
-
-	@Override
-	public <T> void visitRecord(Class<T> clazz) {
-		if (recordClass == null) {
-			// the record class is missing we cant create any shadow element for it.
-			return;
-		}
-		try {
-			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-					visitTypeParameter(generic);
-			}
-		} catch (NoClassDefFoundError ignore) {
-			// partial classpath
-		}
-		try {
-			if (clazz.getGenericSuperclass() != null && clazz.getGenericSuperclass() != Object.class) {
-				visitTypeReference(CtRole.SUPER_TYPE, clazz.getGenericSuperclass());
-			}
-		} catch (NoClassDefFoundError ignore) {
-			// partial classpath
-		}
-		try {
-			for (Type anInterface : clazz.getGenericInterfaces()) {
-				visitTypeReference(CtRole.INTERFACE, anInterface);
-			}
-		} catch (NoClassDefFoundError ignore) {
-			// partial classpath
-		}
-		try {
-			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
-				visitAnnotation(annotation);
-			}
-		} catch (NoClassDefFoundError ignore) {
-			// partial classpath
-		}
-		try {
-			for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-				if (constructor.isSynthetic()) {
-					continue;
-				}
-				visitConstructor(constructor);
-			}
-		} catch (NoClassDefFoundError ignore) {
-			// partial classpath
-		}
-		try {
-			for (RtMethod method : getDeclaredMethods(clazz)) {
-				if (method.getMethod().isSynthetic()) {
-					continue;
-				}
-				visitMethod(method);
-			}
-		} catch (NoClassDefFoundError ignore) {
-			// partial classpath
-		}
-		try {
-			for (Field field : clazz.getDeclaredFields()) {
-				if (field.isSynthetic()) {
-					continue;
-				}
-				visitField(field);
-			}
-		} catch (NoClassDefFoundError ignore) {
-			// partial classpath
-		}
-		try {
-			for (Class<?> aClass : clazz.getDeclaredClasses()) {
-				visitType(aClass);
-			}
-		} catch (NoClassDefFoundError ignore) {
-			// partial classpath
-		}
-		for (AnnotatedElement element : MethodHandleUtils.getRecordComponents(clazz)) {
-			visitRecordComponent(element);
-		}
-
-
-
-	}
-
-	private static boolean isTopLevelType(Class<?> clazz) {
-		return clazz.getEnclosingClass() == null && clazz.getPackage() != null;
-	}
-
-	private static Class<?> getRecordClass() {
-		try {
-			return Class.forName("java.lang.Record");
-		} catch (Exception e) {
-				return null;
-		}
-	}
-
-	@Override
-	public void visitRecordComponent(AnnotatedElement recordComponent) {
-
-	}
-
-	private void scanPermittedTypes(Class<?> clazz) {
-		Class<?>[] permittedSubclasses = MethodHandleUtils.getPermittedSubclasses(clazz);
-		if (permittedSubclasses == null) {
-			return;
-		}
-		for (Class<?> subclass : permittedSubclasses) {
-			try {
-				visitTypeReference(CtRole.PERMITTED_TYPE, subclass);
-			} catch (NoClassDefFoundError ignore) {
-				// partial classpath
-			}
-		}
 	}
 }

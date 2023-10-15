@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler.jdt;
 
@@ -23,7 +23,6 @@ import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.SuperReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -184,7 +183,7 @@ public class PositionBuilder {
 				//offset of the bracket before catch
 				int lastBracket = getEndOfLastTryBlock(tryStatement, 0);
 				int catchStart = findNextNonWhitespace(contents, endOfTry, lastBracket + 1);
-				if (!CATCH.equals(new String(contents, catchStart, CATCH.length()))) {
+				if (CATCH.equals(new String(contents, catchStart, CATCH.length())) == false) {
 					return handlePositionProblem("Unexpected beginning of catch statement on offset: " + catchStart);
 				}
 				int bracketStart = findNextNonWhitespace(contents, endOfTry, catchStart + CATCH.length());
@@ -377,7 +376,7 @@ public class PositionBuilder {
 				}
 			}
 
-			if (getModifiers(methodDeclaration.modifiers, false, ModifierTarget.METHOD).isEmpty()) {
+			if (getModifiers(methodDeclaration.modifiers, false, true).isEmpty()) {
 				modifiersSourceEnd = modifiersSourceStart - 1;
 			}
 
@@ -415,22 +414,20 @@ public class PositionBuilder {
 			//build position with appropriate context
 			return buildPositionCtElement(e, (Argument) pair.node);
 		} else if (node instanceof TypeReference) {
+			TypeReference typeReference = (TypeReference) node;
+			if (typeReference.resolvedType.getTypeAnnotations() != null) {
+				for (int a = 0; a < typeReference.resolvedType.getTypeAnnotations().length; a++) {
+					sourceStart = findPrevAnnotations(contents, 0, sourceStart);
+				}
+			}
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		} else if (node instanceof AllocationExpression) {
 			AllocationExpression allocationExpression = (AllocationExpression) node;
 			if (allocationExpression.enumConstant != null) {
 				FieldDeclaration fieldDeclaration = allocationExpression.enumConstant;
-
-				//1) skip the annotations
-				Annotation[] annotations = allocationExpression.enumConstant.annotations;
-				if (annotations != null && annotations.length > 0) {
-					Annotation lastAnnotation = annotations[annotations.length - 1];
-					sourceStart = findNextNonWhitespace(contents, sourceEnd, lastAnnotation.sourceEnd);
-				}
-
-				//2) skip comments
+				//1) skip comments
 				sourceStart = findNextNonWhitespace(contents, sourceEnd, sourceStart);
-				//3) move to beginning of enum construction
+				//2) move to beginning of enum construction
 				sourceStart += fieldDeclaration.name.length;
 			}
 		} else if (node instanceof CaseStatement) {
@@ -448,11 +445,6 @@ public class PositionBuilder {
 		} else if ((node instanceof AssertStatement)) {
 			AssertStatement assert_ = (AssertStatement) node;
 			sourceEnd = findNextChar(contents, contents.length, sourceEnd, ';');
-		} else if (node instanceof SuperReference) {
-			// when a super reference is followed by a unary operator (e.g. `super.method(-x)`),
-			// JDT for some reason sets the end source position to the unary operator, so we
-			// must adjust for this.
-			sourceEnd = sourceStart + "super".length() - 1;
 		}
 
 		if (e instanceof CtModifiable) {
@@ -465,7 +457,7 @@ public class PositionBuilder {
 	}
 
 	private int getParentsSourceStart() {
-		Iterator<ASTPair> iter = this.jdtTreeBuilder.getContextBuilder().getAllContexts().iterator();
+		Iterator<ASTPair> iter = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
 		if (iter.hasNext()) {
 			iter.next();
 			if (iter.hasNext()) {
@@ -670,23 +662,20 @@ public class PositionBuilder {
 	}
 
 	/**
-	 * @param content the character array on which the search will be performed.
-	 * @param maxOff maximum acceptable return value.
-	 * @param off the offset of {@code content} where the search begins.
+	 * @param maxOff maximum acceptable return value
 	 * @return index of first non whitespace char, searching forward.
 	 * Can return 'off' if it is non whitespace.
 	 * Note: all kinds of java comments are understood as whitespace too.
 	 * The search must start out of comment or on the first character of the comment
 	 */
-	public static int findNextNonWhitespace(char[] content, int maxOff, int off) {
+	static int findNextNonWhitespace(char[] content, int maxOff, int off) {
 		return findNextNonWhitespace(true, content, maxOff, off);
 	}
-
 	static int findNextNonWhitespace(boolean commentIsWhiteSpace, char[] content, int maxOff, int off) {
 		maxOff = Math.min(maxOff, content.length - 1);
 		while (off >= 0 && off <= maxOff) {
 			char c = content[off];
-			if (!Character.isWhitespace(c)) {
+			if (Character.isWhitespace(c) == false) {
 				//non whitespace found
 				int endOfCommentOff = commentIsWhiteSpace ? getEndOfComment(content, maxOff, off) : -1;
 				if (endOfCommentOff == -1) {
@@ -708,16 +697,10 @@ public class PositionBuilder {
 	 * Note: all kinds of java comments are understood as whitespace too. Then it returns offset of the first character of the comment
 	 */
 	static int findNextWhitespace(char[] content, int maxOff, int off) {
-		boolean inString = false;
 		maxOff = Math.min(maxOff, content.length - 1);
 		while (off >= 0 && off <= maxOff) {
 			char c = content[off];
-			if (c == '"' && !inString) {
-				inString = true;
-			} else if (c == '"' && inString) {
-				inString = false;
-			}
-			if (Character.isWhitespace(c) || (!inString && getEndOfComment(content, maxOff, off) >= 0)) {
+			if (Character.isWhitespace(c) || getEndOfComment(content, maxOff, off) >= 0) {
 				//it is whitespace or comment starts there
 				return off;
 			}
@@ -725,7 +708,6 @@ public class PositionBuilder {
 		}
 		return -1;
 	}
-
 	/**
 	 * @param minOff the minimal acceptable return value
 	 * @return index of first non whitespace char, searching backward. Can return `off` if it is already a non whitespace.
@@ -740,7 +722,7 @@ public class PositionBuilder {
 			int startOfCommentOff = getStartOfComment(content, minOff, off);
 			if (startOfCommentOff >= 0) {
 				off = startOfCommentOff;
-			} else if (!Character.isWhitespace(c)) {
+			} else if (Character.isWhitespace(c) == false) {
 				//non whitespace found.
 				return off;
 			}
@@ -785,13 +767,11 @@ public class PositionBuilder {
 		return -1;
 	}
 	/**
-	 * @param content the character array on which the search will be performed.
-	 * @param maxOff maximum acceptable return value.
-	 * @param off the offset of {@code content} where the search begins.
+	 * @param maxOff maximum acceptable return value
 	 * @return if the off points at start of comment then it returns offset which points on last character of the comment
 	 * if the off does not point at start of comment then it returns -1
 	 */
-	public static int getEndOfComment(char[] content, int maxOff, int off) {
+	static int getEndOfComment(char[] content, int maxOff, int off) {
 		maxOff = Math.min(maxOff, content.length - 1);
 		if (off + 1 <= maxOff) {
 			if (content[off] == '/' && content[off + 1] == '*') {

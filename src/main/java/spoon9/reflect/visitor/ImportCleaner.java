@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
@@ -11,43 +11,17 @@ import spoon9.SpoonException;
 import spoon9.experimental.CtUnresolvedImport;
 import spoon9.javadoc.internal.JavadocDescriptionElement;
 import spoon9.javadoc.internal.JavadocInlineTag;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFieldAccess;
-import spoon9.reflect.code.CtFieldRead;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtJavaDoc;
-import spoon9.reflect.code.CtJavaDocTag;
-import spoon9.reflect.code.CtTargetedExpression;
-import spoon9.reflect.code.CtTypeAccess;
-import spoon9.reflect.declaration.CtCompilationUnit;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.declaration.CtImportKind;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtType;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.factory.Factory;
 import spoon9.reflect.path.CtRole;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
-import spoon9.reflect.reference.CtPackageReference;
-import spoon9.reflect.reference.CtReference;
-import spoon9.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon9.reflect.reference.CtTypeReference;
+import spoon9.reflect.reference.*;
 import spoon9.reflect.visitor.filter.TypeFilter;
 import spoon9.support.Experimental;
-import spoon9.support.adaption.TypeAdaptor;
 import spoon9.support.util.ModelList;
-import spoon9.support.visitor.equals.EqualsVisitor;
+import spoon9.support.visitor.ClassTypingContext;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -88,16 +62,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			return;
 		}
 
-		if (targetedExpression instanceof CtFieldRead) {
-			// Type can be null in no-classpath => Just add a computed import to keep existing ones alive
-			// Only add an import for the field if the type of the target is implicit, to prevent adding imports
-			// for fully-qualified field accesses.
-			if (target.getType() == null || target.getType().isImplicit()) {
-				context.addImport(((CtFieldRead<?>) targetedExpression).getVariable());
-			}
-		}
-
-		if (target.isImplicit()) {
+		if (target != null && target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {
 				if (targetedExpression instanceof CtFieldAccess) {
 					context.addImport(((CtFieldAccess<?>) targetedExpression).getVariable());
@@ -182,42 +147,21 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				// we would like to add an import, but we don't know to where
 				return;
 			}
-			if (ref instanceof CtFieldReference<?> && !isReferencePresentInImports(ref)) {
-				return;
-			}
 			CtTypeReference<?> topLevelTypeRef = typeRef.getTopLevelType();
 			if (typeRefQNames.contains(topLevelTypeRef.getQualifiedName())) {
 				//it is reference to a type of this CompilationUnit. Do not add it
-				return;
-			}
-			if (ref instanceof CtTypeReference<?>
-					&& !isReferencePresentInImports(topLevelTypeRef)
-					&& topLevelTypeRef != ref
-					&& !isReferencePresentInImports(ref)) {
-				// check if a top level type has been imported
-				// if it has been, we don't need to add a separate import for its subtype
-				// last condition ensures that if only the subtype has been imported, we do not remove it
 				return;
 			}
 			CtPackageReference packageRef = topLevelTypeRef.getPackage();
 			if (packageRef == null) {
 				return;
 			}
-			if ("java.lang".equals(packageRef.getQualifiedName())
-				&& !isStaticExecutableRef(ref)
-				&& !isStaticFieldRef(ref)) {
-				//java.lang is always imported implicitly. Ignore it, unless it is a static field or method import
+			if ("java.lang".equals(packageRef.getQualifiedName())) {
+				//java.lang is always imported implicitly. Ignore it
 				return;
 			}
-			if (ref instanceof CtTypeReference && Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
+			if (Objects.equals(packageQName, packageRef.getQualifiedName())) {
 				//it is reference to a type of the same package. Do not add it
-				return;
-			}
-			if (isStaticExecutableRef(ref) && inheritsFrom(ref.getParent(CtType.class).getReference(), typeRef)) {
-				// Static method is inherited from parent class. At worst, importing an inherited
-				// static method results in a compile error, if the static method is defined in
-				// the default package (not allowed to import methods from default package).
-				// At best, it's pointless. So we skip it.
 				return;
 			}
 			String importRefID = getImportRefID(ref);
@@ -226,45 +170,11 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			}
 		}
 
-		private boolean isReferencePresentInImports(CtReference ref) {
-			boolean found = compilationUnit.getImports()
-				.stream()
-				.anyMatch(ctImport -> ctImport.getReference() != null
-					&& isEqualAfterSkippingRole(ctImport.getReference(), ref, CtRole.TYPE_ARGUMENT));
-
-			if (found) {
-				return true;
-			}
-			if (!(ref instanceof CtFieldReference)) {
-				return false;
-			}
-			return compilationUnit.getImports()
-				.stream()
-				.filter(it -> it.getReference() instanceof CtTypeMemberWildcardImportReference)
-				.map(it -> (CtTypeMemberWildcardImportReference) it.getReference())
-				.anyMatch(it -> it.getTypeReference().equals(((CtFieldReference<?>) ref).getDeclaringType()));
-		}
-
-		/**
-		 * Checks if element and other are equal if comparison for `role` value is skipped
-		 */
-		private boolean isEqualAfterSkippingRole(CtElement element, CtElement other, CtRole role) {
-			EqualsVisitor equalsVisitor = new EqualsVisitor();
-			boolean isEqual = equalsVisitor.checkEquals(element, other);
-			if (isEqual) {
-				return true;
-			}
-			if (role == equalsVisitor.getNotEqualRole()) {
-				return true;
-			}
-			return false;
-		}
-
 		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
 			ModelList<CtImport> existingImports = compilationUnit.getImports();
 			Set<CtImport> computedImports = new HashSet<>(this.computedImports.values());
 			topfor: for (CtImport oldImport : new ArrayList<>(existingImports)) {
-				if (!removeImport(oldImport, computedImports)) {
+				if (!computedImports.remove(oldImport)) {
 
 					// case: import is required in Javadoc
 					for (CtType type: compilationUnit.getDeclaredTypes()) {
@@ -319,24 +229,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				existingImports.set(existingImports.stream().sorted(importComparator).collect(Collectors.toList()));
 			}
 		}
-
-		/**
-		 * Remove an import from the given collection based on equality or textual equality.
-		 */
-		private boolean removeImport(CtImport toRemove, Collection<CtImport> imports) {
-			String toRemoveStr = toRemove.toString();
-			Iterator<CtImport> it = imports.iterator();
-			while (it.hasNext()) {
-				CtImport imp = it.next();
-				if (toRemove.equals(imp) || toRemoveStr.equals(imp.toString())) {
-					it.remove();
-					return true;
-				}
-			}
-			return false;
-		}
 	}
-
 
 	/**
 	 * @return fast unique identification of reference. It is not the same like printing of import, because it needs to handle access path.
@@ -370,8 +263,8 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	 */
 	private boolean removeAllTypeImportWithPackage(Set<CtImport> imports, String packageName) {
 		boolean found = false;
-		for (Iterator<CtImport> iter = imports.iterator(); iter.hasNext();) {
-			CtImport newImport = iter.next();
+		for (Iterator iter = imports.iterator(); iter.hasNext();) {
+			CtImport newImport = (CtImport) iter.next();
 			if (newImport.getImportKind() == CtImportKind.TYPE) {
 				CtTypeReference<?> typeRef = (CtTypeReference<?>) newImport.getReference();
 				if (typeRef.getPackage() != null && packageName.equals(typeRef.getPackage().getQualifiedName())) {
@@ -391,7 +284,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	 */
 	private boolean removeAllStaticTypeMembersImportWithType(Set<CtImport> imports, CtTypeReference<?> typeRef) {
 		//the cached type hierarchy of typeRef
-		TypeAdaptor contextOfTypeRef = new TypeAdaptor(typeRef);
+		ClassTypingContext contextOfTypeRef = new ClassTypingContext(typeRef);
 		Iterator<CtImport> iter = imports.iterator();
 		class Visitor extends CtAbstractImportVisitor {
 			boolean found = false;
@@ -476,22 +369,5 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	public ImportCleaner setImportComparator(Comparator<CtImport> importComparator) {
 		this.importComparator = importComparator;
 		return this;
-	}
-
-	/** @return true if ref inherits from potentialBase */
-	private static boolean inheritsFrom(CtTypeReference<?> ref, CtTypeReference<?> potentialBase) {
-		CtTypeReference<?> superClass = ref.getSuperclass();
-		return superClass != null
-				&& (superClass.getQualifiedName().equals(potentialBase.getQualifiedName())
-						|| inheritsFrom(superClass, potentialBase));
-	}
-
-	private static boolean isStaticExecutableRef(CtElement element) {
-		return element instanceof CtExecutableReference<?>
-				&& ((CtExecutableReference<?>) element).isStatic();
-	}
-
-	private static boolean isStaticFieldRef(CtReference ref) {
-		return ref instanceof CtFieldReference<?> && ((CtFieldReference<?>) ref).isStatic();
 	}
 }

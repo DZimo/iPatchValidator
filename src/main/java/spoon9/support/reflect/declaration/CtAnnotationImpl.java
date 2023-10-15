@@ -1,28 +1,16 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
 import spoon9.SpoonException;
 import spoon9.reflect.annotations.MetamodelPropertyField;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFieldAccess;
-import spoon9.reflect.code.CtFieldRead;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.code.CtNewArray;
-import spoon9.reflect.code.CtTypeAccess;
-import spoon9.reflect.declaration.CtAnnotatedElementType;
-import spoon9.reflect.declaration.CtAnnotation;
-import spoon9.reflect.declaration.CtAnnotationMethod;
-import spoon9.reflect.declaration.CtAnnotationType;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtShadowable;
-import spoon9.reflect.declaration.CtType;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtArrayTypeReference;
 import spoon9.reflect.reference.CtFieldReference;
@@ -39,16 +27,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * The implementation for {@link CtAnnotation}.
@@ -269,21 +249,21 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	private Object forceObjectToType(Object ret, Class<?> type) {
 		if (type.isPrimitive()) {
-			if ((type == boolean.class) && (ret.getClass() != Boolean.class)) {
+			if ((type == boolean.class) && (ret.getClass() != boolean.class)) {
 				return Boolean.parseBoolean(ret.toString());
-			} else if ((type == byte.class) && (ret.getClass() != Byte.class)) {
+			} else if ((type == byte.class) && (ret.getClass() != byte.class)) {
 				return Byte.parseByte(ret.toString());
-			} else if ((type == char.class) && (ret.getClass() != Character.class)) {
+			} else if ((type == char.class) && (ret.getClass() != char.class)) {
 				return ret.toString().charAt(0);
-			} else if ((type == double.class) && (ret.getClass() != Double.class)) {
+			} else if ((type == double.class) && (ret.getClass() != double.class)) {
 				return Double.parseDouble(ret.toString());
-			} else if ((type == float.class) && (ret.getClass() != Float.class)) {
+			} else if ((type == float.class) && (ret.getClass() != float.class)) {
 				return Float.parseFloat(ret.toString());
-			} else if ((type == int.class) && (ret.getClass() != Integer.class)) {
+			} else if ((type == int.class) && (ret.getClass() != int.class)) {
 				return Integer.parseInt(ret.toString());
-			} else if ((type == long.class) && (ret.getClass() != Long.class)) {
+			} else if ((type == long.class) && (ret.getClass() != long.class)) {
 				return Long.parseLong(ret.toString());
-			} else if (type == short.class && ret.getClass() != Short.class) {
+			} else if (type == short.class && ret.getClass() != short.class) {
 				return Short.parseShort(ret.toString());
 			}
 		}
@@ -339,7 +319,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	public Map<String, Object> getElementValues() {
 		Map<String, Object> res = new TreeMap<>();
-		res.putAll(elementValues);
+		for (Entry<String, CtExpression> elementValue : elementValues.entrySet()) {
+			res.put(elementValue.getKey(), elementValue.getValue());
+		}
 		return res;
 	}
 
@@ -350,7 +332,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@Override
 	public Map<String, CtExpression> getAllValues() {
-		Map<String, CtExpression> values = new TreeMap<>();
+		Map<String, CtExpression> values = new TreeMap();
 		// first, we put the default values
 		CtAnnotationType<?> annotationType = (CtAnnotationType) getAnnotationType().getTypeDeclaration();
 		for (CtAnnotationMethod m : annotationType.getAnnotationMethods()) {
@@ -469,10 +451,5 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	@UnsettableProperty
 	public <C extends CtExpression<A>> C setTypeCasts(List<CtTypeReference<?>> casts) {
 		return (C) this;
-	}
-
-	@Override
-	public String getName() {
-		return getAnnotationType().getSimpleName();
 	}
 }

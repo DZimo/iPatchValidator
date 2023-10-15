@@ -1,34 +1,19 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import spoon9.SpoonException;
+import spoon9.reflect.ModelElementContainerDefaultCapacities;
 import spoon9.reflect.annotations.MetamodelPropertyField;
 import spoon9.reflect.cu.CompilationUnit;
 import spoon9.reflect.cu.SourcePosition;
-import spoon9.reflect.declaration.CtCompilationUnit;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtPackageDeclaration;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.ParentNotInitializedException;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtModuleReference;
 import spoon9.reflect.reference.CtPackageReference;
@@ -41,7 +26,15 @@ import spoon9.support.UnsettableProperty;
 import spoon9.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon9.support.sniper.internal.ElementSourceFragment;
 import spoon9.support.util.ModelList;
-import spoon9.reflect.ModelElementContainerDefaultCapacities;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implements a compilation unit. In Java, a compilation unit can contain only one
@@ -324,11 +317,10 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	public String getOriginalSourceCode() {
 
 		if (originalSourceCode == null && getFile() != null && getFile().exists()) {
-			try {
-				originalSourceCode = Files.readString(
-					getFile().toPath(),
-					this.getFactory().getEnvironment().getEncoding()
-				);
+			try (FileInputStream s = new FileInputStream(getFile())) {
+				byte[] elementBytes = new byte[s.available()];
+				s.read(elementBytes);
+				originalSourceCode = new String(elementBytes, this.getFactory().getEnvironment().getEncoding());
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -420,15 +412,12 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 	@Override
 	@UnsettableProperty
-	public <E extends CtElement> E setParent(CtElement parent) {
+	public <E extends CtElement> E setParent(E parent) {
 		return (E) this;
 	}
 
 	@Override
 	public String toString() {
-		if (this.file != null) {
-			return this.file.getName();
-		}
-		return "CompilationUnit<unknown file>";
+		return this.file.getName();
 	}
 }

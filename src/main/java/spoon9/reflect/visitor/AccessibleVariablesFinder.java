@@ -1,28 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
-import spoon9.reflect.code.CtCatch;
-import spoon9.reflect.code.CtFor;
-import spoon9.reflect.code.CtForEach;
-import spoon9.reflect.code.CtLocalVariable;
-import spoon9.reflect.code.CtResource;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtStatementList;
-import spoon9.reflect.code.CtTryWithResource;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtVariable;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
@@ -100,11 +86,7 @@ public class AccessibleVariablesFinder {
 
 			@Override
 			public void visitCtTryWithResource(CtTryWithResource e) {
-				for (CtResource<?> resource: e.getResources()) {
-					if (resource instanceof CtLocalVariable) {
-						variables.add((CtLocalVariable<?>) resource);
-					}
-				}
+				variables.addAll(e.getResources());
 				super.visitCtTryWithResource(e);
 			}
 

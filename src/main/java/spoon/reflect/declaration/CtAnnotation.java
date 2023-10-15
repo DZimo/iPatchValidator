@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
@@ -131,7 +131,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * Set's this annotation's element names and their values. This is in the
 	 * form of a map that associates element names with their corresponding
 	 * values. Note that type values are stored as
-	 * {@link spoon.reflect.reference.CtTypeReference}.
+	 * {@link CtTypeReference}.
 	 */
 	@PropertySetter(role = VALUE)
 	<T extends CtAnnotation<A>> T setElementValues(Map<String, Object> values);
@@ -147,7 +147,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	/**
 	 * Returns the element which is annotated by this annotation.
 	 *
-	 * @return annotated {@link spoon.reflect.declaration.CtElement}
+	 * @return annotated {@link CtElement}
 	 */
 	@DerivedProperty // the annotation is contained by the element not the other way around
 	CtElement getAnnotatedElement();
@@ -155,7 +155,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	/**
 	 * Returns the type of the element which is annotated by this annotation.
 	 *
-	 * @return {@link spoon.reflect.declaration.CtAnnotatedElementType}
+	 * @return {@link CtAnnotatedElementType}
 	 */
 	@DerivedProperty
 	CtAnnotatedElementType getAnnotatedElementType();
@@ -234,13 +234,4 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 		}
 		return null;
 	}
-
-	/**
-	 * Returns the class name of the annotation, eg "Deprecated" for @Deprecated.
-	 *
-	 * @return the name of the annotation
-	 */
-	@DerivedProperty
-	String getName();
-
 }

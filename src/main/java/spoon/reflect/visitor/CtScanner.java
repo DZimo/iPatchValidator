@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -59,7 +59,6 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -81,8 +80,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
@@ -122,14 +119,14 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	/**
-	 * This method is called by the scanner when entering a scanned element.
+	 * This method is upcalled by the scanner when entering a scanned element.
 	 * To be overridden to implement specific scanners.
 	 */
 	protected void enter(CtElement e) {
 	}
 
 	/**
-	 * This method is called by the scanner when exiting a scanned element. To
+	 * This method is upcalled by the scanner when exiting a scanned element. To
 	 * be overridden to implement specific scanners.
 	 */
 	protected void exit(CtElement e) {
@@ -137,9 +134,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a collection of meta-model elements.
-	 *
-	 * @param role Role of the collection in the parent element
-	 * @param elements A collection of elements to scan (generally sibling elements)
 	 */
 	public void scan(CtRole role, Collection<? extends CtElement> elements) {
 		if (elements != null) {
@@ -153,9 +147,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a Map of meta-model elements.
-	 *
-	 * @param role Role of the map in the parent element
-	 * @param elements A map of elements to scan (generally sibling elements)
 	 */
 	public void scan(CtRole role, Map<String, ? extends CtElement> elements) {
 		if (elements != null) {
@@ -167,8 +158,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a collection of meta-model elements.
-	 *
-	 * @param elements A collection of elements
 	 */
 	public void scan(Collection<? extends CtElement> elements) {
 		scan(null, elements);
@@ -176,9 +165,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a meta-model element.
-	 *
-	 * @param role Role of the element in its parent
-	 * @param element An element to scan
 	 */
 	public void scan(CtRole role, CtElement element) {
 		scan(element);
@@ -186,8 +172,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a meta-model element.
-	 *
-	 * @param element An element to scan
 	 */
 	public void scan(CtElement element) {
 		if (element != null) {
@@ -208,8 +192,6 @@ public abstract class CtScanner implements CtVisitor {
 	/**
 	 * Generically scans an object that can be an element, a reference, or a
 	 * collection of those.
-	 *
-	 * @param o A {@link CtElement}, or a {@link Map} or {@link Collection} of elements
 	 */
 	public void scan(Object o) {
 		scan(null, o);
@@ -218,9 +200,6 @@ public abstract class CtScanner implements CtVisitor {
 	/**
 	 * Generically scans an object that can be an element, a reference, or a
 	 * collection of those.
-	 *
-	 * @param role Role of the object in its parent
-	 * @param o A {@link CtElement}, or a {@link Map} or {@link Collection} of elements
 	 */
 	public void scan(CtRole role, Object o) {
 		if (o instanceof CtElement) {
@@ -355,7 +334,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.INTERFACE, ctClass.getSuperInterfaces());
 		scan(CtRole.TYPE_PARAMETER, ctClass.getFormalCtTypeParameters());
 		scan(CtRole.TYPE_MEMBER, ctClass.getTypeMembers());
-		scan(CtRole.PERMITTED_TYPE, ctClass.getPermittedTypes());
 		scan(CtRole.COMMENT, ctClass.getComments());
 		exit(ctClass);
 	}
@@ -514,7 +492,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.INTERFACE, intrface.getSuperInterfaces());
 		scan(CtRole.TYPE_PARAMETER, intrface.getFormalCtTypeParameters());
 		scan(CtRole.TYPE_MEMBER, intrface.getTypeMembers());
-		scan(CtRole.PERMITTED_TYPE, intrface.getPermittedTypes());
 		scan(CtRole.COMMENT, intrface.getComments());
 		exit(intrface);
 	}
@@ -1046,39 +1023,5 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, statement.getComments());
 		exit(statement);
 		}
-
-	@Override
-	public void visitCtTypePattern(CtTypePattern pattern) {
-		enter(pattern);
-		scan(CtRole.VARIABLE, pattern.getVariable());
-		scan(CtRole.ANNOTATION, pattern.getAnnotations());
-		scan(CtRole.TYPE, pattern.getType());
-		scan(CtRole.COMMENT, pattern.getComments());
-		exit(pattern);
-	}
-
-	@Override
-	public void visitCtRecord(CtRecord recordType) {
-		enter(recordType);
-		scan(CtRole.ANNOTATION, recordType.getAnnotations());
-		scan(CtRole.INTERFACE, recordType.getSuperInterfaces());
-		scan(CtRole.TYPE_MEMBER, recordType.getTypeMembers());
-		scan(CtRole.TYPE_PARAMETER, recordType.getFormalCtTypeParameters());
-		scan(CtRole.RECORD_COMPONENT, recordType.getRecordComponents());
-		scan(CtRole.COMMENT, recordType.getComments());
-		exit(recordType);
-	}
-
-	@Override
-	public void visitCtRecordComponent(CtRecordComponent recordType) {
-		enter(recordType);
-		scan(CtRole.ANNOTATION, recordType.getAnnotations());
-		scan(CtRole.TYPE, recordType.getType());
-		scan(CtRole.COMMENT, recordType.getComments());
-		exit(recordType);
-	}
-
-
-
 }
 

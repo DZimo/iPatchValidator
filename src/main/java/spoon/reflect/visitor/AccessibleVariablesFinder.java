@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -11,7 +11,6 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTryWithResource;
@@ -100,11 +99,7 @@ public class AccessibleVariablesFinder {
 
 			@Override
 			public void visitCtTryWithResource(CtTryWithResource e) {
-				for (CtResource<?> resource: e.getResources()) {
-					if (resource instanceof CtLocalVariable) {
-						variables.add((CtLocalVariable<?>) resource);
-					}
-				}
+				variables.addAll(e.getResources());
 				super.visitCtTryWithResource(e);
 			}
 

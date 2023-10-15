@@ -1,23 +1,17 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.code;
 
 import spoon9.reflect.annotations.MetamodelPropertyField;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtStatementList;
-import spoon9.reflect.code.CtUnaryOperator;
-import spoon9.reflect.code.UnaryOperatorKind;
+import spoon9.reflect.code.*;
 import spoon9.reflect.visitor.CtVisitor;
 
-import static spoon9.reflect.path.CtRole.EXPRESSION;
-import static spoon9.reflect.path.CtRole.LABEL;
-import static spoon9.reflect.path.CtRole.OPERATOR_KIND;
+import static spoon9.reflect.path.CtRole.*;
 
 public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUnaryOperator<T> {
 	private static final long serialVersionUID = 1L;
@@ -29,7 +23,7 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	String label;
 
 	@MetamodelPropertyField(role = EXPRESSION)
-	CtExpression<?> operand;
+	CtExpression<T> operand;
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -37,7 +31,7 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	}
 
 	@Override
-	public CtExpression<?> getOperand() {
+	public CtExpression<T> getOperand() {
 		return operand;
 	}
 
@@ -76,7 +70,7 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	}
 
 	@Override
-	public <C extends CtUnaryOperator> C setOperand(CtExpression<?> expression) {
+	public <C extends CtUnaryOperator> C setOperand(CtExpression<T> expression) {
 		if (expression != null) {
 			expression.setParent(this);
 		}

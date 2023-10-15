@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -50,9 +50,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -67,7 +65,6 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
@@ -95,15 +92,12 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -287,14 +281,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	/**
-	 * Scans an abstract resource in try-with-resource statement.
-	 * @param resource The resource
-	 */
-	public void scanCtResource(CtResource<?> resource) {
-
-	}
-
-	/**
 	 * Scans an abstract statement.
 	 */
 	public void scanCtStatement(CtStatement s) {
@@ -360,20 +346,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans a body holder
 	 */
 	public void scanCtBodyHolder(CtBodyHolder ctBodyHolder) {
-	}
-
-	/**
-	 * Scans a pattern
-	 * @param pattern the pattern to scan
-	*/
-	public void scanCtPattern(CtPattern pattern) {
-	}
-
-	/**
-	 * Scans a sealable type
-	 * @param sealable the sealable type to scan
-	 */
-	public void scanCtSealable(CtSealable sealable) {
 	}
 
 	@Override
@@ -528,7 +500,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtClass(CtClass<T> e) {
 		scanCtType(e);
-		scanCtSealable(e);
 		scanCtStatement(e);
 		scanCtTypeInformation(e);
 		scanCtFormalTypeDeclarer(e);
@@ -664,11 +635,8 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtInterface(CtInterface<T> e) {
 		scanCtType(e);
-		scanCtSealable(e);
-		scanCtStatement(e);
 		scanCtTypeInformation(e);
 		scanCtFormalTypeDeclarer(e);
-		scanCtCodeElement(e);
 		scanCtNamedElement(e);
 		scanCtTypeMember(e);
 		scanCtElement(e);
@@ -706,7 +674,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVariable(e);
 		scanCtCodeElement(e);
 		scanCtNamedElement(e);
-		scanCtResource(e);
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtModifiable(e);
@@ -1077,30 +1044,5 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
-
-
-	@Override
-	public void visitCtTypePattern(CtTypePattern pattern) {
-		scanCtPattern(pattern);
-		scanCtExpression(pattern);
-		scanCtTypedElement(pattern);
-		scanCtCodeElement(pattern);
-		scanCtElement(pattern);
-		scanCtVisitable(pattern);
-	}
-	@Override
-	public void visitCtRecord(CtRecord recordType) {
-		visitCtClass(recordType);
-	}
-
-	@Override
-	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
-		scanCtElement(recordComponent);
-		scanCtTypedElement(recordComponent);
-		scanCtNamedElement(recordComponent);
-		scanCtVisitable(recordComponent);
-		scanCtShadowable(recordComponent);
-	}
-
 
 }

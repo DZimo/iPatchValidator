@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 /**
  *  This file originally comes from JavaParser and is distributed under the terms of
@@ -22,7 +22,6 @@ import java.io.Serializable;
 * <p>For example <code>{@link String}</code>
 */
 public class JavadocInlineTag implements JavadocDescriptionElement, Serializable {
-	private static final long serialVersionUID = 1L;
 
 	/** Return the next word of the string, in other words it stops when a space is encountered. */
 	public static String nextWord(String string) {
@@ -51,35 +50,30 @@ public class JavadocInlineTag implements JavadocDescriptionElement, Serializable
 	}
 
 	/**
-	 * The type of tag: it could either correspond to a known tag (code, docRoot, etc.) or represent
-	 * an unknown tag.
-	 *
-	 * See also:
-	 * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html">
-	 * Tags in the Javadoc specification
-	 * </a>
-	 */
+		* The type of tag: it could either correspond to a known tag (code, docRoot, etc.) or represent
+		* an unknown tag.
+		*/
 	public enum Type {
-		CODE("code"),
-		DOC_ROOT("docRoot"),
-		INHERIT_DOC("inheritDoc"),
-		LINK("link"),
-		LINKPLAIN("linkplain"),
-		LITERAL("literal"),
-		VALUE("value"),
-		UNKNOWN("unknown");
+		CODE,
+		DOC_ROOT,
+		INHERIT_DOC,
+		LINK,
+		LINKPLAIN,
+		LITERAL,
+		VALUE,
+		UNKNOWN;
 
-		private final String keyword;
-
-		Type(String keyword) {
-			this.keyword = keyword;
+		Type() {
+			this.keyword = name();
 		}
 
+		private String keyword;
+
 		static Type fromName(String tagName) {
-			for (Type type : values()) {
-				if (type.keyword.equalsIgnoreCase(tagName)) {
-					return type;
-				}
+			for (Type t : Type.values()) {
+			if (t.keyword.equals(tagName.toUpperCase())) {
+				return t;
+			}
 			}
 			return UNKNOWN;
 		}

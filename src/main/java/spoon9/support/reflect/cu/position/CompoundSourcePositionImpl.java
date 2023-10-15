@@ -1,21 +1,23 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.cu.position;
 
 import spoon9.reflect.cu.CompilationUnit;
 import spoon9.reflect.cu.position.CompoundSourcePosition;
 
+import java.io.Serializable;
+
 /**
  * This class represents the position of a named Java program element in a source
  * file.
  */
 public class CompoundSourcePositionImpl extends SourcePositionImpl
-		implements CompoundSourcePosition {
+		implements CompoundSourcePosition, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int declarationSourceStart;

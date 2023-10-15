@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.code;
 
@@ -38,7 +38,7 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	CtExpression<S> getCaseExpression();
 
 	/**
-	 * Sets the case expression. If set with null, the CtCase will represent a default label.
+	 * Sets the case expression.
 	 * Use {@link #setCaseExpressions(List)} since Java 12
 	 */
 	@PropertySetter(role = EXPRESSION)
@@ -52,7 +52,7 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	List<CtExpression<S>> getCaseExpressions();
 
 	/**
-	 * Sets the case expressions. If set with null or an empty list, the CtCase will represent a default label.
+	 * Sets the case expressions.
 	 * (Multiple case expressions are available as a preview feature since Java 12)
 	 */
 	@PropertySetter(role = EXPRESSION)

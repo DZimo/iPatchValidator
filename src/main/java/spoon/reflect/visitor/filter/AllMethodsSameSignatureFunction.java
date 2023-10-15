@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor.filter;
 
@@ -23,7 +23,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryAware;
-import spoon.support.adaption.TypeAdaptor;
+import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.SubInheritanceHierarchyResolver;
 
 /**
@@ -133,11 +133,11 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		toBeCheckedSubTypes.add(declaringType);
 		while (!toBeCheckedSubTypes.isEmpty()) {
 			for (CtType<?> subType : toBeCheckedSubTypes) {
-				TypeAdaptor typeAdaptor = new TypeAdaptor(subType);
+				ClassTypingContext ctc = new ClassTypingContext(subType);
 				//search for first target method from the same type inheritance hierarchy
-				targetMethod = getTargetMethodOfHierarchy(targetMethods, typeAdaptor);
+				targetMethod = getTargetMethodOfHierarchy(targetMethods, ctc);
 				//search for all methods with same signature in inheritance hierarchy of `subType`
-				forEachOverridenMethod(typeAdaptor, targetMethod, typesCheckedForRootType, new CtConsumer<CtMethod<?>>() {
+				forEachOverridenMethod(ctc, targetMethod, typesCheckedForRootType, new CtConsumer<CtMethod<?>>() {
 					@Override
 					public void accept(CtMethod<?> overriddenMethod) {
 						targetMethods.add(overriddenMethod);
@@ -176,13 +176,13 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 	 * calls outputConsumer for each method which is overridden by 'thisMethod' in scope of `ctc`.
 	 * There is assured that each method is returned only once.
 	 *
-	 * @param typeAdaptor - type adaptor whose scope is searched for overridden methods
+	 * @param ctc - class typing context whose scope is searched for overridden methods
 	 * @param thisMethod - the
 	 * @param distintTypesSet set of qualified names of types which were already visited
 	 * @param outputConsumer result handling consumer
 	 */
-	private void forEachOverridenMethod(final TypeAdaptor typeAdaptor, final CtMethod<?> thisMethod, Set<String> distintTypesSet, final CtConsumer<CtMethod<?>> outputConsumer) {
-		final CtQuery q = typeAdaptor.getHierarchyStart()
+	private void forEachOverridenMethod(final ClassTypingContext ctc, final CtMethod<?> thisMethod, Set<String> distintTypesSet, final CtConsumer<CtMethod<?>> outputConsumer) {
+		final CtQuery q = ctc.getAdaptationScope()
 			.map(new AllTypeMembersFunction(CtMethod.class).distinctSet(distintTypesSet));
 		q.forEach(new CtConsumer<CtMethod<?>>() {
 			@Override
@@ -196,7 +196,7 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 				 * note: we are in super inheritance hierarchy of type declaring input `method`, so we do not have to check isSubTypeOf.
 				 * Check for isSubSignature is enough
 				 */
-				if (typeAdaptor.isSameSignature(thisMethod, thatMethod)) {
+				if (ctc.isSubSignature(thisMethod, thatMethod)) {
 					outputConsumer.accept(thatMethod);
 					if (query.isTerminated()) {
 						q.terminate();
@@ -206,10 +206,10 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		});
 	}
 
-	private CtMethod<?> getTargetMethodOfHierarchy(List<CtMethod<?>> targetMethods, TypeAdaptor typeAdaptor) {
+	private CtMethod<?> getTargetMethodOfHierarchy(List<CtMethod<?>> targetMethods, ClassTypingContext ctc) {
 		for (CtMethod<?> method : targetMethods) {
 			CtType<?> declaringType = method.getDeclaringType();
-			if (typeAdaptor.isSubtypeOf(declaringType.getReference())) {
+			if (ctc.isSubtypeOf(declaringType.getReference())) {
 				return method;
 			}
 		}

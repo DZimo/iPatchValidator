@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.code;
 
@@ -20,10 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static spoon9.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon9.reflect.path.CtRole.ASSIGNED;
-import static spoon9.reflect.path.CtRole.ASSIGNMENT;
-import static spoon9.reflect.path.CtRole.CAST;
-import static spoon9.reflect.path.CtRole.TYPE;
+import static spoon9.reflect.path.CtRole.*;
 
 public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements CtAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
@@ -86,7 +83,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}

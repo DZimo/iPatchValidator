@@ -14,12 +14,7 @@ import spoon9.pattern.internal.ResultHolder;
 import spoon9.pattern.internal.parameter.ParameterInfo;
 import spoon9.support.util.ImmutableMap;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +44,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 	@Override
 	public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		Class<?> requiredClass = result.getRequiredClass();
-		if (requiredClass != null && !requiredClass.isAssignableFrom(String.class)) {
+		if (requiredClass != null && requiredClass.isAssignableFrom(String.class) == false) {
 			throw new SpoonException("StringValueResolver provides only String values. It doesn't support: " + requiredClass);
 		}
 		/*
@@ -71,13 +66,13 @@ public class StringNode extends AbstractPrimitiveMatcher {
 
 	@Override
 	public ImmutableMap matchTarget(Object target, ImmutableMap parameters) {
-		if (!(target instanceof String)) {
+		if ((target instanceof String) == false) {
 			return null;
 		}
 		String targetString = (String) target;
 		Pattern re = getMatchingPattern();
 		Matcher m = re.matcher(targetString);
-		if (!m.matches()) {
+		if (m.matches() == false) {
 			return null;
 		}
 		ParameterInfo[] params = getMatchingParameterInfos();

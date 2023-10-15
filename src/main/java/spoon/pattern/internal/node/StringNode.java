@@ -49,7 +49,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 	@Override
 	public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		Class<?> requiredClass = result.getRequiredClass();
-		if (requiredClass != null && !requiredClass.isAssignableFrom(String.class)) {
+		if (requiredClass != null && requiredClass.isAssignableFrom(String.class) == false) {
 			throw new SpoonException("StringValueResolver provides only String values. It doesn't support: " + requiredClass);
 		}
 		/*
@@ -71,13 +71,13 @@ public class StringNode extends AbstractPrimitiveMatcher {
 
 	@Override
 	public ImmutableMap matchTarget(Object target, ImmutableMap parameters) {
-		if (!(target instanceof String)) {
+		if ((target instanceof String) == false) {
 			return null;
 		}
 		String targetString = (String) target;
-		java.util.regex.Pattern re = getMatchingPattern();
+		Pattern re = getMatchingPattern();
 		Matcher m = re.matcher(targetString);
-		if (!m.matches()) {
+		if (m.matches() == false) {
 			return null;
 		}
 		ParameterInfo[] params = getMatchingParameterInfos();

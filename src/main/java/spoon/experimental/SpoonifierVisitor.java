@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.experimental;
 
@@ -32,13 +32,12 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * Visitor that generates factory calls to recreate the AST visited.
@@ -48,8 +47,8 @@ public class SpoonifierVisitor extends CtScanner {
 //public class SpoonifierVisitor extends CtInheritanceScanner {
 	StringBuilder result = new StringBuilder();
 	Map<String, Integer> variableCount = new HashMap<>();
-	Deque<String> parentName = new ArrayDeque<>();
-	Deque<Map<CtRole, String>> roleContainer = new ArrayDeque<>();
+	Stack<String> parentName = new Stack<>();
+	Stack<Map<CtRole, String>> roleContainer = new Stack<>();
 
 	PropertyScanner propertyScanner = new PropertyScanner();
 
@@ -155,7 +154,7 @@ public class SpoonifierVisitor extends CtScanner {
 			} else if (o instanceof Set) {
 				handleContainer(element, parent, elementRoleInParent, variableName, "Set");
 			} else {
-				result.append(printTabs() + parentName.getFirst() + ".setValueByRole(CtRole." + elementRoleInParent.name() + ", " + variableName + ");\n");
+				result.append(printTabs() + parentName.peek() + ".setValueByRole(CtRole." + elementRoleInParent.name() + ", " + variableName + ");\n");
 			}
 		}
 
@@ -189,12 +188,12 @@ public class SpoonifierVisitor extends CtScanner {
 		}
 
 		String containerName;
-		if (!roleContainer.getFirst().containsKey(elementRoleInParent)) {
-			containerName = parentName.getFirst() + elementRoleInParent.toString().substring(0, 1).toUpperCase() + elementRoleInParent.toString().substring(1) + "s";
-			roleContainer.getFirst().put(elementRoleInParent, containerName);
+		if (!roleContainer.peek().containsKey(elementRoleInParent)) {
+			containerName = parentName.peek() + elementRoleInParent.toString().substring(0, 1).toUpperCase() + elementRoleInParent.toString().substring(1) + "s";
+			roleContainer.peek().put(elementRoleInParent, containerName);
 			result.append(printTabs() + container + " " + containerName + " = new " + concreteClass + "();\n");
 		} else {
-			containerName = roleContainer.getFirst().get(elementRoleInParent);
+			containerName = roleContainer.peek().get(elementRoleInParent);
 		}
 
 		if (container.equals("Map")) {
@@ -223,16 +222,10 @@ public class SpoonifierVisitor extends CtScanner {
 				&& isLeafTypeReference(element.getParent())) {
 			return;
 		}
-		if (!roleContainer.getFirst().isEmpty()) {
-			for (CtRole role: roleContainer.getFirst().keySet()) {
-				String variableName = roleContainer.getFirst().get(role);
-				result.append(printTabs())
-						.append(parentName.getFirst())
-						.append(".setValueByRole(CtRole.")
-						.append(role.name())
-						.append(", ")
-						.append(variableName)
-						.append(");\n");
+		if (!roleContainer.peek().isEmpty()) {
+			for (CtRole role: roleContainer.peek().keySet()) {
+				String variableName = roleContainer.peek().get(role);
+				result.append(printTabs() + parentName.peek() + ".setValueByRole(CtRole." + role.name() + ", " + variableName + ");\n");
 			}
 		}
 		parentName.pop();
@@ -260,26 +253,12 @@ public class SpoonifierVisitor extends CtScanner {
 		@Override
 		public void visitCtLiteral(CtLiteral element) {
 			if (element.getType().isPrimitive()) {
-				result.append(printTabs())
-							.append(variableName)
-							.append(".setValue((")
-							.append(element.getType().getSimpleName())
-							.append(") ")
-							.append(element)
-							.append(");\n");
+				result.append(printTabs() + variableName + ".setValue((" + element.getType().getSimpleName() + ") " + element.toString() + ");\n");
 				if (element.getBase() != null) {
-					result.append(printTabs())
-							.append(variableName)
-							.append(".setBase(LiteralBase.")
-							.append(element.getBase().name())
-							.append(");\n");
+					result.append(printTabs() + variableName + ".setBase(LiteralBase." + element.getBase().name() + ");\n");
 				}
 			} else if (element.getType().getQualifiedName().equals("java.lang.String")) {
-				result.append(printTabs())
-							.append(variableName)
-							.append(".setValue(\"")
-							.append(StringEscapeUtils.escapeJava((String) element.getValue()))
-							.append("\");\n");
+				result.append(printTabs() + variableName + ".setValue(\"" + StringEscapeUtils.escapeJava((String) element.getValue()) + "\");\n");
 			}
 			super.visitCtLiteral(element);
 		}

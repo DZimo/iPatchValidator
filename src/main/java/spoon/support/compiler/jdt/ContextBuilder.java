@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler.jdt;
 
@@ -66,16 +66,16 @@ public class ContextBuilder {
 
 	CompilationUnit compilationUnitSpoon;
 
-	boolean isBuildLambda;
+	boolean isBuildLambda = false;
 
-	boolean isBuildTypeCast;
+	boolean isBuildTypeCast = false;
 
-	boolean ignoreComputeImports;
+	boolean ignoreComputeImports = false;
 
 	/**
 	 * Stack of all parents elements
 	 */
-	private final Deque<ASTPair> stack = new ArrayDeque<>();
+	Deque<ASTPair> stack = new ArrayDeque<>();
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 
@@ -114,6 +114,7 @@ public class ContextBuilder {
 		} catch (UnsupportedOperationException ignore) {
 			// For some element, we throw an UnsupportedOperationException when we call setType().
 		}
+
 	}
 
 	void exit(ASTNode node) {
@@ -126,39 +127,10 @@ public class ContextBuilder {
 			this.jdtTreeBuilder.getExiter().setChild(current);
 			this.jdtTreeBuilder.getExiter().setChild(pair.node);
 			ASTPair parentPair = stack.peek();
-			this.jdtTreeBuilder.getExiter().exitParent(parentPair);
+			this.jdtTreeBuilder.getExiter().setParent(parentPair.node);
+			//visit ParentExiter using parent Spoon node, while it has access to parent's JDT node and child Spoon and JDT node
+			this.jdtTreeBuilder.getExiter().scan(parentPair.element);
 		}
-	}
-
-	/**
-	 * @return all {@link ASTPair}s currently on the stack
-	 */
-	Iterable<ASTPair> getAllContexts() {
-		return stack;
-	}
-
-	/**
-	 * @return {@code true} if there are any elements on the stack
-	 */
-	boolean hasCurrentContext() {
-		return !stack.isEmpty();
-	}
-
-	/**
-	 *
-	 * @return the {@link CtElement} on the top of the stack
-	 * @throws NullPointerException if the stack is empty
-	 */
-	CtElement getCurrentElement() {
-		return stack.peek().element;
-	}
-
-	/**
-	 * @return the {@link ASTNode} on the top of the stack
-	 * @throws NullPointerException if the stack is empty
-	 */
-	ASTNode getCurrentNode() {
-		return stack.peek().node;
 	}
 
 	CtElement getContextElementOnLevel(int level) {
@@ -199,7 +171,7 @@ public class ContextBuilder {
 			// note: this happens when using the new try(vardelc) structure
 			this.jdtTreeBuilder.getLogger().error(
 					format("Could not find declaration for local variable %s at %s",
-							name, getCurrentElement().getPosition()));
+							name, stack.peek().element.getPosition()));
 		}
 		return localVariable;
 	}
@@ -214,7 +186,7 @@ public class ContextBuilder {
 			// note: this happens when using the new try(vardelc) structure
 			this.jdtTreeBuilder.getLogger().error(
 					format("Could not find declaration for catch variable %s at %s",
-							name, getCurrentElement().getPosition()));
+							name, stack.peek().element.getPosition()));
 		}
 		return catchVariable;
 	}
@@ -226,7 +198,7 @@ public class ContextBuilder {
 			// note: this can happen when identifier is not a variable name but e.g. a Type name.
 			this.jdtTreeBuilder.getLogger().debug(
 					format("Could not find declaration for variable %s at %s.",
-							name, getCurrentElement().getPosition()));
+							name, stack.peek().element.getPosition()));
 		}
 		return variable;
 	}
@@ -237,7 +209,7 @@ public class ContextBuilder {
 	private static String getNormalQualifiedName(ReferenceBinding referenceBinding) {
 		String pkg = new String(referenceBinding.getPackage().readableName()).replaceAll("\\.", "\\" + CtPackage.PACKAGE_SEPARATOR);
 		String name = new String(referenceBinding.qualifiedSourceName()).replaceAll("\\.", "\\" + CtType.INNERTTYPE_SEPARATOR);
-		return pkg.isEmpty() ? name : pkg + "." + name;
+		return pkg.equals("") ? name : pkg + "." + name;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -288,11 +260,7 @@ public class ContextBuilder {
 						if (name.equals(new String(fieldBinding.readableName()))) {
 							final String qualifiedNameOfParent = getNormalQualifiedName(referenceBinding);
 
-							CtType<?> parentOfField = typeFactory.get(qualifiedNameOfParent);
-							if (parentOfField != null) {
-								return (U) parentOfField.getField(name);
-							}
-							parentOfField = referenceBinding.isClass()
+							final CtType parentOfField = referenceBinding.isClass()
 									? classFactory.create(qualifiedNameOfParent)
 									: interfaceFactory.create(qualifiedNameOfParent);
 
@@ -300,7 +268,7 @@ public class ContextBuilder {
 									EnumSet.noneOf(ModifierKind.class),
 									referenceBuilder.getTypeReference(fieldBinding.type),
 									name);
-							return field.setExtendedModifiers(JDTTreeBuilderQuery.getModifiers(fieldBinding.modifiers, true, ModifierTarget.FIELD));
+							return field.setExtendedModifiers(JDTTreeBuilderQuery.getModifiers(fieldBinding.modifiers, true, false));
 						}
 					}
 					// add super class if any

@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.reference;
 
@@ -32,8 +32,10 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
-import spoon.support.adaption.TypeAdaptor;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.RtHelper;
+import spoon.support.util.internal.MapUtils;
+import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
@@ -43,8 +45,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
@@ -55,11 +58,6 @@ import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	// We use thread-local storage for the caching to avoid having to lock when doing cache invalidation and lookup.
-	// See https://github.com/INRIA/spoon/issues/4668 for details.
-	private static final ThreadLocal<Map<String, Class<?>>> classByQName = ThreadLocal.withInitial(HashMap::new);
-	private static final ThreadLocal<ClassLoader> lastClassLoader = new ThreadLocal<>();
-
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
@@ -68,8 +66,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@MetamodelPropertyField(role = PACKAGE_REF)
 	private CtPackageReference pack;
-
-
 
 	public CtTypeReferenceImpl() {
 	}
@@ -115,109 +111,70 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-
-	public Class<T> getActualClass() {
-			return getPrimitiveType(this).orElseGet(this::findClass);
-	}
-
 	@SuppressWarnings("unchecked")
-	private Optional<Class<T>> getPrimitiveType(CtTypeReference<?> typeReference) {
-		switch (typeReference.getSimpleName()) {
-			case "boolean":
-				return Optional.of((Class<T>) boolean.class);
-			case "byte":
-				return Optional.of((Class<T>) byte.class);
-			case "double":
-				return Optional.of((Class<T>) double.class);
-			case "int":
-				return Optional.of((Class<T>) int.class);
-			case "short":
-				return Optional.of((Class<T>) short.class);
-			case "char":
-				return Optional.of((Class<T>) char.class);
-			case "long":
-				return Optional.of((Class<T>) long.class);
-			case "float":
-				return Optional.of((Class<T>) float.class);
-			case "void":
-				return Optional.of((Class<T>) void.class);
-			default:
-				return Optional.empty();
+	public Class<T> getActualClass() {
+		if (isPrimitive()) {
+			String simpleN = getSimpleName();
+			if ("boolean".equals(simpleN)) {
+				return (Class<T>) boolean.class;
+			} else if ("byte".equals(simpleN)) {
+				return (Class<T>) byte.class;
+			} else if ("double".equals(simpleN)) {
+				return (Class<T>) double.class;
+			} else if ("int".equals(simpleN)) {
+				return (Class<T>) int.class;
+			} else if ("short".equals(simpleN)) {
+				return (Class<T>) short.class;
+			} else if ("char".equals(simpleN)) {
+				return (Class<T>) char.class;
+			} else if ("long".equals(simpleN)) {
+				return (Class<T>) long.class;
+			} else if ("float".equals(simpleN)) {
+				return (Class<T>) float.class;
+			} else if ("void".equals(simpleN)) {
+				return (Class<T>) void.class;
+			}
 		}
+		return findClass();
 	}
 
+	private static Map<String, Class> classByQName = Collections.synchronizedMap(new HashMap<>());
+	private static ClassLoader lastClassLoader = null;
 
 	/**
 	 * Finds the class requested in {@link #getActualClass()}.
 	 *
 	 * Looks for the class in the standard Java classpath, but also in the sourceClassPath given as option.
 	 */
+	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
-		CtTypeReference<?> typeReference = this;
-		if (isArray()) {
-			CtTypeReference<?> componentTypeReference = convertToComponentType();
-			if (componentTypeReference.isPrimitive()) {
-				return getPrimitiveType(componentTypeReference)
-					.map(this::asArrayTypeWithOurDimensions)
-					.orElseThrow(() -> new SpoonException("Cant find primitive type: " + componentTypeReference));
-			}
-			typeReference = componentTypeReference;
-		}
-		Class<T> actualClass = getClassFromThreadLocalCacheOrLoad(typeReference);
-		return isArray() ? asArrayTypeWithOurDimensions(actualClass) : actualClass;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Class<T> getClassFromThreadLocalCacheOrLoad(CtTypeReference<?> typeReference) {
+		String qualifiedName = getQualifiedName();
 		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
-		checkCacheIntegrity(classLoader);
-		String qualifiedName = typeReference.getQualifiedName();
-		return (Class<T>) classByQName.get().computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
-	}
 
-	/**
-	 * Converts the type reference to its component type. If the type is no array, the type reference is returned.
-	 * @return  the component type of the type reference.
-	 */
-	private CtTypeReference<T> convertToComponentType() {
-		if (!this.getQualifiedName().contains("[")) {
-			return this;
+		// an array class should not crash
+		// see https://github.com/INRIA/spoon/pull/2882
+		if (getSimpleName().contains("[]")) {
+			// Class.forName does not work for primitive types and arrays :-(
+			// we have to work-around
+			// original idea from https://bugs.openjdk.java.net/browse/JDK-4031337
+			return (Class<T>) RtHelper.getAllFields((Launcher.parseClass("public class Foo { public " + getQualifiedName() + " field; }").newInstance().getClass()))[0].getType();
 		}
-		return getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
-	}
 
-	private Class<?> loadClassWithQName(ClassLoader classLoader, String qualifiedName) {
-			try {
-				return classLoader.loadClass(qualifiedName);
-			} catch (Throwable e) {
-				throw new SpoonClassNotFoundException("cannot load class: " + qualifiedName, e);
-			}
-	}
-
-	/**
-	 * Checks if the given classloader is the same as the one used in the last call to {@link #findClass()}.
-	 * If not, the cache is cleared.
-	 * @param classLoader  the classloader to check against the old one.
-	 */
-	private void checkCacheIntegrity(ClassLoader classLoader) {
-		if (classLoader != lastClassLoader.get()) {
+		if (classLoader != lastClassLoader) {
 			//clear cache because class loader changed
-			classByQName.get().clear();
-			lastClassLoader.set(classLoader);
+			classByQName.clear();
+			lastClassLoader = classLoader;
 		}
-	}
-
-	/**
-	 * Converts the given type to an array type.
-	 * @param clazz  the type to convert.
-	 * @return  the array type.
-	 */
-	@SuppressWarnings("unchecked")
-	private <R> Class<R> asArrayTypeWithOurDimensions(Class<R> clazz) {
-		String simpleName = getSimpleName();
-		int dimensionCount = (simpleName.length() - simpleName.indexOf('[')) / 2;
-		int[] dimensions = new int[dimensionCount];
-		return (Class<R>) Array.newInstance(clazz, dimensions).getClass();
+		return MapUtils.getOrCreate(classByQName, qualifiedName, () -> {
+			try {
+				// creating a classloader on the fly is not the most efficient
+				// but it decreases the amount of state to maintain
+				// since getActualClass is only used in rare cases, that's OK.
+				return (Class<T>) classLoader.loadClass(qualifiedName);
+			} catch (Throwable e) {
+				throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
+			}
+		});
 	}
 
 	@Override
@@ -231,6 +188,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaration() {
 		return getFactory().Type().get(getQualifiedName());
 	}
@@ -272,7 +230,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean isPrimitive() {
-		return getPrimitiveType(this).isPresent();
+		return ("boolean".equals(getSimpleName()) || "byte".equals(getSimpleName()) || "double".equals(getSimpleName()) || "int".equals(getSimpleName()) || "short".equals(getSimpleName())
+				|| "char".equals(getSimpleName()) || "long".equals(getSimpleName()) || "float".equals(getSimpleName()) || "void".equals(getSimpleName()));
 	}
 
 	@Override
@@ -298,7 +257,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			//everything is a sub type of Object
 			return true;
 		}
-		return new TypeAdaptor(this).isSubtypeOf(type);
+		return new ClassTypingContext(this).isSubtypeOf(type);
 	}
 
 	/**
@@ -522,27 +481,16 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean isLocalType() {
-		CtType<T> declaration = this.getDeclaration();
-		if (declaration != null) {
-			return declaration.isLocalType();
+		if (this.getDeclaration() != null) {
+			return (this.getDeclaration().isLocalType());
 		}
 		// A local type doesn't have a fully qualified name but have an identifier
 		// to know which is the local type member wanted by the developer.
 		// Oracle documentation: https://docs.oracle.com/javase/specs/jls/se7/html/jls-6.html#jls-6.7
 		// JDT documentation: http://help.eclipse.org/juno/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/ITypeBinding.html#getQualifiedName()
-		String name = getSimpleName();
-		if (name.isEmpty() || !Character.isDigit(name.charAt(0))) {
-			return false;
-		}
-		// first char has to be a digit, everything else just needs to be a valid
-		// java identifier part and at least one non-digit. The validity is already covered by
-		// setSimpleName, so we just need to look for that non-digit char
-		for (int i = 1; i < name.length(); i++) {
-			if (!Character.isDigit(name.charAt(i))) {
-				return true;
-			}
-		}
-		return false;
+		final Pattern pattern = Pattern.compile("^([0-9]+)([a-zA-Z]+)$");
+		final Matcher m = pattern.matcher(getSimpleName());
+		return m.find();
 	}
 
 	@Override
@@ -753,7 +701,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return declType;
 		}
 		CtTypeReference<?> contextTypeRef = contextType.getReference();
-		if (contextTypeRef != null && !contextTypeRef.canAccess(declType)) {
+		if (contextTypeRef != null && contextTypeRef.canAccess(declType) == false) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
 			CtTypeReference<?> type = contextTypeRef;
@@ -787,7 +735,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (targetDeclType != null && sourceDeclType != null && targetDeclType.isSubtypeOf(sourceDeclType)) {
 			applyActualTypeArguments(targetDeclType, sourceDeclType);
 		}
-		if (!targetTypeRef.isSubtypeOf(sourceTypeRef)) {
+		if (targetTypeRef.isSubtypeOf(sourceTypeRef) == false) {
 			throw new SpoonException("Invalid arguments. targetTypeRef " + targetTypeRef.getQualifiedName() + " must be a sub type of sourceTypeRef " + sourceTypeRef.getQualifiedName());
 		}
 		List<CtTypeReference<?>> newTypeArgs = new ArrayList<>();

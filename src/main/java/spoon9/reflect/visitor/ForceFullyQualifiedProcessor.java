@@ -1,18 +1,13 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtNewClass;
-import spoon9.reflect.code.CtSuperAccess;
-import spoon9.reflect.code.CtTargetedExpression;
-import spoon9.reflect.code.CtThisAccess;
-import spoon9.reflect.code.CtTypeAccess;
+import spoon9.reflect.code.*;
 import spoon9.reflect.declaration.CtAnonymousExecutable;
 import spoon9.reflect.declaration.CtClass;
 import spoon9.reflect.declaration.CtElement;
@@ -55,10 +50,6 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 				//do not use FQ names for that
 				return;
 			}
-			if (role == CtRole.PERMITTED_TYPE) {
-				// implicit permitted types are present in the same CU and don't need to be imported
-				return;
-			}
 			//force fully qualified name
 			reference.setImplicit(false);
 			reference.setSimplyQualified(false);
@@ -97,8 +88,8 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 		if (!target.isImplicit()) {
 			return;
 		}
-		if (target instanceof CtThisAccess || target instanceof CtSuperAccess) {
-			//the implicit this/super access is not forced
+		if (target instanceof CtThisAccess) {
+			//the non implicit this access is not forced
 			return;
 		}
 		if (target instanceof CtTypeAccess) {

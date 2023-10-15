@@ -1,19 +1,20 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.modelobs;
+
+import spoon9.reflect.declaration.CtElement;
+import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.path.CtRole;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.ModifierKind;
-import spoon9.reflect.path.CtRole;
 
 
 /** Can be subclassed by clients who want to be notified on all changes in AST nodes */
@@ -44,19 +45,6 @@ public interface FineModelChangeListener {
 
 	/** a newValue is appended to the map corresponding to the role in the AST node */
 	<K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue);
-
-	/**
-	 * A mapping is removed from the map corresponding to the role in the AST node
-	 *
-	 * @param currentElement the element that changed
-	 * @param role the role of the field that changed
-	 * @param field the current value of the field that changed
-	 * @param key the key of the element that was deleted
-	 * @param oldValue the element that was deleted
-	 * @param <K> the key type
-	 * @param <V> the value type
-	 */
-	<K, V> void onMapDelete(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement oldValue);
 
 	/** a map corresponding to the role in the AST node is emptied */
 	<K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue);

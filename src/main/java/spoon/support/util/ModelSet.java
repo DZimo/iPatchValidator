@@ -1,18 +1,15 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.util;
-
-import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
 
 import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -24,23 +21,21 @@ import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
+import static spoon.support.util.ModelList.linkToParent;
+
 /**
  * The implementation of the {@link Set}, which is used by Spoon model objects.
  * It assures:
  * 1) each inserted {@link CtElement} gets assigned correct parent
  * 2) each change is reported in {@link FineModelChangeListener}
- *
- * @deprecated This set is no longer actively used or maintained. It is only kept for backwards
- * compatibility and might be removed in a future release.
  */
-@Deprecated
 public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final Set<T> set;
 
 	protected ModelSet(Comparator<? super CtElement> comparator) {
-		set = Collections.synchronizedSet(new TreeSet<>(comparator));
+		set = new TreeSet<>(comparator);
 	}
 
 	protected abstract CtElement getOwner();
@@ -84,20 +79,23 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 
 		// we make sure that the element is always the last put in the set
 		// for being least suprising for client code
-		set.remove(e);
+		if (set.contains(e)) {
+			set.remove(e);
+		}
+
 		set.add(e);
 		return true;
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		if (!set.contains(o)) {
+		if (set.contains(o) == false) {
 			return false;
 		}
 		@SuppressWarnings("unchecked")
 		T e = (T) o;
 		getModelChangeListener().onSetDelete(getOwner(), getRole(), set, e);
-		if (!set.remove(o)) {
+		if (set.remove(o) == false) {
 			throw new SpoonException("Element was contained in the Set, but Set#remove returned false. Not removed??");
 		}
 		return true;
@@ -160,7 +158,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 	public void set(Collection<T> elements) {
 		//TODO the best would be to detect added/removed statements and to fire modifications only for them
 		this.clear();
-		if (elements != null && !elements.isEmpty()) {
+		if (elements != null && elements.isEmpty() == false) {
 			this.addAll(elements);
 		}
 	}

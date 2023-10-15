@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
@@ -23,7 +23,8 @@ import spoon9.reflect.visitor.chain.CtScannerListener;
 import spoon9.reflect.visitor.chain.ScanningMode;
 import spoon9.support.Experimental;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -75,14 +76,14 @@ abstract class ImportAnalyzer<U> extends AbstractProcessor<CtElement> {
 	}
 
 	//The set of roles whose values are always kept implicit
-	protected static Set<CtRole> IGNORED_ROLES_WHEN_IMPLICIT = EnumSet.of(
+	protected static Set<CtRole> IGNORED_ROLES_WHEN_IMPLICIT = new HashSet<>(Arrays.asList(
 			//e.g. List<String> s = new ArrayList</*keep me implicit*/>();
 			CtRole.TYPE_ARGUMENT,
 			//e.g. List<?/* extends Object*/>
 			CtRole.BOUNDING_TYPE,
 			//e.g. (/*implicit type of parameter*/ p) -> {}
 			CtRole.TYPE
-	);
+	));
 
 	/**
 	 * {@link CtScannerListener} implementation which stops scanning of children on elements,

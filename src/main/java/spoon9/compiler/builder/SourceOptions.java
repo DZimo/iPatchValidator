@@ -1,18 +1,18 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.compiler.builder;
 
+import org.apache.commons.io.IOUtils;
 import spoon9.compiler.SpoonFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,9 +52,8 @@ public class SourceOptions<T extends SourceOptions<T>> extends Options<T> {
 				try {
 					File file = File.createTempFile(source.getName(), ".java");
 					file.deleteOnExit();
-					try (FileOutputStream fileOutputStream = new FileOutputStream(file);
-							InputStream content = source.getContent()) {
-						content.transferTo(fileOutputStream);
+					try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+						IOUtils.copy(source.getContent(), fileOutputStream);
 					}
 					args.add(file.toString());
 				} catch (IOException e) {

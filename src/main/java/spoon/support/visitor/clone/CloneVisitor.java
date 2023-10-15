@@ -1,11 +1,12 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
+
 /**
  * Used to clone a given element.
  *
@@ -14,7 +15,7 @@ package spoon.support.visitor.clone;
 public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	private final spoon.support.visitor.equals.CloneHelper cloneHelper;
 
-	private final spoon.support.visitor.clone.CloneBuilder builder = new spoon.support.visitor.clone.CloneBuilder();
+	private final CloneBuilder builder = new CloneBuilder();
 
 	private spoon.reflect.declaration.CtElement other;
 
@@ -62,7 +63,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtArrayRead(final spoon.reflect.code.CtArrayRead<T> arrayRead) {
 		spoon.reflect.code.CtArrayRead<T> aCtArrayRead = arrayRead.getFactory().Core().createArrayRead();
 		this.builder.copy(arrayRead, aCtArrayRead);
@@ -77,7 +78,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtArrayWrite(final spoon.reflect.code.CtArrayWrite<T> arrayWrite) {
 		spoon.reflect.code.CtArrayWrite<T> aCtArrayWrite = arrayWrite.getFactory().Core().createArrayWrite();
 		this.builder.copy(arrayWrite, aCtArrayWrite);
@@ -198,14 +199,13 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtClass.setSuperInterfaces(this.cloneHelper.clone(ctClass.getSuperInterfaces()));
 		aCtClass.setFormalCtTypeParameters(this.cloneHelper.clone(ctClass.getFormalCtTypeParameters()));
 		aCtClass.setTypeMembers(this.cloneHelper.clone(ctClass.getTypeMembers()));
-		aCtClass.setPermittedTypes(this.cloneHelper.clone(ctClass.getPermittedTypes()));
 		aCtClass.setComments(this.cloneHelper.clone(ctClass.getComments()));
 		this.cloneHelper.tailor(ctClass, aCtClass);
 		this.other = aCtClass;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtTypeParameter(spoon.reflect.declaration.CtTypeParameter typeParameter) {
 		spoon.reflect.declaration.CtTypeParameter aCtTypeParameter = typeParameter.getFactory().Core().createTypeParameter();
 		this.builder.copy(typeParameter, aCtTypeParameter);
@@ -268,7 +268,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	public <T extends java.lang.Enum<?>> void visitCtEnum(final spoon.reflect.declaration.CtEnum<T> ctEnum) {
+	public <T extends Enum<?>> void visitCtEnum(final spoon.reflect.declaration.CtEnum<T> ctEnum) {
 		spoon.reflect.declaration.CtEnum<T> aCtEnum = ctEnum.getFactory().Core().createEnum();
 		this.builder.copy(ctEnum, aCtEnum);
 		aCtEnum.setAnnotations(this.cloneHelper.clone(ctEnum.getAnnotations()));
@@ -307,7 +307,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtEnumValue(final spoon.reflect.declaration.CtEnumValue<T> enumValue) {
 		spoon.reflect.declaration.CtEnumValue<T> aCtEnumValue = enumValue.getFactory().Core().createEnumValue();
 		this.builder.copy(enumValue, aCtEnumValue);
@@ -320,7 +320,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtThisAccess(final spoon.reflect.code.CtThisAccess<T> thisAccess) {
 		spoon.reflect.code.CtThisAccess<T> aCtThisAccess = thisAccess.getFactory().Core().createThisAccess();
 		this.builder.copy(thisAccess, aCtThisAccess);
@@ -405,7 +405,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtInterface.setSuperInterfaces(this.cloneHelper.clone(intrface.getSuperInterfaces()));
 		aCtInterface.setFormalCtTypeParameters(this.cloneHelper.clone(intrface.getFormalCtTypeParameters()));
 		aCtInterface.setTypeMembers(this.cloneHelper.clone(intrface.getTypeMembers()));
-		aCtInterface.setPermittedTypes(this.cloneHelper.clone(intrface.getPermittedTypes()));
 		aCtInterface.setComments(this.cloneHelper.clone(intrface.getComments()));
 		this.cloneHelper.tailor(intrface, aCtInterface);
 		this.other = aCtInterface;
@@ -508,7 +507,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtAnnotationMethod(spoon.reflect.declaration.CtAnnotationMethod<T> annotationMethod) {
 		spoon.reflect.declaration.CtAnnotationMethod<T> aCtAnnotationMethod = annotationMethod.getFactory().Core().createAnnotationMethod();
 		this.builder.copy(annotationMethod, aCtAnnotationMethod);
@@ -535,7 +534,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtConstructorCall(final spoon.reflect.code.CtConstructorCall<T> ctConstructorCall) {
 		spoon.reflect.code.CtConstructorCall<T> aCtConstructorCall = ctConstructorCall.getFactory().Core().createConstructorCall();
 		this.builder.copy(ctConstructorCall, aCtConstructorCall);
@@ -565,7 +564,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtLambda(final spoon.reflect.code.CtLambda<T> lambda) {
 		spoon.reflect.code.CtLambda<T> aCtLambda = lambda.getFactory().Core().createLambda();
 		this.builder.copy(lambda, aCtLambda);
@@ -581,7 +580,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T, E extends spoon.reflect.code.CtExpression<?>> void visitCtExecutableReferenceExpression(final spoon.reflect.code.CtExecutableReferenceExpression<T, E> expression) {
 		spoon.reflect.code.CtExecutableReferenceExpression<T, E> aCtExecutableReferenceExpression = expression.getFactory().Core().createExecutableReferenceExpression();
 		this.builder.copy(expression, aCtExecutableReferenceExpression);
@@ -736,7 +735,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtTryWithResource(final spoon.reflect.code.CtTryWithResource tryWithResource) {
 		spoon.reflect.code.CtTryWithResource aCtTryWithResource = tryWithResource.getFactory().Core().createTryWithResource();
 		this.builder.copy(tryWithResource, aCtTryWithResource);
@@ -762,7 +761,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtWildcardReference(spoon.reflect.reference.CtWildcardReference wildcardReference) {
 		spoon.reflect.reference.CtWildcardReference aCtWildcardReference = wildcardReference.getFactory().Core().createWildcardReference();
 		this.builder.copy(wildcardReference, aCtWildcardReference);
@@ -775,7 +774,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
 		spoon.reflect.reference.CtIntersectionTypeReference<T> aCtIntersectionTypeReference = reference.getFactory().Core().createIntersectionTypeReference();
 		this.builder.copy(reference, aCtIntersectionTypeReference);
@@ -802,7 +801,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtTypeAccess(final spoon.reflect.code.CtTypeAccess<T> typeAccess) {
 		spoon.reflect.code.CtTypeAccess<T> aCtTypeAccess = typeAccess.getFactory().Core().createTypeAccess();
 		this.builder.copy(typeAccess, aCtTypeAccess);
@@ -828,7 +827,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtVariableRead(final spoon.reflect.code.CtVariableRead<T> variableRead) {
 		spoon.reflect.code.CtVariableRead<T> aCtVariableRead = variableRead.getFactory().Core().createVariableRead();
 		this.builder.copy(variableRead, aCtVariableRead);
@@ -841,7 +840,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtVariableWrite(final spoon.reflect.code.CtVariableWrite<T> variableWrite) {
 		spoon.reflect.code.CtVariableWrite<T> aCtVariableWrite = variableWrite.getFactory().Core().createVariableWrite();
 		this.builder.copy(variableWrite, aCtVariableWrite);
@@ -897,7 +896,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtFieldRead(final spoon.reflect.code.CtFieldRead<T> fieldRead) {
 		spoon.reflect.code.CtFieldRead<T> aCtFieldRead = fieldRead.getFactory().Core().createFieldRead();
 		this.builder.copy(fieldRead, aCtFieldRead);
@@ -911,7 +910,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtFieldWrite(final spoon.reflect.code.CtFieldWrite<T> fieldWrite) {
 		spoon.reflect.code.CtFieldWrite<T> aCtFieldWrite = fieldWrite.getFactory().Core().createFieldWrite();
 		this.builder.copy(fieldWrite, aCtFieldWrite);
@@ -925,7 +924,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public <T> void visitCtSuperAccess(final spoon.reflect.code.CtSuperAccess<T> f) {
 		spoon.reflect.code.CtSuperAccess<T> aCtSuperAccess = f.getFactory().Core().createSuperAccess();
 		this.builder.copy(f, aCtSuperAccess);
@@ -939,7 +938,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtComment(final spoon.reflect.code.CtComment comment) {
 		spoon.reflect.code.CtComment aCtComment = comment.getFactory().Core().createComment();
 		this.builder.copy(comment, aCtComment);
@@ -950,7 +949,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtJavaDoc(final spoon.reflect.code.CtJavaDoc javaDoc) {
 		spoon.reflect.code.CtJavaDoc aCtJavaDoc = javaDoc.getFactory().Core().createJavaDoc();
 		this.builder.copy(javaDoc, aCtJavaDoc);
@@ -962,7 +961,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtJavaDocTag(final spoon.reflect.code.CtJavaDocTag docTag) {
 		spoon.reflect.code.CtJavaDocTag aCtJavaDocTag = docTag.getFactory().Core().createJavaDocTag();
 		this.builder.copy(docTag, aCtJavaDocTag);
@@ -973,7 +972,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtImport(final spoon.reflect.declaration.CtImport ctImport) {
 		spoon.reflect.declaration.CtImport aCtImport = ctImport.getFactory().Core().createImport();
 		this.builder.copy(ctImport, aCtImport);
@@ -985,7 +984,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtModule(spoon.reflect.declaration.CtModule module) {
 		spoon.reflect.declaration.CtModule aCtModule = module.getFactory().Core().createModule();
 		this.builder.copy(module, aCtModule);
@@ -998,7 +997,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtModuleReference(spoon.reflect.reference.CtModuleReference moduleReference) {
 		spoon.reflect.reference.CtModuleReference aCtModuleReference = moduleReference.getFactory().Core().createModuleReference();
 		this.builder.copy(moduleReference, aCtModuleReference);
@@ -1008,7 +1007,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtPackageExport(spoon.reflect.declaration.CtPackageExport moduleExport) {
 		spoon.reflect.declaration.CtPackageExport aCtPackageExport = moduleExport.getFactory().Core().createPackageExport();
 		this.builder.copy(moduleExport, aCtPackageExport);
@@ -1021,7 +1020,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtModuleRequirement(spoon.reflect.declaration.CtModuleRequirement moduleRequirement) {
 		spoon.reflect.declaration.CtModuleRequirement aCtModuleRequirement = moduleRequirement.getFactory().Core().createModuleRequirement();
 		this.builder.copy(moduleRequirement, aCtModuleRequirement);
@@ -1033,7 +1032,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtProvidedService(spoon.reflect.declaration.CtProvidedService moduleProvidedService) {
 		spoon.reflect.declaration.CtProvidedService aCtProvidedService = moduleProvidedService.getFactory().Core().createProvidedService();
 		this.builder.copy(moduleProvidedService, aCtProvidedService);
@@ -1046,7 +1045,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtUsedService(spoon.reflect.declaration.CtUsedService usedService) {
 		spoon.reflect.declaration.CtUsedService aCtUsedService = usedService.getFactory().Core().createUsedService();
 		this.builder.copy(usedService, aCtUsedService);
@@ -1058,7 +1057,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtCompilationUnit(spoon.reflect.declaration.CtCompilationUnit compilationUnit) {
 		spoon.reflect.declaration.CtCompilationUnit aCtCompilationUnit = compilationUnit.getFactory().Core().createCompilationUnit();
 		this.builder.copy(compilationUnit, aCtCompilationUnit);
@@ -1073,7 +1072,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtPackageDeclaration(spoon.reflect.declaration.CtPackageDeclaration packageDeclaration) {
 		spoon.reflect.declaration.CtPackageDeclaration aCtPackageDeclaration = packageDeclaration.getFactory().Core().createPackageDeclaration();
 		this.builder.copy(packageDeclaration, aCtPackageDeclaration);
@@ -1085,7 +1084,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtTypeMemberWildcardImportReference(spoon.reflect.reference.CtTypeMemberWildcardImportReference wildcardReference) {
 		spoon.reflect.reference.CtTypeMemberWildcardImportReference aCtTypeMemberWildcardImportReference = wildcardReference.getFactory().Core().createTypeMemberWildcardImportReference();
 		this.builder.copy(wildcardReference, aCtTypeMemberWildcardImportReference);
@@ -1095,7 +1094,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
+	@Override
 	public void visitCtYieldStatement(spoon.reflect.code.CtYieldStatement statement) {
 		spoon.reflect.code.CtYieldStatement aCtYieldStatement = statement.getFactory().Core().createYieldStatement();
 		this.builder.copy(statement, aCtYieldStatement);
@@ -1104,45 +1103,5 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtYieldStatement.setComments(this.cloneHelper.clone(statement.getComments()));
 		this.cloneHelper.tailor(statement, aCtYieldStatement);
 		this.other = aCtYieldStatement;
-	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
-	public void visitCtTypePattern(spoon.reflect.code.CtTypePattern pattern) {
-		spoon.reflect.code.CtTypePattern aCtTypePattern = pattern.getFactory().Core().createTypePattern();
-		this.builder.copy(pattern, aCtTypePattern);
-		aCtTypePattern.setVariable(this.cloneHelper.clone(pattern.getVariable()));
-		aCtTypePattern.setAnnotations(this.cloneHelper.clone(pattern.getAnnotations()));
-		aCtTypePattern.setType(this.cloneHelper.clone(pattern.getType()));
-		aCtTypePattern.setComments(this.cloneHelper.clone(pattern.getComments()));
-		this.cloneHelper.tailor(pattern, aCtTypePattern);
-		this.other = aCtTypePattern;
-	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
-	public void visitCtRecord(spoon.reflect.declaration.CtRecord recordType) {
-		spoon.reflect.declaration.CtRecord aCtRecord = recordType.getFactory().Core().createRecord();
-		this.builder.copy(recordType, aCtRecord);
-		aCtRecord.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
-		aCtRecord.setSuperInterfaces(this.cloneHelper.clone(recordType.getSuperInterfaces()));
-		aCtRecord.setTypeMembers(this.cloneHelper.clone(recordType.getTypeMembers()));
-		aCtRecord.setFormalCtTypeParameters(this.cloneHelper.clone(recordType.getFormalCtTypeParameters()));
-		aCtRecord.setRecordComponents(this.cloneHelper.clone(recordType.getRecordComponents()));
-		aCtRecord.setComments(this.cloneHelper.clone(recordType.getComments()));
-		this.cloneHelper.tailor(recordType, aCtRecord);
-		this.other = aCtRecord;
-	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
-	public void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent recordType) {
-		spoon.reflect.declaration.CtRecordComponent aCtRecordComponent = recordType.getFactory().Core().createRecordComponent();
-		this.builder.copy(recordType, aCtRecordComponent);
-		aCtRecordComponent.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
-		aCtRecordComponent.setType(this.cloneHelper.clone(recordType.getType()));
-		aCtRecordComponent.setComments(this.cloneHelper.clone(recordType.getComments()));
-		this.cloneHelper.tailor(recordType, aCtRecordComponent);
-		this.other = aCtRecordComponent;
 	}
 }

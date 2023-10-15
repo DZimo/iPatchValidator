@@ -1,17 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support;
 
 
 import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
-import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -58,7 +55,6 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -89,11 +85,9 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtUsedService;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.SubFactory;
@@ -106,12 +100,11 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.support.reflect.CtExtendedModifier;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.support.reflect.code.CtAnnotationFieldAccessImpl;
 import spoon.support.reflect.code.CtArrayReadImpl;
 import spoon.support.reflect.code.CtArrayWriteImpl;
@@ -157,7 +150,6 @@ import spoon.support.reflect.code.CtThrowImpl;
 import spoon.support.reflect.code.CtTryImpl;
 import spoon.support.reflect.code.CtTryWithResourceImpl;
 import spoon.support.reflect.code.CtTypeAccessImpl;
-import spoon.support.reflect.code.CtTypePatternImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
@@ -187,8 +179,6 @@ import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtProvidedServiceImpl;
-import spoon.support.reflect.declaration.CtRecordComponentImpl;
-import spoon.support.reflect.declaration.CtRecordImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.declaration.CtUsedServiceImpl;
 import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
@@ -201,11 +191,11 @@ import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
 import spoon.support.reflect.reference.CtModuleReferenceImpl;
 import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
-import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 import spoon.support.reflect.reference.CtWildcardReferenceImpl;
+import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
 
 /**
@@ -843,272 +833,263 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 
 	@Override
 	public CtElement create(Class<? extends CtElement> klass) {
-		if (klass.equals(spoon.reflect.code.CtAnnotationFieldAccess.class)) {
+		if (klass.equals(CtAnnotationFieldAccess.class)) {
 			return createAnnotationFieldAccess();
 		}
-		if (klass.equals(spoon.reflect.code.CtArrayRead.class)) {
+		if (klass.equals(CtArrayRead.class)) {
 			return createArrayRead();
 		}
-		if (klass.equals(spoon.reflect.code.CtArrayWrite.class)) {
+		if (klass.equals(CtArrayWrite.class)) {
 			return createArrayWrite();
 		}
-		if (klass.equals(spoon.reflect.code.CtAssert.class)) {
+		if (klass.equals(CtAssert.class)) {
 			return createAssert();
 		}
-		if (klass.equals(spoon.reflect.code.CtAssignment.class)) {
+		if (klass.equals(CtAssignment.class)) {
 			return createAssignment();
 		}
-		if (klass.equals(spoon.reflect.code.CtBinaryOperator.class)) {
+		if (klass.equals(CtBinaryOperator.class)) {
 			return createBinaryOperator();
 		}
-		if (klass.equals(spoon.reflect.code.CtBlock.class)) {
+		if (klass.equals(CtBlock.class)) {
 			return createBlock();
 		}
-		if (klass.equals(spoon.reflect.code.CtBreak.class)) {
+		if (klass.equals(CtBreak.class)) {
 			return createBreak();
 		}
-		if (klass.equals(spoon.reflect.code.CtCase.class)) {
+		if (klass.equals(CtCase.class)) {
 			return createCase();
 		}
-		if (klass.equals(spoon.reflect.code.CtCatch.class)) {
+		if (klass.equals(CtCatch.class)) {
 			return createCatch();
 		}
-		if (klass.equals(spoon.reflect.code.CtCatchVariable.class)) {
+		if (klass.equals(CtCatchVariable.class)) {
 			return createCatchVariable();
 		}
-		if (klass.equals(spoon.reflect.code.CtCodeSnippetExpression.class)) {
+		if (klass.equals(CtCodeSnippetExpression.class)) {
 			return createCodeSnippetExpression();
 		}
-		if (klass.equals(spoon.reflect.code.CtCodeSnippetStatement.class)) {
+		if (klass.equals(CtCodeSnippetStatement.class)) {
 			return createCodeSnippetStatement();
 		}
-		if (klass.equals(spoon.reflect.code.CtComment.class)) {
+		if (klass.equals(CtComment.class)) {
 			return createComment();
 		}
-		if (klass.equals(spoon.reflect.code.CtJavaDoc.class)) {
+		if (klass.equals(CtJavaDoc.class)) {
 			return createJavaDoc();
 		}
-		if (klass.equals(spoon.reflect.code.CtJavaDocTag.class)) {
+		if (klass.equals(CtJavaDocTag.class)) {
 			return createJavaDocTag();
 		}
-		if (klass.equals(spoon.reflect.code.CtConditional.class)) {
+		if (klass.equals(CtConditional.class)) {
 			return createConditional();
 		}
-		if (klass.equals(spoon.reflect.code.CtConstructorCall.class)) {
+		if (klass.equals(CtConstructorCall.class)) {
 			return createConstructorCall();
 		}
-		if (klass.equals(spoon.reflect.code.CtContinue.class)) {
+		if (klass.equals(CtContinue.class)) {
 			return createContinue();
 		}
-		if (klass.equals(spoon.reflect.code.CtDo.class)) {
+		if (klass.equals(CtDo.class)) {
 			return createDo();
 		}
-		if (klass.equals(spoon.reflect.code.CtExecutableReferenceExpression.class)) {
+		if (klass.equals(CtExecutableReferenceExpression.class)) {
 			return createExecutableReferenceExpression();
 		}
-		if (klass.equals(spoon.reflect.code.CtFieldRead.class)) {
+		if (klass.equals(CtFieldRead.class)) {
 			return createFieldRead();
 		}
-		if (klass.equals(spoon.reflect.code.CtFieldWrite.class)) {
+		if (klass.equals(CtFieldWrite.class)) {
 			return createFieldWrite();
 		}
-		if (klass.equals(spoon.reflect.code.CtForEach.class)) {
+		if (klass.equals(CtForEach.class)) {
 			return createForEach();
 		}
-		if (klass.equals(spoon.reflect.code.CtFor.class)) {
+		if (klass.equals(CtFor.class)) {
 			return createFor();
 		}
-		if (klass.equals(spoon.reflect.code.CtIf.class)) {
+		if (klass.equals(CtIf.class)) {
 			return createIf();
 		}
-		if (klass.equals(spoon.reflect.code.CtInvocation.class)) {
+		if (klass.equals(CtInvocation.class)) {
 			return createInvocation();
 		}
-		if (klass.equals(spoon.reflect.code.CtLambda.class)) {
+		if (klass.equals(CtLambda.class)) {
 			return createLambda();
 		}
-		if (klass.equals(spoon.reflect.code.CtLiteral.class)) {
+		if (klass.equals(CtLiteral.class)) {
 			return createLiteral();
 		}
-		if (klass.equals(spoon.reflect.code.CtTextBlock.class)) {
+		if (klass.equals(CtTextBlock.class)) {
 			return createTextBlock();
 		}
-		if (klass.equals(spoon.reflect.code.CtLocalVariable.class)) {
+		if (klass.equals(CtLocalVariable.class)) {
 			return createLocalVariable();
 		}
-		if (klass.equals(spoon.reflect.code.CtNewArray.class)) {
+		if (klass.equals(CtNewArray.class)) {
 			return createNewArray();
 		}
-		if (klass.equals(spoon.reflect.code.CtNewClass.class)) {
+		if (klass.equals(CtNewClass.class)) {
 			return createNewClass();
 		}
-		if (klass.equals(spoon.reflect.code.CtOperatorAssignment.class)) {
+		if (klass.equals(CtOperatorAssignment.class)) {
 			return createOperatorAssignment();
 		}
-		if (klass.equals(spoon.reflect.code.CtReturn.class)) {
+		if (klass.equals(CtReturn.class)) {
 			return createReturn();
 		}
-		if (klass.equals(spoon.reflect.code.CtStatementList.class)) {
+		if (klass.equals(CtStatementList.class)) {
 			return createStatementList();
 		}
-		if (klass.equals(spoon.reflect.code.CtSuperAccess.class)) {
+		if (klass.equals(CtSuperAccess.class)) {
 			return createSuperAccess();
 		}
-		if (klass.equals(spoon.reflect.code.CtSwitch.class)) {
+		if (klass.equals(CtSwitch.class)) {
 			return createSwitch();
 		}
-		if (klass.equals(spoon.reflect.code.CtSwitchExpression.class)) {
+		if (klass.equals(CtSwitchExpression.class)) {
 			return createSwitchExpression();
 		}
-		if (klass.equals(spoon.reflect.code.CtSynchronized.class)) {
+		if (klass.equals(CtSynchronized.class)) {
 			return createSynchronized();
 		}
-		if (klass.equals(spoon.reflect.code.CtThisAccess.class)) {
+		if (klass.equals(CtThisAccess.class)) {
 			return createThisAccess();
 		}
-		if (klass.equals(spoon.reflect.code.CtThrow.class)) {
+		if (klass.equals(CtThrow.class)) {
 			return createThrow();
 		}
-		if (klass.equals(spoon.reflect.code.CtTry.class)) {
+		if (klass.equals(CtTry.class)) {
 			return createTry();
 		}
-		if (klass.equals(spoon.reflect.code.CtTryWithResource.class)) {
+		if (klass.equals(CtTryWithResource.class)) {
 			return createTryWithResource();
 		}
-		if (klass.equals(spoon.reflect.code.CtTypeAccess.class)) {
+		if (klass.equals(CtTypeAccess.class)) {
 			return createTypeAccess();
 		}
-		if (klass.equals(spoon.reflect.code.CtUnaryOperator.class)) {
+		if (klass.equals(CtUnaryOperator.class)) {
 			return createUnaryOperator();
 		}
-		if (klass.equals(spoon.reflect.code.CtVariableRead.class)) {
+		if (klass.equals(CtVariableRead.class)) {
 			return createVariableRead();
 		}
-		if (klass.equals(spoon.reflect.code.CtVariableWrite.class)) {
+		if (klass.equals(CtVariableWrite.class)) {
 			return createVariableWrite();
 		}
-		if (klass.equals(spoon.reflect.code.CtWhile.class)) {
+		if (klass.equals(CtWhile.class)) {
 			return createWhile();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtAnnotation.class)) {
+		if (klass.equals(CtAnnotation.class)) {
 			return createAnnotation();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtAnnotationMethod.class)) {
+		if (klass.equals(CtAnnotationMethod.class)) {
 			return createAnnotationMethod();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtAnnotationType.class)) {
+		if (klass.equals(CtAnnotationType.class)) {
 			return createAnnotationType();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtAnonymousExecutable.class)) {
+		if (klass.equals(CtAnonymousExecutable.class)) {
 			return createAnonymousExecutable();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtClass.class)) {
+		if (klass.equals(CtClass.class)) {
 			return createClass();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtConstructor.class)) {
+		if (klass.equals(CtConstructor.class)) {
 			return createConstructor();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtEnum.class)) {
+		if (klass.equals(CtEnum.class)) {
 			return createEnum();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtEnumValue.class)) {
+		if (klass.equals(CtEnumValue.class)) {
 			return createEnumValue();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtField.class)) {
+		if (klass.equals(CtField.class)) {
 			return createField();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtInterface.class)) {
+		if (klass.equals(CtInterface.class)) {
 			return createInterface();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtMethod.class)) {
+		if (klass.equals(CtMethod.class)) {
 			return createMethod();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtPackage.class)) {
+		if (klass.equals(CtPackage.class)) {
 			return createPackage();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtParameter.class)) {
+		if (klass.equals(CtParameter.class)) {
 			return createParameter();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtTypeParameter.class)) {
+		if (klass.equals(CtTypeParameter.class)) {
 			return createTypeParameter();
 		}
-		if (klass.equals(spoon.reflect.reference.CtArrayTypeReference.class)) {
+		if (klass.equals(CtArrayTypeReference.class)) {
 			return createArrayTypeReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtCatchVariableReference.class)) {
+		if (klass.equals(CtCatchVariableReference.class)) {
 			return createCatchVariableReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtExecutableReference.class)) {
+		if (klass.equals(CtExecutableReference.class)) {
 			return createExecutableReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtFieldReference.class)) {
+		if (klass.equals(CtFieldReference.class)) {
 			return createFieldReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtIntersectionTypeReference.class)) {
+		if (klass.equals(CtIntersectionTypeReference.class)) {
 			return createIntersectionTypeReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtLocalVariableReference.class)) {
+		if (klass.equals(CtLocalVariableReference.class)) {
 			return createLocalVariableReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtPackageReference.class)) {
+		if (klass.equals(CtPackageReference.class)) {
 			return createPackageReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtParameterReference.class)) {
+		if (klass.equals(CtParameterReference.class)) {
 			return createParameterReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtTypeParameterReference.class)) {
+		if (klass.equals(CtTypeParameterReference.class)) {
 			return createTypeParameterReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtTypeReference.class)) {
+		if (klass.equals(CtTypeReference.class)) {
 			return createTypeReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtUnboundVariableReference.class)) {
+		if (klass.equals(CtUnboundVariableReference.class)) {
 			return createUnboundVariableReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtWildcardReference.class)) {
+		if (klass.equals(CtWildcardReference.class)) {
 			return createWildcardReference();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtImport.class)) {
+		if (klass.equals(CtImport.class)) {
 			return createImport();
 		}
-		if (klass.equals(spoon.reflect.reference.CtModuleReference.class)) {
+		if (klass.equals(CtModuleReference.class)) {
 			return createModuleReference();
 		}
-		if (klass.equals(spoon.reflect.reference.CtTypeMemberWildcardImportReference.class)) {
+		if (klass.equals(CtTypeMemberWildcardImportReference.class)) {
 			return createTypeMemberWildcardImportReference();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtModule.class)) {
+		if (klass.equals(CtModule.class)) {
 			return createModule();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtModuleRequirement.class)) {
+		if (klass.equals(CtModuleRequirement.class)) {
 			return createModuleRequirement();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtPackageExport.class)) {
+		if (klass.equals(CtPackageExport.class)) {
 			return createPackageExport();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtProvidedService.class)) {
+		if (klass.equals(CtProvidedService.class)) {
 			return createProvidedService();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtUsedService.class)) {
+		if (klass.equals(CtUsedService.class)) {
 			return createUsedService();
 		}
 		if (klass.equals(spoon.reflect.declaration.CtCompilationUnit.class)) {
 			return createCompilationUnit();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtPackageDeclaration.class)) {
+		if (klass.equals(CtPackageDeclaration.class)) {
 			return createPackageDeclaration();
 		}
-		if (klass.equals(spoon.reflect.code.CtYieldStatement.class)) {
+		if (klass.equals(CtYieldStatement.class)) {
 			return createYieldStatement();
-		}
-		if (klass.equals(spoon.reflect.code.CtTypePattern.class)) {
-			return createTypePattern();
-		}
-		if (klass.equals(spoon.reflect.declaration.CtRecord.class)) {
-			return createRecord();
-		}
-		if (klass.equals(spoon.reflect.declaration.CtRecordComponent.class)) {
-			return createRecordComponent();
 		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
@@ -1124,7 +1105,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	public CtModule createModule() {
 		CtModule module = new CtModuleImpl();
 		module.setFactory(getMainFactory());
-		module.setParent(this.getMainFactory().Module().getUnnamedModule());
+		this.getMainFactory().Module().getUnnamedModule().addModule(module);
 		return module;
 	}
 
@@ -1168,29 +1149,5 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtYieldStatement e = new CtYieldStatementImpl();
 		e.setFactory(getMainFactory());
 		return e;
-	}
-
-	@Override
-	public CtTypePattern createTypePattern() {
-		CtTypePattern pattern = new CtTypePatternImpl();
-		pattern.setFactory(getMainFactory());
-		return pattern;
-	}
-
-	@Override
-	public CtRecord createRecord() {
-		CtRecord recordType = new CtRecordImpl();
-		Set<CtExtendedModifier> modifier = new HashSet<>(recordType.getExtendedModifiers());
-		modifier.add(CtExtendedModifier.implicit(ModifierKind.FINAL));
-		recordType.setExtendedModifiers(modifier);
-		recordType.setFactory(getMainFactory());
-		return recordType;
-	}
-
-	@Override
-	public CtRecordComponent createRecordComponent() {
-		CtRecordComponent recordComponent = new CtRecordComponentImpl();
-		recordComponent.setFactory(getMainFactory());
-		return recordComponent;
 	}
 }

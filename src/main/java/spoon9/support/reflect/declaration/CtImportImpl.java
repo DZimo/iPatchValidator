@@ -1,24 +1,19 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
 import spoon9.SpoonException;
 import spoon9.experimental.CtUnresolvedImport;
 import spoon9.reflect.annotations.MetamodelPropertyField;
-import spoon9.reflect.path.CtRole;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
 import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.reference.CtPackageReference;
-import spoon9.reflect.reference.CtReference;
 import spoon9.reflect.declaration.CtImportKind;
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon9.reflect.path.CtRole;
+import spoon9.reflect.reference.*;
 import spoon9.reflect.visitor.CtImportVisitor;
 import spoon9.reflect.visitor.CtVisitor;
 import spoon9.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
@@ -61,8 +56,12 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 			reference.setParent(this);
 		}
 
-		// may throw an exception if invalid
-		getImportKindFor(reference);
+		try {
+			// may throw an exception if invalid
+			getImportKindFor(reference);
+		} catch (SpoonException e) {
+			throw e;
+		}
 
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_REFERENCE, reference, this.localReference);
 		this.localReference = reference;

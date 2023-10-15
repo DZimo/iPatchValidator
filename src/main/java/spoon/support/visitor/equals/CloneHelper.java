@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.equals;
 
@@ -17,7 +17,7 @@ import spoon.support.visitor.clone.CloneVisitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,7 +78,7 @@ public class CloneHelper {
 		if (elements == null || elements.isEmpty()) {
 			return EmptyClearableSet.instance();
 		}
-		Set<T> others = new LinkedHashSet<>(elements.size());
+		Set<T> others = new HashSet<>(elements.size());
 		for (T element : elements) {
 			addClone(others, element);
 		}
@@ -117,7 +117,7 @@ public class CloneHelper {
 
 
 	/** Is called by {@link CloneVisitor} at the end of the cloning for each element. */
-	public void tailor(final spoon.reflect.declaration.CtElement topLevelElement, final spoon.reflect.declaration.CtElement topLevelClone) {
+	public void tailor(final CtElement topLevelElement, final CtElement topLevelClone) {
 		// this scanner visit certain nodes to done some additional work after cloning
 		new CtScanner() {
 			@Override

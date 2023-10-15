@@ -1,18 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.code;
 
 import spoon9.reflect.annotations.MetamodelPropertyField;
-import spoon9.reflect.code.CtAbstractInvocation;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtStatementList;
+import spoon9.reflect.code.*;
 import spoon9.reflect.declaration.CtTypedElement;
 import spoon9.reflect.reference.CtActualTypeContainer;
 import spoon9.reflect.reference.CtExecutableReference;
@@ -25,9 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static spoon9.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon9.reflect.path.CtRole.ARGUMENT;
-import static spoon9.reflect.path.CtRole.EXECUTABLE_REF;
-import static spoon9.reflect.path.CtRole.LABEL;
+import static spoon9.reflect.path.CtRole.*;
 
 public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
@@ -67,11 +61,6 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	@Override
 	public <C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument) {
 		return addArgument(arguments.size(), argument);
-	}
-
-	@Override
-	public <C extends CtAbstractInvocation<T>> C addArgumentAt(int position, CtExpression<?> argument) {
-		return addArgument(position, argument);
 	}
 
 	@Override
@@ -164,7 +153,7 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	@DerivedProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}

@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.pattern;
 
@@ -11,11 +11,7 @@ import spoon9.SpoonException;
 import spoon9.reflect.code.CtBlock;
 import spoon9.reflect.code.CtReturn;
 import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.visitor.Filter;
 import spoon9.support.Experimental;
 
@@ -118,7 +114,7 @@ public class PatternBuilderHelper {
 			throw new SpoonException("The body of " + method.getSignature() + " must contain exactly one statement. But there is:\n" + body.toString());
 		}
 		CtStatement firstStatement = body.getStatements().get(0);
-		if (!(firstStatement instanceof CtReturn)) {
+		if (firstStatement instanceof CtReturn<?> == false) {
 			throw new SpoonException("The body of " + method.getSignature() + " must contain return statement. But there is:\n" + body.toString());
 		}
 		setElements(Collections.singletonList(((CtReturn<?>) firstStatement).getReturnedExpression()));
@@ -144,7 +140,7 @@ public class PatternBuilderHelper {
 	 */
 	public PatternBuilderHelper keepTypeMembers(Filter<? super CtElement> filter) {
 		for (CtTypeMember ctTypeMember : new ArrayList<>(getClonedPatternType().getTypeMembers())) {
-			if (!filter.matches(ctTypeMember)) {
+			if (filter.matches(ctTypeMember) == false) {
 				ctTypeMember.delete();
 			}
 		}

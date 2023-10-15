@@ -1,29 +1,20 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.path;
+
+import spoon9.SpoonException;
+import spoon9.reflect.declaration.*;
+import spoon9.support.Internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-
-import spoon9.SpoonException;
-import spoon9.reflect.declaration.CtAnonymousExecutable;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModuleRequirement;
-import spoon9.reflect.declaration.CtPackageExport;
-import spoon9.reflect.declaration.CtProvidedService;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtUsedService;
-import spoon9.support.Internal;
 
 /**
  * Identifies the roles of attributes of spoon model.
@@ -118,10 +109,7 @@ public enum CtRole {
 	IS_INFERRED,
 	TYPE_REF,
 	LITERAL_BASE,
-	CASE_KIND,
-	RECORD_COMPONENT,
-	COMPACT_CONSTRUCTOR,
-	PERMITTED_TYPE;
+	CASE_KIND;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

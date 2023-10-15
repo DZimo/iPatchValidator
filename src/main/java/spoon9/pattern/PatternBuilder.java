@@ -1,23 +1,11 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.pattern;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import spoon9.SpoonException;
 import spoon9.pattern.internal.ValueConvertor;
@@ -44,6 +32,10 @@ import spoon9.reflect.visitor.chain.CtQuery;
 import spoon9.reflect.visitor.chain.CtQueryable;
 import spoon9.reflect.visitor.filter.TypeFilter;
 import spoon9.support.Experimental;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * The master class to create a {@link Pattern} instance.
@@ -107,7 +99,7 @@ public class PatternBuilder {
 			throw new SpoonException("Cannot create a Pattern from an null model");
 		}
 		this.templateTypeRef = getDeclaringTypeRef(template);
-		this.patternModel = List.copyOf(template);
+		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
 		this.valueConvertor = new ValueConvertorImpl();
 		patternNodes = ElementNode.create(this.patternModel, patternElementToSubstRequests);
 		patternQuery = new PatternQuery(getFactory().Query(), patternModel);
@@ -126,7 +118,6 @@ public class PatternBuilder {
 				t = (CtType) ctElement;
 				type = mergeType(type, t);
 			}
-
 			t = ctElement.getParent(CtType.class);
 			if (t != null) {
 				type = mergeType(type, t);
@@ -197,7 +188,7 @@ public class PatternBuilder {
 			throw new SpoonException("Removing of Node is not supported");
 		}
 		handleConflict(conflictMode, oldNode, newNode, tobeUsedNode -> {
-			if (!patternNodes.replaceNode(oldNode, tobeUsedNode)) {
+			if (patternNodes.replaceNode(oldNode, tobeUsedNode) == false) {
 				if (conflictMode == ConflictResolutionMode.KEEP_OLD_NODE) {
 					//The parent of oldNode was already replaced. OK - Keep that parent old node
 					return;
@@ -233,7 +224,7 @@ public class PatternBuilder {
 	private void handleConflict(ConflictResolutionMode conflictMode, RootNode oldNode, RootNode newNode, Consumer<RootNode> applyNewNode) {
 		if (oldNode != newNode) {
 			if (conflictMode == ConflictResolutionMode.APPEND) {
-				if (!(oldNode instanceof ListOfNodes)) {
+				if (oldNode instanceof ListOfNodes == false) {
 					oldNode = new ListOfNodes(new ArrayList<>(Arrays.asList(oldNode)));
 				}
 				if (newNode instanceof ListOfNodes) {
@@ -303,11 +294,6 @@ public class PatternBuilder {
 		return false;
 	}
 
-	/**
-	 * Builds a Pattern and returns it
-	 * @throws SpoonException if the pattern has been built already
-	 * @return the built pattern
-	 */
 	public Pattern build() {
 		if (built) {
 			throw new SpoonException("The Pattern may be built only once");
@@ -357,7 +343,7 @@ public class PatternBuilder {
 			pb.queryModel().filterChildren(new TypeFilter<>(CtVariableReference.class))
 				.forEach((CtVariableReference<?> varRef) -> {
 					CtVariable<?> var = varRef.getDeclaration();
-					if (var == null || !isInModel(var)) {
+					if (var == null || isInModel(var) == false) {
 						//the varRef has declaration out of the scope of the template. It must be a template parameter.
 						ParameterInfo parameter = pb.parameter(varRef.getSimpleName()).getCurrentParameter();
 						pb.addSubstitutionRequest(parameter, varRef);

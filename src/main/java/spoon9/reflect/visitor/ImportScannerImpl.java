@@ -1,56 +1,21 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
 import spoon9.experimental.CtUnresolvedImport;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtCatchVariable;
-import spoon9.reflect.code.CtFieldAccess;
-import spoon9.reflect.code.CtFieldRead;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtJavaDoc;
-import spoon9.reflect.code.CtJavaDocTag;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.declaration.CtAnnotationType;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtEnum;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtInterface;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.declaration.CtVariable;
-import spoon9.reflect.declaration.ParentNotInitializedException;
-import spoon9.reflect.reference.CtArrayTypeReference;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.reference.CtPackageReference;
-import spoon9.reflect.reference.CtReference;
-import spoon9.reflect.reference.CtTypeReference;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
+import spoon9.reflect.reference.*;
 import spoon9.support.SpoonClassNotFoundException;
 import spoon9.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -179,11 +144,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			String bracket = m.group(1);
 			String tag = m.group(2);
 			if ("{".equals(bracket)) {
-				if (!inlineTags.contains(tag)) {
+				if (inlineTags.contains(tag) == false) {
 					continue;
 				}
 			} else {
-				if (!mainTags.contains(tag)) {
+				if (mainTags.contains(tag) == false) {
 					continue;
 				}
 			}
@@ -361,7 +326,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
-		if (targetType != null && !targetType.canAccess(ref)) {
+		if (targetType != null && targetType.canAccess(ref) == false) {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
 			return false;
 		}
@@ -772,6 +737,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (parent != null) {
 			CtBlock block = (CtBlock) parent;
+			boolean innerClass = false;
 
 			// now we have the first container block, we want to check if we're not in an inner class
 			while (parent != null && !(parent instanceof CtClass)) {

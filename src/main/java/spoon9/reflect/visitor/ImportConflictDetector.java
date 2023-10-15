@@ -1,24 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFieldAccess;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtTargetedExpression;
-import spoon9.reflect.code.CtTypeAccess;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtExecutableReference;
 import spoon9.reflect.reference.CtFieldReference;
@@ -26,7 +16,6 @@ import spoon9.reflect.reference.CtPackageReference;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.support.Experimental;
 
-import java.util.Map;
 
 /**
  * Detects conflicts needed to be required be a fully-qualified name.
@@ -197,16 +186,6 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScope> {
 				ref.setSimplyQualified(false);
 				return false;
 			});
-
-			if (!ref.isImplicit() && ref.isSimplyQualified()) {
-				Map<String, String> encounteredNames = ((LexicalScopeScanner) scanner).getEncounteredImportedQualifiedNames();
-				encounteredNames.putIfAbsent(ref.getSimpleName(), ref.getQualifiedName());
-				if (!encounteredNames.get(ref.getSimpleName()).equals(ref.getQualifiedName())) {
-					// We have found a different type with the same simple name, do not import this one
-					ref.setImplicit(false);
-					ref.setSimplyQualified(false);
-				}
-			}
 		} //else it is already fully qualified
 		checkConflictOfTypeReference(nameScope, ref);
 	}

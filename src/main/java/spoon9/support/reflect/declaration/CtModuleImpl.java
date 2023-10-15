@@ -1,21 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
 import spoon9.reflect.annotations.MetamodelPropertyField;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtModuleDirective;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtPackageExport;
-import spoon9.reflect.declaration.CtProvidedService;
-import spoon9.reflect.declaration.CtModuleRequirement;
-import spoon9.reflect.declaration.CtUsedService;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtModuleReference;
 import spoon9.reflect.visitor.CtVisitor;
@@ -425,7 +418,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 
 	@Override
 	@DerivedProperty
-	public <T extends CtElement> T setParent(CtElement parent) {
+	public <T extends CtElement> T setParent(T parent) {
 		return (T) this;
 	}
 

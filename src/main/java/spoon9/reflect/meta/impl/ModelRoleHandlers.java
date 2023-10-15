@@ -1,115 +1,21 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.meta.impl;
-import java.lang.annotation.Annotation;
-import spoon9.reflect.code.BinaryOperatorKind;
-import spoon9.reflect.code.CaseKind;
-import spoon9.reflect.code.CtAbstractInvocation;
-import spoon9.reflect.code.CtAbstractSwitch;
-import spoon9.reflect.code.CtArrayAccess;
-import spoon9.reflect.code.CtAssert;
-import spoon9.reflect.code.CtAssignment;
-import spoon9.reflect.code.CtBinaryOperator;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtBodyHolder;
-import spoon9.reflect.code.CtCase;
-import spoon9.reflect.code.CtCatch;
-import spoon9.reflect.code.CtCatchVariable;
-import spoon9.reflect.code.CtComment;
-import spoon9.reflect.code.CtConditional;
-import spoon9.reflect.code.CtDo;
-import spoon9.reflect.code.CtExecutableReferenceExpression;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFor;
-import spoon9.reflect.code.CtForEach;
-import spoon9.reflect.code.CtIf;
-import spoon9.reflect.code.CtJavaDoc;
-import spoon9.reflect.code.CtJavaDocTag;
-import spoon9.reflect.code.CtLabelledFlowBreak;
-import spoon9.reflect.code.CtLambda;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.code.CtLocalVariable;
-import spoon9.reflect.code.CtNewArray;
-import spoon9.reflect.code.CtNewClass;
-import spoon9.reflect.code.CtOperatorAssignment;
-import spoon9.reflect.code.CtRHSReceiver;
-import spoon9.reflect.code.CtResource;
-import spoon9.reflect.code.CtReturn;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtStatementList;
-import spoon9.reflect.code.CtSynchronized;
-import spoon9.reflect.code.CtTargetedExpression;
-import spoon9.reflect.code.CtTextBlock;
-import spoon9.reflect.code.CtThrow;
-import spoon9.reflect.code.CtTry;
-import spoon9.reflect.code.CtTryWithResource;
-import spoon9.reflect.code.CtTypeAccess;
-import spoon9.reflect.code.CtTypePattern;
-import spoon9.reflect.code.CtUnaryOperator;
-import spoon9.reflect.code.CtVariableAccess;
-import spoon9.reflect.code.CtWhile;
-import spoon9.reflect.code.CtYieldStatement;
-import spoon9.reflect.code.LiteralBase;
-import spoon9.reflect.code.UnaryOperatorKind;
+
+import spoon9.reflect.code.*;
 import spoon9.reflect.cu.SourcePosition;
-import spoon9.reflect.declaration.CtAnnotation;
-import spoon9.reflect.declaration.CtAnnotationMethod;
-import spoon9.reflect.declaration.CtAnonymousExecutable;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtCodeSnippet;
-import spoon9.reflect.declaration.CtCompilationUnit;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtEnum;
-import spoon9.reflect.declaration.CtEnumValue;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModifiable;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtModuleDirective;
-import spoon9.reflect.declaration.CtModuleRequirement;
-import spoon9.reflect.declaration.CtMultiTypedElement;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtPackageDeclaration;
-import spoon9.reflect.declaration.CtPackageExport;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtProvidedService;
-import spoon9.reflect.declaration.CtRecord;
-import spoon9.reflect.declaration.CtRecordComponent;
-import spoon9.reflect.declaration.CtSealable;
-import spoon9.reflect.declaration.CtShadowable;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeInformation;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.reflect.declaration.CtTypedElement;
-import spoon9.reflect.declaration.CtUsedService;
-import spoon9.reflect.declaration.CtVariable;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.meta.RoleHandler;
 import spoon9.reflect.path.CtRole;
-import spoon9.reflect.reference.CtActualTypeContainer;
-import spoon9.reflect.reference.CtArrayTypeReference;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
-import spoon9.reflect.reference.CtIntersectionTypeReference;
-import spoon9.reflect.reference.CtModuleReference;
-import spoon9.reflect.reference.CtPackageReference;
-import spoon9.reflect.reference.CtReference;
-import spoon9.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.reference.CtVariableReference;
-import spoon9.reflect.reference.CtWildcardReference;
+import spoon9.reflect.reference.*;
 import spoon9.support.reflect.CtExtendedModifier;
+
+import java.lang.annotation.Annotation;
 /**
  * Contains implementations of {@link RoleHandler}s for all {@link CtRole}s of all model elements
  */
@@ -117,28 +23,11 @@ class ModelRoleHandlers {
 	private ModelRoleHandlers() {
 	}
 
-	static final RoleHandler[] roleHandlers = new RoleHandler[]{ new CtTypeAccess_ACCESSED_TYPE_RoleHandler(), new CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler(), new CtElement_ANNOTATION_RoleHandler(), new CtAnnotation_ANNOTATION_TYPE_RoleHandler(), new CtAbstractInvocation_ARGUMENT_RoleHandler(), new CtExecutableReference_ARGUMENT_TYPE_RoleHandler(), new CtAssignment_ASSIGNED_RoleHandler(), new CtRHSReceiver_ASSIGNMENT_RoleHandler(), new CtBodyHolder_BODY_RoleHandler(), new CtSynchronized_BODY_RoleHandler(), new CtIntersectionTypeReference_BOUND_RoleHandler(), new CtWildcardReference_BOUNDING_TYPE_RoleHandler(), new CtAbstractSwitch_CASE_RoleHandler(), new CtCase_CASE_KIND_RoleHandler(), new CtExpression_CAST_RoleHandler(), new CtTry_CATCH_RoleHandler(), new CtElement_COMMENT_RoleHandler(), new CtComment_COMMENT_CONTENT_RoleHandler(), new CtJavaDocTag_COMMENT_CONTENT_RoleHandler(), new CtJavaDoc_COMMENT_TAG_RoleHandler(), new CtComment_COMMENT_TYPE_RoleHandler(), new CtConstructor_COMPACT_CONSTRUCTOR_RoleHandler(), new CtAssert_CONDITION_RoleHandler(), new CtConditional_CONDITION_RoleHandler(), new CtIf_CONDITION_RoleHandler(), new CtClass_CONSTRUCTOR_RoleHandler(), new CtPackage_CONTAINED_TYPE_RoleHandler(), new CtCompilationUnit_DECLARED_IMPORT_RoleHandler(), new CtCompilationUnit_DECLARED_MODULE_RoleHandler(), new CtCompilationUnit_DECLARED_MODULE_REF_RoleHandler(), new CtCompilationUnit_DECLARED_TYPE_RoleHandler(), new CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler(), new CtExecutableReference_DECLARING_TYPE_RoleHandler(), new CtFieldReference_DECLARING_TYPE_RoleHandler(), new CtTypeReference_DECLARING_TYPE_RoleHandler(), new CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler(), new CtVariable_DEFAULT_EXPRESSION_RoleHandler(), new CtNewArray_DIMENSION_RoleHandler(), new CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler(), new CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler(), new CtConditional_ELSE_RoleHandler(), new CtIf_ELSE_RoleHandler(), new CtModifiable_EMODIFIER_RoleHandler(), new CtAbstractInvocation_EXECUTABLE_REF_RoleHandler(), new CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler(), new CtModule_EXPORTED_PACKAGE_RoleHandler(), new CtAbstractSwitch_EXPRESSION_RoleHandler(), new CtArrayAccess_EXPRESSION_RoleHandler(), new CtAssert_EXPRESSION_RoleHandler(), new CtCase_EXPRESSION_RoleHandler(), new CtDo_EXPRESSION_RoleHandler(), new CtFor_EXPRESSION_RoleHandler(), new CtForEach_EXPRESSION_RoleHandler(), new CtLambda_EXPRESSION_RoleHandler(), new CtNewArray_EXPRESSION_RoleHandler(), new CtReturn_EXPRESSION_RoleHandler(), new CtSynchronized_EXPRESSION_RoleHandler(), new CtThrow_EXPRESSION_RoleHandler(), new CtUnaryOperator_EXPRESSION_RoleHandler(), new CtWhile_EXPRESSION_RoleHandler(), new CtYieldStatement_EXPRESSION_RoleHandler(), new CtType_FIELD_RoleHandler(), new CtTry_FINALIZER_RoleHandler(), new CtForEach_FOREACH_VARIABLE_RoleHandler(), new CtFor_FOR_INIT_RoleHandler(), new CtFor_FOR_UPDATE_RoleHandler(), new CtProvidedService_IMPLEMENTATION_TYPE_RoleHandler(), new CtImport_IMPORT_REFERENCE_RoleHandler(), new CtType_INTERFACE_RoleHandler(), new CtTypeInformation_INTERFACE_RoleHandler(), new CtMethod_IS_DEFAULT_RoleHandler(), new CtFieldReference_IS_FINAL_RoleHandler(), new CtElement_IS_IMPLICIT_RoleHandler(), new CtLocalVariable_IS_INFERRED_RoleHandler(), new CtParameter_IS_INFERRED_RoleHandler(), new CtShadowable_IS_SHADOW_RoleHandler(), new CtExecutableReference_IS_STATIC_RoleHandler(), new CtFieldReference_IS_STATIC_RoleHandler(), new CtWildcardReference_IS_UPPER_RoleHandler(), new CtParameter_IS_VARARGS_RoleHandler(), new CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler(), new CtStatement_LABEL_RoleHandler(), new CtBinaryOperator_LEFT_OPERAND_RoleHandler(), new CtLiteral_LITERAL_BASE_RoleHandler(), new CtType_METHOD_RoleHandler(), new CtModifiable_MODIFIER_RoleHandler(), new CtModule_MODIFIER_RoleHandler(), new CtModuleRequirement_MODIFIER_RoleHandler(), new CtTypeInformation_MODIFIER_RoleHandler(), new CtModule_MODULE_DIRECTIVE_RoleHandler(), new CtModuleRequirement_MODULE_REF_RoleHandler(), new CtPackageExport_MODULE_REF_RoleHandler(), new CtMultiTypedElement_MULTI_TYPE_RoleHandler(), new CtNamedElement_NAME_RoleHandler(), new CtReference_NAME_RoleHandler(), new CtNewClass_NESTED_TYPE_RoleHandler(), new CtType_NESTED_TYPE_RoleHandler(), new CtModule_OPENED_PACKAGE_RoleHandler(), new CtPackageExport_OPENED_PACKAGE_RoleHandler(), new CtBinaryOperator_OPERATOR_KIND_RoleHandler(), new CtOperatorAssignment_OPERATOR_KIND_RoleHandler(), new CtUnaryOperator_OPERATOR_KIND_RoleHandler(), new CtCompilationUnit_PACKAGE_DECLARATION_RoleHandler(), new CtPackageDeclaration_PACKAGE_REF_RoleHandler(), new CtPackageExport_PACKAGE_REF_RoleHandler(), new CtTypeReference_PACKAGE_REF_RoleHandler(), new CtCatch_PARAMETER_RoleHandler(), new CtExecutable_PARAMETER_RoleHandler(), new CtSealable_PERMITTED_TYPE_RoleHandler(), new CtElement_POSITION_RoleHandler(), new CtModule_PROVIDED_SERVICE_RoleHandler(), new CtRecord_RECORD_COMPONENT_RoleHandler(), new CtModule_REQUIRED_MODULE_RoleHandler(), new CtBinaryOperator_RIGHT_OPERAND_RoleHandler(), new CtModule_SERVICE_TYPE_RoleHandler(), new CtProvidedService_SERVICE_TYPE_RoleHandler(), new CtUsedService_SERVICE_TYPE_RoleHandler(), new CtCodeSnippet_SNIPPET_RoleHandler(), new CtStatementList_STATEMENT_RoleHandler(), new CtModule_SUB_PACKAGE_RoleHandler(), new CtPackage_SUB_PACKAGE_RoleHandler(), new CtType_SUPER_TYPE_RoleHandler(), new CtTypeInformation_SUPER_TYPE_RoleHandler(), new CtTargetedExpression_TARGET_RoleHandler(), new CtLabelledFlowBreak_TARGET_LABEL_RoleHandler(), new CtConditional_THEN_RoleHandler(), new CtIf_THEN_RoleHandler(), new CtExecutable_THROWN_RoleHandler(), new CtTryWithResource_TRY_RESOURCE_RoleHandler(), new CtArrayTypeReference_TYPE_RoleHandler(), new CtExecutableReference_TYPE_RoleHandler(), new CtTypedElement_TYPE_RoleHandler(), new CtVariableReference_TYPE_RoleHandler(), new CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler(), new CtType_TYPE_MEMBER_RoleHandler(), new CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler(), new CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler(), new CtAnnotation_VALUE_RoleHandler(), new CtEnum_VALUE_RoleHandler(), new CtLiteral_VALUE_RoleHandler(), new CtTextBlock_VALUE_RoleHandler(), new CtTypePattern_VARIABLE_RoleHandler(), new CtVariableAccess_VARIABLE_RoleHandler() };
+	static final RoleHandler[] roleHandlers = new RoleHandler[]{ new CtTypeAccess_ACCESSED_TYPE_RoleHandler(), new CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler(), new CtElement_ANNOTATION_RoleHandler(), new CtAnnotation_ANNOTATION_TYPE_RoleHandler(), new CtAbstractInvocation_ARGUMENT_RoleHandler(), new CtExecutableReference_ARGUMENT_TYPE_RoleHandler(), new CtAssignment_ASSIGNED_RoleHandler(), new CtRHSReceiver_ASSIGNMENT_RoleHandler(), new CtBodyHolder_BODY_RoleHandler(), new CtSynchronized_BODY_RoleHandler(), new CtIntersectionTypeReference_BOUND_RoleHandler(), new CtWildcardReference_BOUNDING_TYPE_RoleHandler(), new CtAbstractSwitch_CASE_RoleHandler(), new CtCase_CASE_KIND_RoleHandler(), new CtExpression_CAST_RoleHandler(), new CtTry_CATCH_RoleHandler(), new CtElement_COMMENT_RoleHandler(), new CtComment_COMMENT_CONTENT_RoleHandler(), new CtJavaDocTag_COMMENT_CONTENT_RoleHandler(), new CtJavaDoc_COMMENT_TAG_RoleHandler(), new CtComment_COMMENT_TYPE_RoleHandler(), new CtAssert_CONDITION_RoleHandler(), new CtConditional_CONDITION_RoleHandler(), new CtIf_CONDITION_RoleHandler(), new CtClass_CONSTRUCTOR_RoleHandler(), new CtPackage_CONTAINED_TYPE_RoleHandler(), new CtCompilationUnit_DECLARED_IMPORT_RoleHandler(), new CtCompilationUnit_DECLARED_MODULE_RoleHandler(), new CtCompilationUnit_DECLARED_MODULE_REF_RoleHandler(), new CtCompilationUnit_DECLARED_TYPE_RoleHandler(), new CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler(), new CtExecutableReference_DECLARING_TYPE_RoleHandler(), new CtFieldReference_DECLARING_TYPE_RoleHandler(), new CtTypeReference_DECLARING_TYPE_RoleHandler(), new CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler(), new CtVariable_DEFAULT_EXPRESSION_RoleHandler(), new CtNewArray_DIMENSION_RoleHandler(), new CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler(), new CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler(), new CtConditional_ELSE_RoleHandler(), new CtIf_ELSE_RoleHandler(), new CtModifiable_EMODIFIER_RoleHandler(), new CtAbstractInvocation_EXECUTABLE_REF_RoleHandler(), new CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler(), new CtModule_EXPORTED_PACKAGE_RoleHandler(), new CtAbstractSwitch_EXPRESSION_RoleHandler(), new CtArrayAccess_EXPRESSION_RoleHandler(), new CtAssert_EXPRESSION_RoleHandler(), new CtCase_EXPRESSION_RoleHandler(), new CtDo_EXPRESSION_RoleHandler(), new CtFor_EXPRESSION_RoleHandler(), new CtForEach_EXPRESSION_RoleHandler(), new CtLambda_EXPRESSION_RoleHandler(), new CtNewArray_EXPRESSION_RoleHandler(), new CtReturn_EXPRESSION_RoleHandler(), new CtSynchronized_EXPRESSION_RoleHandler(), new CtThrow_EXPRESSION_RoleHandler(), new CtUnaryOperator_EXPRESSION_RoleHandler(), new CtWhile_EXPRESSION_RoleHandler(), new CtYieldStatement_EXPRESSION_RoleHandler(), new CtType_FIELD_RoleHandler(), new CtTry_FINALIZER_RoleHandler(), new CtForEach_FOREACH_VARIABLE_RoleHandler(), new CtFor_FOR_INIT_RoleHandler(), new CtFor_FOR_UPDATE_RoleHandler(), new CtProvidedService_IMPLEMENTATION_TYPE_RoleHandler(), new CtImport_IMPORT_REFERENCE_RoleHandler(), new CtType_INTERFACE_RoleHandler(), new CtTypeInformation_INTERFACE_RoleHandler(), new CtMethod_IS_DEFAULT_RoleHandler(), new CtFieldReference_IS_FINAL_RoleHandler(), new CtElement_IS_IMPLICIT_RoleHandler(), new CtLocalVariable_IS_INFERRED_RoleHandler(), new CtParameter_IS_INFERRED_RoleHandler(), new CtShadowable_IS_SHADOW_RoleHandler(), new CtExecutableReference_IS_STATIC_RoleHandler(), new CtFieldReference_IS_STATIC_RoleHandler(), new CtWildcardReference_IS_UPPER_RoleHandler(), new CtParameter_IS_VARARGS_RoleHandler(), new CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler(), new CtStatement_LABEL_RoleHandler(), new CtBinaryOperator_LEFT_OPERAND_RoleHandler(), new CtLiteral_LITERAL_BASE_RoleHandler(), new CtType_METHOD_RoleHandler(), new CtModifiable_MODIFIER_RoleHandler(), new CtModule_MODIFIER_RoleHandler(), new CtModuleRequirement_MODIFIER_RoleHandler(), new CtTypeInformation_MODIFIER_RoleHandler(), new CtModule_MODULE_DIRECTIVE_RoleHandler(), new CtModuleRequirement_MODULE_REF_RoleHandler(), new CtPackageExport_MODULE_REF_RoleHandler(), new CtMultiTypedElement_MULTI_TYPE_RoleHandler(), new CtNamedElement_NAME_RoleHandler(), new CtReference_NAME_RoleHandler(), new CtNewClass_NESTED_TYPE_RoleHandler(), new CtType_NESTED_TYPE_RoleHandler(), new CtModule_OPENED_PACKAGE_RoleHandler(), new CtPackageExport_OPENED_PACKAGE_RoleHandler(), new CtBinaryOperator_OPERATOR_KIND_RoleHandler(), new CtOperatorAssignment_OPERATOR_KIND_RoleHandler(), new CtUnaryOperator_OPERATOR_KIND_RoleHandler(), new CtCompilationUnit_PACKAGE_DECLARATION_RoleHandler(), new CtPackageDeclaration_PACKAGE_REF_RoleHandler(), new CtPackageExport_PACKAGE_REF_RoleHandler(), new CtTypeReference_PACKAGE_REF_RoleHandler(), new CtCatch_PARAMETER_RoleHandler(), new CtExecutable_PARAMETER_RoleHandler(), new CtElement_POSITION_RoleHandler(), new CtModule_PROVIDED_SERVICE_RoleHandler(), new CtModule_REQUIRED_MODULE_RoleHandler(), new CtBinaryOperator_RIGHT_OPERAND_RoleHandler(), new CtModule_SERVICE_TYPE_RoleHandler(), new CtProvidedService_SERVICE_TYPE_RoleHandler(), new CtUsedService_SERVICE_TYPE_RoleHandler(), new CtCodeSnippet_SNIPPET_RoleHandler(), new CtStatementList_STATEMENT_RoleHandler(), new CtModule_SUB_PACKAGE_RoleHandler(), new CtPackage_SUB_PACKAGE_RoleHandler(), new CtType_SUPER_TYPE_RoleHandler(), new CtTypeInformation_SUPER_TYPE_RoleHandler(), new CtTargetedExpression_TARGET_RoleHandler(), new CtLabelledFlowBreak_TARGET_LABEL_RoleHandler(), new CtConditional_THEN_RoleHandler(), new CtIf_THEN_RoleHandler(), new CtExecutable_THROWN_RoleHandler(), new CtTryWithResource_TRY_RESOURCE_RoleHandler(), new CtArrayTypeReference_TYPE_RoleHandler(), new CtExecutableReference_TYPE_RoleHandler(), new CtTypedElement_TYPE_RoleHandler(), new CtVariableReference_TYPE_RoleHandler(), new CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler(), new CtType_TYPE_MEMBER_RoleHandler(), new CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler(), new CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler(), new CtAnnotation_VALUE_RoleHandler(), new CtEnum_VALUE_RoleHandler(), new CtLiteral_VALUE_RoleHandler(), new CtTextBlock_VALUE_RoleHandler(), new CtVariableAccess_VARIABLE_RoleHandler() };
 
 	static class CtVariableAccess_VARIABLE_RoleHandler extends SingleHandler<CtVariableAccess, CtVariableReference<?>> {
 		private CtVariableAccess_VARIABLE_RoleHandler() {
 			super(CtRole.VARIABLE, CtVariableAccess.class, CtVariableReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getVariable())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setVariable(castValue(value));
-		}
-	}
-
-	static class CtTypePattern_VARIABLE_RoleHandler extends SingleHandler<CtTypePattern, CtLocalVariable<?>> {
-		private CtTypePattern_VARIABLE_RoleHandler() {
-			super(CtRole.VARIABLE, CtTypePattern.class, CtLocalVariable.class);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -187,7 +76,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtEnum_VALUE_RoleHandler extends ListHandler<CtEnum, CtEnumValue<?>> {
+	static class CtEnum_VALUE_RoleHandler extends ListHandler<CtEnum, CtEnumValue<? extends Object>> {
 		private CtEnum_VALUE_RoleHandler() {
 			super(CtRole.VALUE, CtEnum.class, CtEnumValue.class);
 		}
@@ -221,7 +110,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler extends SingleHandler<CtTypeMemberWildcardImportReference, CtTypeReference<?>> {
+	static class CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler extends SingleHandler<CtTypeMemberWildcardImportReference, CtTypeReference<? extends Object>> {
 		private CtTypeMemberWildcardImportReference_TYPE_REF_RoleHandler() {
 			super(CtRole.TYPE_REF, CtTypeMemberWildcardImportReference.class, CtTypeReference.class);
 		}
@@ -289,7 +178,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtVariableReference_TYPE_RoleHandler extends SingleHandler<CtVariableReference, CtTypeReference> {
+	static class CtVariableReference_TYPE_RoleHandler extends SingleHandler<CtVariableReference, CtTypeReference<?>> {
 		private CtVariableReference_TYPE_RoleHandler() {
 			super(CtRole.TYPE, CtVariableReference.class, CtTypeReference.class);
 		}
@@ -306,7 +195,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTypedElement_TYPE_RoleHandler extends SingleHandler<CtTypedElement, CtTypeReference> {
+	static class CtTypedElement_TYPE_RoleHandler extends SingleHandler<CtTypedElement, CtTypeReference<?>> {
 		private CtTypedElement_TYPE_RoleHandler() {
 			super(CtRole.TYPE, CtTypedElement.class, CtTypeReference.class);
 		}
@@ -323,7 +212,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtExecutableReference_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference> {
+	static class CtExecutableReference_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<?>> {
 		private CtExecutableReference_TYPE_RoleHandler() {
 			super(CtRole.TYPE, CtExecutableReference.class, CtTypeReference.class);
 		}
@@ -340,7 +229,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtArrayTypeReference_TYPE_RoleHandler extends SingleHandler<CtArrayTypeReference, CtTypeReference<?>> {
+	static class CtArrayTypeReference_TYPE_RoleHandler extends SingleHandler<CtArrayTypeReference, CtTypeReference<? extends Object>> {
 		private CtArrayTypeReference_TYPE_RoleHandler() {
 			super(CtRole.TYPE, CtArrayTypeReference.class, CtTypeReference.class);
 		}
@@ -357,9 +246,9 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtResource<?>> {
+	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtLocalVariable<? extends Object>> {
 		private CtTryWithResource_TRY_RESOURCE_RoleHandler() {
-			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtResource.class);
+			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtLocalVariable.class);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -471,7 +360,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtType_SUPER_TYPE_RoleHandler extends SingleHandler<CtType, CtTypeReference<?>> {
+	static class CtType_SUPER_TYPE_RoleHandler extends SingleHandler<CtType, CtTypeReference<? extends Object>> {
 		private CtType_SUPER_TYPE_RoleHandler() {
 			super(CtRole.SUPER_TYPE, CtType.class, CtTypeReference.class);
 		}
@@ -607,7 +496,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtBinaryOperator_RIGHT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<?>> {
+	static class CtBinaryOperator_RIGHT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<? extends Object>> {
 		private CtBinaryOperator_RIGHT_OPERAND_RoleHandler() {
 			super(CtRole.RIGHT_OPERAND, CtBinaryOperator.class, CtExpression.class);
 		}
@@ -638,23 +527,6 @@ class ModelRoleHandlers {
 		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setRequiredModules(castValue(value));
-		}
-	}
-
-	static class CtRecord_RECORD_COMPONENT_RoleHandler extends SetHandler<CtRecord, CtRecordComponent> {
-		private CtRecord_RECORD_COMPONENT_RoleHandler() {
-			super(CtRole.RECORD_COMPONENT, CtRecord.class, CtRecordComponent.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRecordComponents())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setRecordComponents(castValue(value));
 		}
 	}
 
@@ -692,24 +564,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtSealable_PERMITTED_TYPE_RoleHandler extends SetHandler<CtSealable, CtTypeReference<?>> {
-		private CtSealable_PERMITTED_TYPE_RoleHandler() {
-			super(CtRole.PERMITTED_TYPE, CtSealable.class, CtTypeReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPermittedTypes())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setPermittedTypes(castValue(value));
-		}
-	}
-
-	static class CtExecutable_PARAMETER_RoleHandler extends ListHandler<CtExecutable, CtParameter<?>> {
+	static class CtExecutable_PARAMETER_RoleHandler extends ListHandler<CtExecutable, CtParameter<? extends Object>> {
 		private CtExecutable_PARAMETER_RoleHandler() {
 			super(CtRole.PARAMETER, CtExecutable.class, CtParameter.class);
 		}
@@ -896,7 +751,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtType_NESTED_TYPE_RoleHandler extends SetHandler<CtType, CtType<?>> {
+	static class CtType_NESTED_TYPE_RoleHandler extends SetHandler<CtType, CtType<? extends Object>> {
 		private CtType_NESTED_TYPE_RoleHandler() {
 			super(CtRole.NESTED_TYPE, CtType.class, CtType.class);
 		}
@@ -913,7 +768,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtNewClass_NESTED_TYPE_RoleHandler extends SingleHandler<CtNewClass, CtClass<?>> {
+	static class CtNewClass_NESTED_TYPE_RoleHandler extends SingleHandler<CtNewClass, CtClass<? extends Object>> {
 		private CtNewClass_NESTED_TYPE_RoleHandler() {
 			super(CtRole.NESTED_TYPE, CtNewClass.class, CtClass.class);
 		}
@@ -1095,7 +950,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtType_METHOD_RoleHandler extends SetHandler<CtType, CtMethod<?>> {
+	static class CtType_METHOD_RoleHandler extends SetHandler<CtType, CtMethod<? extends Object>> {
 		private CtType_METHOD_RoleHandler() {
 			super(CtRole.METHOD, CtType.class, CtMethod.class);
 		}
@@ -1129,7 +984,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtBinaryOperator_LEFT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<?>> {
+	static class CtBinaryOperator_LEFT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<? extends Object>> {
 		private CtBinaryOperator_LEFT_OPERAND_RoleHandler() {
 			super(CtRole.LEFT_OPERAND, CtBinaryOperator.class, CtExpression.class);
 		}
@@ -1362,7 +1217,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtType_INTERFACE_RoleHandler extends SetHandler<CtType, CtTypeReference<?>> {
+	static class CtType_INTERFACE_RoleHandler extends SetHandler<CtType, CtTypeReference<? extends Object>> {
 		private CtType_INTERFACE_RoleHandler() {
 			super(CtRole.INTERFACE, CtType.class, CtTypeReference.class);
 		}
@@ -1447,7 +1302,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtForEach_FOREACH_VARIABLE_RoleHandler extends SingleHandler<CtForEach, CtLocalVariable<?>> {
+	static class CtForEach_FOREACH_VARIABLE_RoleHandler extends SingleHandler<CtForEach, CtLocalVariable<? extends Object>> {
 		private CtForEach_FOREACH_VARIABLE_RoleHandler() {
 			super(CtRole.FOREACH_VARIABLE, CtForEach.class, CtLocalVariable.class);
 		}
@@ -1464,7 +1319,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTry_FINALIZER_RoleHandler extends SingleHandler<CtTry, CtBlock<?>> {
+	static class CtTry_FINALIZER_RoleHandler extends SingleHandler<CtTry, CtBlock<? extends Object>> {
 		private CtTry_FINALIZER_RoleHandler() {
 			super(CtRole.FINALIZER, CtTry.class, CtBlock.class);
 		}
@@ -1481,7 +1336,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtType_FIELD_RoleHandler extends ListHandler<CtType, CtField<?>> {
+	static class CtType_FIELD_RoleHandler extends ListHandler<CtType, CtField<? extends Object>> {
 		private CtType_FIELD_RoleHandler() {
 			super(CtRole.FIELD, CtType.class, CtField.class);
 		}
@@ -1498,7 +1353,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtYieldStatement_EXPRESSION_RoleHandler extends SingleHandler<CtYieldStatement, CtExpression<?>> {
+	static class CtYieldStatement_EXPRESSION_RoleHandler extends SingleHandler<CtYieldStatement, CtExpression<? extends Object>> {
 		private CtYieldStatement_EXPRESSION_RoleHandler() {
 			super(CtRole.EXPRESSION, CtYieldStatement.class, CtExpression.class);
 		}
@@ -1566,7 +1421,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtSynchronized_EXPRESSION_RoleHandler extends SingleHandler<CtSynchronized, CtExpression<?>> {
+	static class CtSynchronized_EXPRESSION_RoleHandler extends SingleHandler<CtSynchronized, CtExpression<? extends Object>> {
 		private CtSynchronized_EXPRESSION_RoleHandler() {
 			super(CtRole.EXPRESSION, CtSynchronized.class, CtExpression.class);
 		}
@@ -1600,7 +1455,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtNewArray_EXPRESSION_RoleHandler extends ListHandler<CtNewArray, CtExpression<?>> {
+	static class CtNewArray_EXPRESSION_RoleHandler extends ListHandler<CtNewArray, CtExpression<? extends Object>> {
 		private CtNewArray_EXPRESSION_RoleHandler() {
 			super(CtRole.EXPRESSION, CtNewArray.class, CtExpression.class);
 		}
@@ -1634,7 +1489,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtForEach_EXPRESSION_RoleHandler extends SingleHandler<CtForEach, CtExpression<?>> {
+	static class CtForEach_EXPRESSION_RoleHandler extends SingleHandler<CtForEach, CtExpression<? extends Object>> {
 		private CtForEach_EXPRESSION_RoleHandler() {
 			super(CtRole.EXPRESSION, CtForEach.class, CtExpression.class);
 		}
@@ -1935,7 +1790,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTypeReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtTypeReference, CtTypeReference<?>> {
+	static class CtTypeReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtTypeReference, CtTypeReference<? extends Object>> {
 		private CtTypeReference_DECLARING_TYPE_RoleHandler() {
 			super(CtRole.DECLARING_TYPE, CtTypeReference.class, CtTypeReference.class);
 		}
@@ -1952,7 +1807,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtFieldReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtFieldReference, CtTypeReference<?>> {
+	static class CtFieldReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtFieldReference, CtTypeReference<? extends Object>> {
 		private CtFieldReference_DECLARING_TYPE_RoleHandler() {
 			super(CtRole.DECLARING_TYPE, CtFieldReference.class, CtTypeReference.class);
 		}
@@ -1969,7 +1824,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtExecutableReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<?>> {
+	static class CtExecutableReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<? extends Object>> {
 		private CtExecutableReference_DECLARING_TYPE_RoleHandler() {
 			super(CtRole.DECLARING_TYPE, CtExecutableReference.class, CtTypeReference.class);
 		}
@@ -1986,7 +1841,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler extends ListHandler<CtCompilationUnit, CtTypeReference<?>> {
+	static class CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler extends ListHandler<CtCompilationUnit, CtTypeReference<? extends Object>> {
 		private CtCompilationUnit_DECLARED_TYPE_REF_RoleHandler() {
 			super(CtRole.DECLARED_TYPE_REF, CtCompilationUnit.class, CtTypeReference.class);
 		}
@@ -2003,7 +1858,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtCompilationUnit_DECLARED_TYPE_RoleHandler extends ListHandler<CtCompilationUnit, CtType<?>> {
+	static class CtCompilationUnit_DECLARED_TYPE_RoleHandler extends ListHandler<CtCompilationUnit, CtType<? extends Object>> {
 		private CtCompilationUnit_DECLARED_TYPE_RoleHandler() {
 			super(CtRole.DECLARED_TYPE, CtCompilationUnit.class, CtType.class);
 		}
@@ -2061,7 +1916,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtPackage_CONTAINED_TYPE_RoleHandler extends SetHandler<CtPackage, CtType<?>> {
+	static class CtPackage_CONTAINED_TYPE_RoleHandler extends SetHandler<CtPackage, CtType<? extends Object>> {
 		private CtPackage_CONTAINED_TYPE_RoleHandler() {
 			super(CtRole.CONTAINED_TYPE, CtPackage.class, CtType.class);
 		}
@@ -2143,23 +1998,6 @@ class ModelRoleHandlers {
 		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setAssertExpression(castValue(value));
-		}
-	}
-
-	static class CtConstructor_COMPACT_CONSTRUCTOR_RoleHandler extends SingleHandler<CtConstructor, Boolean> {
-		private CtConstructor_COMPACT_CONSTRUCTOR_RoleHandler() {
-			super(CtRole.COMPACT_CONSTRUCTOR, CtConstructor.class, Boolean.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isCompactConstructor())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setCompactConstructor(castValue(value));
 		}
 	}
 
@@ -2265,7 +2103,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtExpression_CAST_RoleHandler extends ListHandler<CtExpression, CtTypeReference<?>> {
+	static class CtExpression_CAST_RoleHandler extends ListHandler<CtExpression, CtTypeReference<? extends Object>> {
 		private CtExpression_CAST_RoleHandler() {
 			super(CtRole.CAST, CtExpression.class, CtTypeReference.class);
 		}
@@ -2316,7 +2154,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtWildcardReference_BOUNDING_TYPE_RoleHandler extends SingleHandler<CtWildcardReference, CtTypeReference<?>> {
+	static class CtWildcardReference_BOUNDING_TYPE_RoleHandler extends SingleHandler<CtWildcardReference, CtTypeReference<? extends Object>> {
 		private CtWildcardReference_BOUNDING_TYPE_RoleHandler() {
 			super(CtRole.BOUNDING_TYPE, CtWildcardReference.class, CtTypeReference.class);
 		}
@@ -2333,7 +2171,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtIntersectionTypeReference_BOUND_RoleHandler extends ListHandler<CtIntersectionTypeReference, CtTypeReference<?>> {
+	static class CtIntersectionTypeReference_BOUND_RoleHandler extends ListHandler<CtIntersectionTypeReference, CtTypeReference<? extends Object>> {
 		private CtIntersectionTypeReference_BOUND_RoleHandler() {
 			super(CtRole.BOUND, CtIntersectionTypeReference.class, CtTypeReference.class);
 		}
@@ -2350,7 +2188,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtSynchronized_BODY_RoleHandler extends SingleHandler<CtSynchronized, CtBlock<?>> {
+	static class CtSynchronized_BODY_RoleHandler extends SingleHandler<CtSynchronized, CtBlock<? extends Object>> {
 		private CtSynchronized_BODY_RoleHandler() {
 			super(CtRole.BODY, CtSynchronized.class, CtBlock.class);
 		}
@@ -2418,7 +2256,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtExecutableReference_ARGUMENT_TYPE_RoleHandler extends ListHandler<CtExecutableReference, CtTypeReference<?>> {
+	static class CtExecutableReference_ARGUMENT_TYPE_RoleHandler extends ListHandler<CtExecutableReference, CtTypeReference<? extends Object>> {
 		private CtExecutableReference_ARGUMENT_TYPE_RoleHandler() {
 			super(CtRole.ARGUMENT_TYPE, CtExecutableReference.class, CtTypeReference.class);
 		}

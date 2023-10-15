@@ -1,29 +1,20 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.factory;
 
 import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtExecutableReference;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.template.Substitution;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * The {@link CtMethod} sub-factory.

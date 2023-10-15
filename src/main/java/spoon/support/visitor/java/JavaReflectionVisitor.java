@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.java;
 
@@ -12,7 +12,6 @@ import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
@@ -26,19 +25,19 @@ import java.lang.reflect.WildcardType;
  * Client code should not rely on it.
  */
 interface JavaReflectionVisitor {
-	/** Visits a {@link java.lang.Package} */
+	/** Visits a {@link Package} */
 	void visitPackage(Package aPackage);
 
-	/** Visits a {@link java.lang.Class} */
+	/** Visits a {@link Class} */
 	<T> void visitClass(Class<T> clazz);
 
-	/** Visits a {@link java.lang.Class} representing an interface, see {@link Class#isInterface()} ()} */
+	/** Visits a {@link Class} representing an interface, see {@link Class#isInterface()} ()} */
 	<T> void visitInterface(Class<T> clazz);
 
-	/** Visits a {@link java.lang.Class} representing an enum, see {@link Class#isEnum()} */
+	/** Visits a {@link Class} representing an enum, see {@link Class#isEnum()} */
 	<T> void visitEnum(Class<T> clazz);
 
-	/** Visits a {@link java.lang.Class} representing an enum, see {@link Class#isAnnotation()} */
+	/** Visits a {@link Class} representing an enum, see {@link Class#isAnnotation()} */
 	<T extends Annotation> void visitAnnotationClass(Class<T> clazz);
 
 	/** Visits an {@link Annotation} instance */
@@ -85,12 +84,4 @@ interface JavaReflectionVisitor {
 	/** Visits a class as an array reference
 	 * @param role {@link CtRole} which this reference plays*/
 	<T> void visitArrayReference(CtRole role, Type typeArray);
-
-	/** Visits a {@link java.lang.Class} representing an record, see {@code Class#isRecord()} */
-	<T> void visitRecord(Class<T> clazz);
-
-	/** Visits a record component.
-	 * @param recordComponent a record component
-	*/
-	void visitRecordComponent(AnnotatedElement recordComponent);
 }

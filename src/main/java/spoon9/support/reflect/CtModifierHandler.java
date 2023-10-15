@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect;
 
@@ -41,7 +41,7 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public CtModifierHandler setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
-		if (extendedModifiers != null) {
+		if (extendedModifiers != null && !extendedModifiers.isEmpty()) {
 			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
 				this.modifiers = new HashSet<>();
@@ -68,11 +68,11 @@ public class CtModifierHandler implements Serializable {
 		if (modifiers == null) {
 			modifiers = Collections.emptySet();
 		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
-		this.modifiers.clear();
-		for (ModifierKind modifier : modifiers) {
-			addModifier(modifier);
-		}
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			this.modifiers.clear();
+			for (ModifierKind modifier : modifiers) {
+				addModifier(modifier);
+			}
 		return this;
 	}
 
@@ -82,8 +82,8 @@ public class CtModifierHandler implements Serializable {
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, modifier);
 		// we always add explicit modifiers, then we have to remove first implicit one
-		modifiers.remove(CtExtendedModifier.implicit(modifier));
-		modifiers.add(CtExtendedModifier.explicit(modifier));
+		modifiers.remove(new CtExtendedModifier(modifier, true));
+		modifiers.add(new CtExtendedModifier(modifier));
 		return this;
 	}
 
@@ -93,8 +93,8 @@ public class CtModifierHandler implements Serializable {
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDelete(element, MODIFIER, modifiers, modifier);
 		// we want to remove implicit OR explicit modifier
-		modifiers.remove(CtExtendedModifier.implicit(modifier));
-		modifiers.remove(CtExtendedModifier.explicit(modifier));
+		modifiers.remove(new CtExtendedModifier(modifier));
+		modifiers.remove(new CtExtendedModifier(modifier, true));
 		return this;
 	}
 

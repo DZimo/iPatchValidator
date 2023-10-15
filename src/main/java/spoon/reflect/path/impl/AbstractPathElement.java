@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.path.impl;
 
@@ -12,8 +12,8 @@ import spoon.reflect.visitor.CtScanner;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.TreeMap;
 
 /**
@@ -53,10 +53,16 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 		if (arguments.isEmpty()) {
 			return "";
 		}
-		StringJoiner joiner = new StringJoiner(";", "[", "]");
-		for (Map.Entry<String, String> entry : arguments.entrySet()) {
-			joiner.add(entry.getKey() + "=" + entry.getValue());
+		StringBuilder builder = new StringBuilder("[");
+
+		for (Iterator<Map.Entry<String, String>> iter = arguments.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry<String, String> value = iter.next();
+			builder.append(value.getKey() + "=" + value.getValue());
+			if (iter.hasNext()) {
+				builder.append(";");
+			}
 		}
-		return joiner.toString();
+
+		return builder.append("]").toString();
 	}
 }

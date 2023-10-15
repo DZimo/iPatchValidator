@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.reference;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * This interface defines a reference to a
- * {@link spoon.reflect.declaration.CtExecutable}. It can be a
+ * {@link CtExecutable}. It can be a
  * {@link spoon.reflect.declaration.CtMethod} or a
  * {@link spoon.reflect.declaration.CtConstructor}.
  */
@@ -143,7 +143,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	 * Sets the type of the variable.
 	 */
 	@PropertySetter(role = CtRole.TYPE)
-	<C extends CtExecutableReference<T>> C setType(CtTypeReference type);
+	<C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type);
 
 	/**
 	 * Tells if the referenced executable is final.

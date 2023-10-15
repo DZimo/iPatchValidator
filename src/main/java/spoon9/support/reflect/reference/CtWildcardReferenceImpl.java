@@ -1,14 +1,11 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.reference;
-
-import static spoon9.reflect.path.CtRole.BOUNDING_TYPE;
-import static spoon9.reflect.path.CtRole.IS_UPPER;
 
 import spoon9.reflect.annotations.MetamodelPropertyField;
 import spoon9.reflect.declaration.CtType;
@@ -17,6 +14,9 @@ import spoon9.reflect.reference.CtTypeReference;
 import spoon9.reflect.reference.CtWildcardReference;
 import spoon9.reflect.visitor.CtVisitor;
 import spoon9.support.UnsettableProperty;
+
+import static spoon9.reflect.path.CtRole.BOUNDING_TYPE;
+import static spoon9.reflect.path.CtRole.IS_UPPER;
 
 public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implements CtWildcardReference {
 

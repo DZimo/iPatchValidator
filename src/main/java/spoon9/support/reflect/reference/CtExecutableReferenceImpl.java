@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.reference;
 
@@ -11,24 +11,13 @@ import spoon9.Launcher;
 import spoon9.SpoonException;
 import spoon9.reflect.annotations.MetamodelPropertyField;
 import spoon9.reflect.code.CtLambda;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.declaration.ModifierKind;
-import spoon9.reflect.reference.CtActualTypeContainer;
-import spoon9.reflect.reference.CtArrayTypeReference;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtTypeParameterReference;
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.reference.CtWildcardReference;
+import spoon9.reflect.declaration.*;
+import spoon9.reflect.reference.*;
 import spoon9.reflect.visitor.CtVisitor;
 import spoon9.reflect.visitor.filter.NamedElementFilter;
-import spoon9.support.adaption.TypeAdaptor;
 import spoon9.support.reflect.declaration.CtElementImpl;
 import spoon9.support.util.RtHelper;
+import spoon9.support.visitor.ClassTypingContext;
 import spoon9.support.visitor.SignaturePrinter;
 
 import java.lang.reflect.AnnotatedElement;
@@ -41,11 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon9.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon9.reflect.path.CtRole.DECLARING_TYPE;
-import static spoon9.reflect.path.CtRole.IS_STATIC;
-import static spoon9.reflect.path.CtRole.ARGUMENT_TYPE;
-import static spoon9.reflect.path.CtRole.TYPE;
-import static spoon9.reflect.path.CtRole.TYPE_ARGUMENT;
+import static spoon9.reflect.path.CtRole.*;
 
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -225,8 +210,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			return declaringType != null && declaringType.isSubtypeOf(executable.getDeclaringType());
 		}
 		if (exec instanceof CtMethod<?> && thisExec instanceof CtMethod<?>) {
-			return new TypeAdaptor(((CtTypeMember) thisExec).getDeclaringType())
-					.isOverriding((CtMethod<?>) thisExec, (CtMethod<?>) exec);
+			return new ClassTypingContext(((CtTypeMember) thisExec).getDeclaringType()).isOverriding((CtMethod<?>) thisExec, (CtMethod<?>) exec);
 		}
 		//it is not a method. So we can return true only if it is reference to the this executable
 		return exec == getDeclaration();
@@ -260,7 +244,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setType(CtTypeReference type) {
+	public <C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}

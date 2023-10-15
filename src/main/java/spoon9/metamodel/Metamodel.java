@@ -1,51 +1,33 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.metamodel;
-
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.jspecify.annotations.Nullable;
 
 import spoon9.Launcher;
 import spoon9.SpoonException;
 import spoon9.reflect.annotations.PropertyGetter;
 import spoon9.reflect.annotations.PropertySetter;
-import spoon9.reflect.declaration.CtAnnotation;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtInterface;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModuleDirective;
-import spoon9.reflect.declaration.CtPackageExport;
-import spoon9.reflect.declaration.CtProvidedService;
-import spoon9.reflect.declaration.CtRecord;
-import spoon9.reflect.declaration.CtRecordComponent;
-import spoon9.reflect.declaration.CtType;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.factory.Factory;
 import spoon9.reflect.factory.FactoryImpl;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon9.reflect.visitor.filter.TypeFilter;
-import spoon9.support.adaption.TypeAdaptor;
 import spoon9.support.DefaultCoreFactory;
 import spoon9.support.StandardEnvironment;
 import spoon9.support.compiler.FileSystemFolder;
+import spoon9.support.visitor.ClassTypingContext;
+
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Represents the Spoon metamodel (incl. at runtime)
@@ -107,9 +89,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon9.reflect.code.CtNewArray.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtNewClass.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtOperatorAssignment.class));
-		result.add(factory.Type().get(spoon9.reflect.code.CtPattern.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtRHSReceiver.class));
-		result.add(factory.Type().get(spoon9.reflect.code.CtResource.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtReturn.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtStatement.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtStatementList.class));
@@ -123,7 +103,6 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon9.reflect.code.CtTry.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtTryWithResource.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtTypeAccess.class));
-		result.add(factory.Type().get(spoon9.reflect.code.CtTypePattern.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtUnaryOperator.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtVariableAccess.class));
 		result.add(factory.Type().get(spoon9.reflect.code.CtVariableRead.class));
@@ -155,7 +134,6 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon9.reflect.declaration.CtNamedElement.class));
 		result.add(factory.Type().get(spoon9.reflect.declaration.CtPackage.class));
 		result.add(factory.Type().get(spoon9.reflect.declaration.CtParameter.class));
-		result.add(factory.Type().get(spoon9.reflect.declaration.CtSealable.class));
 		result.add(factory.Type().get(spoon9.reflect.declaration.CtShadowable.class));
 		result.add(factory.Type().get(CtType.class));
 		result.add(factory.Type().get(spoon9.reflect.declaration.CtTypeInformation.class));
@@ -191,8 +169,6 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon9.reflect.reference.CtModuleReference.class));
 		result.add(factory.Type().get(spoon9.reflect.declaration.CtUsedService.class));
 		result.add(factory.Type().get(CtModuleDirective.class));
-		result.add(factory.Type().get(CtRecordComponent.class));
-		result.add(factory.Type().get(CtRecord.class));
 		return result;
 	}
 
@@ -349,7 +325,7 @@ public class Metamodel {
 	 * @param iface the interface of spoon model element
 	 * @return {@link CtClass} of Spoon model which implements the spoon model interface. null if there is no implementation.
 	 */
-	public static @Nullable CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
+	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
 		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
 		return (CtClass<?>) getType(impl, iface);
 	}
@@ -358,9 +334,9 @@ public class Metamodel {
 	 * @param impl the implementation class of a Spoon element
 	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
 	 */
-	public static @Nullable CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
+	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
 		String iface = impl.getQualifiedName();
-		if (!iface.endsWith(CLASS_SUFFIX) || !iface.startsWith("spoon.support.reflect.")) {
+		if (iface.endsWith(CLASS_SUFFIX) == false || iface.startsWith("spoon.support.reflect.") == false) {
 			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
 		}
 		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
@@ -400,7 +376,7 @@ public class Metamodel {
 	private static final String modelApiImplPackage = "spoon.support.reflect";
 
 	private static String replaceApiToImplPackage(String modelInterfaceQName) {
-		if (!modelInterfaceQName.startsWith(modelApiPackage)) {
+		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
 			throw new SpoonException("The qualified name " + modelInterfaceQName + " doesn't belong to Spoon model API package: " + modelApiPackage);
 		}
 		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
@@ -428,15 +404,9 @@ public class Metamodel {
 	 */
 	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
 		String conceptName = getConceptName(type);
-		// computeIfAbsent is not possible here, as the initializeConcept method
-		// calls this method recursively -> ConcurrentModificationException
-		MetamodelConcept concept = nameToConcept.get(conceptName);
-		if (concept == null) {
-			concept = new MetamodelConcept(conceptName);
-			nameToConcept.put(conceptName, concept);
-			initializeConcept(type, concept);
-		}
-		return concept;
+		return getOrCreate(nameToConcept, conceptName,
+				() -> new MetamodelConcept(conceptName),
+				mmConcept -> initializeConcept(type, mmConcept));
 	}
 
 	/**
@@ -530,6 +500,23 @@ public class Metamodel {
 		}
 	}
 
+	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator) {
+		return getOrCreate(map, key, valueCreator, null);
+	}
+	/**
+	 * @param initializer is called immediately after the value is added to the map
+	 */
+	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator, Consumer<V> initializer) {
+		V value = map.get(key);
+		if (value == null) {
+			value = valueCreator.get();
+			map.put(key, value);
+			if (initializer != null) {
+				initializer.accept(value);
+			}
+		}
+		return value;
+	}
 	static <T> boolean addUniqueObject(Collection<T> col, T o) {
 		if (containsObject(col, o)) {
 			return false;
@@ -556,12 +543,12 @@ public class Metamodel {
 		CtAnnotation<A> annotation = method.getAnnotation(annotationType);
 		if (annotation == null) {
 			CtType<?> declType = method.getDeclaringType();
-			TypeAdaptor typeAdaptor = new TypeAdaptor(declType);
+			final ClassTypingContext ctc = new ClassTypingContext(declType);
 			annotation = declType.map(new AllTypeMembersFunction(CtMethod.class)).map((CtMethod<?> currentMethod) -> {
 				if (method == currentMethod) {
 					return null;
 				}
-				if (typeAdaptor.isConflicting(method, currentMethod)) {
+				if (ctc.isSameSignature(method, currentMethod)) {
 					CtAnnotation<A> annotation2 = currentMethod.getAnnotation(annotationType);
 					if (annotation2 != null) {
 						return annotation2;

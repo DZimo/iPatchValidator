@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon;
 
@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * <p>
  * Create an instance of the default implementation of the Spoon compiler by
- * using {@link spoon.Launcher#createCompiler()}. For example:
+ * using {@link Launcher#createCompiler()}. For example:
  * </p>
  */
 public interface SpoonModelBuilder {
@@ -48,7 +48,7 @@ public interface SpoonModelBuilder {
 	 *
 	 * @return true if the Java was successfully compiled with the core Java
 	 * compiler, false if some errors were encountered while compiling
-	 * @throws spoon.SpoonException
+	 * @throws SpoonException
 	 * 		when a building problem occurs
 	 * @see #getSourceClasspath()
 	 * @see #getTemplateClasspath()
@@ -64,7 +64,7 @@ public interface SpoonModelBuilder {
 	 * 		Parameters given at JDT compiler.
 	 * @return true if the Java was successfully compiled with the core Java
 	 * compiler, false if some errors were encountered while compiling
-	 * @throws spoon.SpoonException
+	 * @throws SpoonException
 	 * 		when a building problem occurs
 	 * @see #getSourceClasspath()
 	 * @see #getTemplateClasspath()

@@ -1,22 +1,19 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.code;
 
-import spoon9.reflect.declaration.CtElement;
 import spoon9.reflect.annotations.PropertyGetter;
 import spoon9.reflect.annotations.PropertySetter;
+import spoon9.reflect.declaration.CtElement;
 
 import java.util.Arrays;
 
-import static spoon9.reflect.path.CtRole.DOCUMENTATION_TYPE;
-import static spoon9.reflect.path.CtRole.COMMENT_CONTENT;
-import static spoon9.reflect.path.CtRole.DOCUMENTATION_TYPE_REALNAME;
-import static spoon9.reflect.path.CtRole.JAVADOC_TAG_VALUE;
+import static spoon9.reflect.path.CtRole.*;
 
 /**
  * This code element defines a javadoc tag

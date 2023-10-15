@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler;
 
@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -134,23 +133,17 @@ public class FileSystemFolder implements SpoonFolder {
 		return file;
 	}
 
-
-
 	@Override
-	public int hashCode() {
-		return Objects.hash(file);
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		return toString().equals(obj.toString());
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof FileSystemFolder)) {
-			return false;
-		}
-		FileSystemFolder other = (FileSystemFolder) obj;
-		return Objects.equals(file, other.file);
+	public int hashCode() {
+		return toString().hashCode();
 	}
 
 	@Override

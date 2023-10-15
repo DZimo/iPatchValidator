@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon9.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon9.reflect.path.CtRole.BODY;
-import static spoon9.reflect.path.CtRole.PARAMETER;
-import static spoon9.reflect.path.CtRole.THROWN;
+import static spoon9.reflect.path.CtRole.*;
 
 
 /**
@@ -104,12 +102,6 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtExecutable<R>> T addParameter(CtParameter<?> parameter) {
-		addParameterAt(parameters.size(), parameter);
-		return (T) this;
-	}
-
-	@Override
-	public <T extends CtExecutable<R>> T addParameterAt(int position, CtParameter<?> parameter) {
 		if (parameter == null) {
 			return (T) this;
 		}
@@ -118,7 +110,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		}
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
-		parameters.add(position, parameter);
+		parameters.add(parameter);
 		return (T) this;
 	}
 

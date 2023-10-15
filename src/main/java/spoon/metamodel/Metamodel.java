@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.metamodel;
 
@@ -18,8 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.jspecify.annotations.Nullable;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -33,8 +33,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -42,10 +40,10 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.adaption.TypeAdaptor;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.visitor.ClassTypingContext;
 
 /**
  * Represents the Spoon metamodel (incl. at runtime)
@@ -107,9 +105,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtNewArray.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtNewClass.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtOperatorAssignment.class));
-		result.add(factory.Type().get(spoon.reflect.code.CtPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtRHSReceiver.class));
-		result.add(factory.Type().get(spoon.reflect.code.CtResource.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtReturn.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtStatement.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtStatementList.class));
@@ -123,7 +119,6 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtTry.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTryWithResource.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTypeAccess.class));
-		result.add(factory.Type().get(spoon.reflect.code.CtTypePattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtUnaryOperator.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableRead.class));
@@ -134,30 +129,29 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CaseKind.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtYieldStatement.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotatedElementType.class));
-		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotation.class));
+		result.add(factory.Type().get(CtAnnotation.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotationMethod.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotationType.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtAnonymousExecutable.class));
-		result.add(factory.Type().get(spoon.reflect.declaration.CtClass.class));
+		result.add(factory.Type().get(CtClass.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtCodeSnippet.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtCompilationUnit.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtConstructor.class));
-		result.add(factory.Type().get(spoon.reflect.declaration.CtElement.class));
+		result.add(factory.Type().get(CtElement.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtEnum.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtEnumValue.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtExecutable.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtField.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtFormalTypeDeclarer.class));
-		result.add(factory.Type().get(spoon.reflect.declaration.CtInterface.class));
-		result.add(factory.Type().get(spoon.reflect.declaration.CtMethod.class));
+		result.add(factory.Type().get(CtInterface.class));
+		result.add(factory.Type().get(CtMethod.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtModifiable.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtMultiTypedElement.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtNamedElement.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtPackage.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtParameter.class));
-		result.add(factory.Type().get(spoon.reflect.declaration.CtSealable.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtShadowable.class));
-		result.add(factory.Type().get(spoon.reflect.declaration.CtType.class));
+		result.add(factory.Type().get(CtType.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtTypeInformation.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtTypeMember.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtTypeParameter.class));
@@ -176,7 +170,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtParameterReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtTypeParameterReference.class));
-		result.add(factory.Type().get(spoon.reflect.reference.CtTypeReference.class));
+		result.add(factory.Type().get(CtTypeReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtUnboundVariableReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtVariableReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtWildcardReference.class));
@@ -191,8 +185,6 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtUsedService.class));
 		result.add(factory.Type().get(CtModuleDirective.class));
-		result.add(factory.Type().get(CtRecordComponent.class));
-		result.add(factory.Type().get(CtRecord.class));
 		return result;
 	}
 
@@ -349,7 +341,7 @@ public class Metamodel {
 	 * @param iface the interface of spoon model element
 	 * @return {@link CtClass} of Spoon model which implements the spoon model interface. null if there is no implementation.
 	 */
-	public static @Nullable CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
+	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
 		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
 		return (CtClass<?>) getType(impl, iface);
 	}
@@ -358,9 +350,9 @@ public class Metamodel {
 	 * @param impl the implementation class of a Spoon element
 	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
 	 */
-	public static @Nullable CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
+	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
 		String iface = impl.getQualifiedName();
-		if (!iface.endsWith(CLASS_SUFFIX) || !iface.startsWith("spoon.support.reflect.")) {
+		if (iface.endsWith(CLASS_SUFFIX) == false || iface.startsWith("spoon.support.reflect.") == false) {
 			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
 		}
 		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
@@ -400,7 +392,7 @@ public class Metamodel {
 	private static final String modelApiImplPackage = "spoon.support.reflect";
 
 	private static String replaceApiToImplPackage(String modelInterfaceQName) {
-		if (!modelInterfaceQName.startsWith(modelApiPackage)) {
+		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
 			throw new SpoonException("The qualified name " + modelInterfaceQName + " doesn't belong to Spoon model API package: " + modelApiPackage);
 		}
 		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
@@ -428,15 +420,9 @@ public class Metamodel {
 	 */
 	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
 		String conceptName = getConceptName(type);
-		// computeIfAbsent is not possible here, as the initializeConcept method
-		// calls this method recursively -> ConcurrentModificationException
-		MetamodelConcept concept = nameToConcept.get(conceptName);
-		if (concept == null) {
-			concept = new MetamodelConcept(conceptName);
-			nameToConcept.put(conceptName, concept);
-			initializeConcept(type, concept);
-		}
-		return concept;
+		return getOrCreate(nameToConcept, conceptName,
+				() -> new MetamodelConcept(conceptName),
+				mmConcept -> initializeConcept(type, mmConcept));
 	}
 
 	/**
@@ -530,6 +516,23 @@ public class Metamodel {
 		}
 	}
 
+	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator) {
+		return getOrCreate(map, key, valueCreator, null);
+	}
+	/**
+	 * @param initializer is called immediately after the value is added to the map
+	 */
+	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator, Consumer<V> initializer) {
+		V value = map.get(key);
+		if (value == null) {
+			value = valueCreator.get();
+			map.put(key, value);
+			if (initializer != null) {
+				initializer.accept(value);
+			}
+		}
+		return value;
+	}
 	static <T> boolean addUniqueObject(Collection<T> col, T o) {
 		if (containsObject(col, o)) {
 			return false;
@@ -556,12 +559,12 @@ public class Metamodel {
 		CtAnnotation<A> annotation = method.getAnnotation(annotationType);
 		if (annotation == null) {
 			CtType<?> declType = method.getDeclaringType();
-			TypeAdaptor typeAdaptor = new TypeAdaptor(declType);
+			final ClassTypingContext ctc = new ClassTypingContext(declType);
 			annotation = declType.map(new AllTypeMembersFunction(CtMethod.class)).map((CtMethod<?> currentMethod) -> {
 				if (method == currentMethod) {
 					return null;
 				}
-				if (typeAdaptor.isConflicting(method, currentMethod)) {
+				if (ctc.isSameSignature(method, currentMethod)) {
 					CtAnnotation<A> annotation2 = currentMethod.getAnnotation(annotationType);
 					if (annotation2 != null) {
 						return annotation2;

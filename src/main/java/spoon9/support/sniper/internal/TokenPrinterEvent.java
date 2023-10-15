@@ -1,20 +1,19 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.sniper.internal;
+
+import spoon9.reflect.code.CtComment;
+import spoon9.reflect.cu.SourcePositionHolder;
+import spoon9.reflect.path.CtRole;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.jspecify.annotations.Nullable;
-import spoon9.reflect.code.CtComment;
-import spoon9.reflect.cu.SourcePositionHolder;
-import spoon9.reflect.path.CtRole;
 
 /**
  * Represents an action of Printer, which prints a token
@@ -42,12 +41,12 @@ public abstract class TokenPrinterEvent implements PrinterEvent {
 	}
 
 	@Override
-	public @Nullable SourcePositionHolder getElement() {
+	public SourcePositionHolder getElement() {
 		return comment;
 	}
 
 	/** @return printed token or null if printing complex element or comment */
-	public @Nullable String getToken() {
+	public String getToken() {
 		return token;
 	}
 

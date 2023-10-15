@@ -1,33 +1,21 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
+
+import spoon9.experimental.CtUnresolvedImport;
+import spoon9.reflect.declaration.*;
+import spoon9.reflect.reference.*;
+import spoon9.reflect.visitor.filter.AllTypeMembersFunction;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
-import spoon9.experimental.CtUnresolvedImport;
-import spoon9.reflect.declaration.CtCompilationUnit;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.declaration.CtImportKind;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
-import spoon9.reflect.reference.CtPackageReference;
-import spoon9.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.visitor.filter.AllTypeMembersFunction;
 
 /**
  * Represents a lexical scope of a type, with all accessible fields, nested type names and method names
@@ -170,8 +158,8 @@ class TypeNameScope extends NameScopeImpl {
 		CtPackage pack = compilationUnit.getDeclaredPackage();
 		if (pack != null) {
 			for (CtType<?> packageType : pack.getTypes()) {
-				if (packageType != getScopeElement()) {
-					typesByName.putIfAbsent(packageType.getSimpleName(), packageType);
+				if (packageType != getScopeElement() && !typesByName.containsKey(packageType.getSimpleName())) {
+					typesByName.put(packageType.getSimpleName(), packageType);
 				}
 			}
 		}
@@ -184,6 +172,8 @@ class TypeNameScope extends NameScopeImpl {
 			return;
 		}
 		String name = element.getSimpleName();
-		map.putIfAbsent(name, element);
+		if (!map.containsKey(name)) {
+			map.put(name, element);
+		}
 	}
 }

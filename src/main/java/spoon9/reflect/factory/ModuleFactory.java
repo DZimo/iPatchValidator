@@ -1,32 +1,26 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.factory;
 
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import spoon9.reflect.CtModelImpl;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtModuleRequirement;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtPackageExport;
-import spoon9.reflect.declaration.CtProvidedService;
-import spoon9.reflect.declaration.CtUsedService;
-import spoon9.reflect.declaration.ParentNotInitializedException;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtModuleReference;
 import spoon9.reflect.reference.CtPackageReference;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.reflect.visitor.CtVisitor;
 import spoon9.support.reflect.declaration.CtElementImpl;
 import spoon9.support.reflect.declaration.CtModuleImpl;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class ModuleFactory extends SubFactory {
@@ -128,7 +122,6 @@ public class ModuleFactory extends SubFactory {
 			ctModule = factory.Core().createModule().setSimpleName(moduleName);
 			ctModule.setRootPackage(new CtModelImpl.CtRootPackage());
 			ctModule.setParent(getUnnamedModule());
-			getUnnamedModule().addModule(ctModule);
 		}
 
 		return ctModule;

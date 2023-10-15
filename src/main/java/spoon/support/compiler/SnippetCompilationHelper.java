@@ -1,20 +1,17 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.compiler;
-
 
 import spoon.SpoonModelBuilder;
 import spoon.compiler.ModelBuildingException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -30,10 +27,8 @@ import spoon.reflect.path.CtPath;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
-import spoon.support.compiler.jdt.PositionBuilder;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,14 +52,11 @@ public class SnippetCompilationHelper {
 	 *
 	 */
 	public static void compileAndReplaceSnippetsIn(CtType<?> initialClass) {
+
 		Map<CtPath, CtElement> elements2before = new HashMap<>();
 		Map<CtPath, CtElement> elements2after = new HashMap<>();
 		for (Object o : initialClass.filterChildren(new TypeFilter<>(CtCodeSnippet.class)).list()) {
 			CtElement el = (CtElement) o;
-			if (el instanceof CtCodeSnippetStatement && containsOnlyWhiteSpace(el)) {
-				replaceComments((CtStatement) el);
-				continue;
-			}
 			elements2before.put(el.getPath(), el);
 		}
 		Factory f = initialClass.getFactory();
@@ -75,20 +67,11 @@ public class SnippetCompilationHelper {
 		initialClass.removeModifier(ModifierKind.PUBLIC);
 
 		// we need to delete the current class from its package
-		// otherwise the new type is not added because it has the same fully qualified name
+		// otherwsise the new type is not added because it has the same fully qualified name
 		initialClass.delete();
 
-		// add dummy statements for each comment so paths are same for initial and new class
-		CtType<?> clonedInitialClass = initialClass.clone();
-		addDummyStatements(clonedInitialClass);
-		removeIllegalDummyStatements(clonedInitialClass);
-
-		String pkg = initialClass.getPackage().getQualifiedName();
-		if (!pkg.isEmpty()) {
-			pkg = "package " + pkg + ";";
-		}
 		try {
-			build(f, pkg + clonedInitialClass);
+			build(f, "package " + initialClass.getPackage().getQualifiedName() + ";" + initialClass.toString());
 		} finally {
 			// restore modifiers
 			initialClass.setModifiers(backup);
@@ -109,67 +92,6 @@ public class SnippetCompilationHelper {
 		for (Map.Entry<CtPath, CtElement> ctPath : elements2before.entrySet()) {
 			CtElement toReplace = ctPath.getValue();
 			toReplace.replace(elements2after.get(ctPath.getKey()));
-		}
-	}
-
-	private static boolean containsOnlyWhiteSpace(CtElement element) {
-		char[] snippet = (element.toString() + '\n').toCharArray();
-		int next = PositionBuilder.findNextNonWhitespace(snippet, snippet.length - 1, 0);
-		if (next == -1) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private static void replaceComments(CtStatement element) {
-		replaceComments(element, (element.toString() + '\n').toCharArray());
-		element.delete();
-	}
-
-	private static void replaceComments(CtStatement element, char[] snippet) {
-		Factory factory = element.getFactory();
-		CtComment comment;
-		for (int i = 0; i < snippet.length; i++) {
-			if (Character.isWhitespace(snippet[i])) {
-				continue;
-			}
-			int end = PositionBuilder.getEndOfComment(snippet, snippet.length - 1, i);
-			if (snippet[i + 1] == '*') {
-				comment = factory.createComment(new String(Arrays.copyOfRange(snippet, i + 2, end - 1)), CtComment.CommentType.BLOCK);
-			} else {
-				comment = factory.createComment(new String(Arrays.copyOfRange(snippet, i + 2, end)), CtComment.CommentType.INLINE);
-			}
-			element.insertBefore(comment);
-			if (end + 1 < snippet.length) {
-				replaceComments(element, Arrays.copyOfRange(snippet, end + 1, snippet.length));
-			}
-			break;
-		}
-	}
-
-	private static void addDummyStatements(CtType<?> clonedInitialClass) {
-		Factory factory = clonedInitialClass.getFactory();
-		List<CtComment> list = clonedInitialClass.filterChildren(new TypeFilter<>(CtComment.class)).list();
-		for (CtComment comment : list) {
-			CtConstructorCall call = factory.createConstructorCall(factory.createCtTypeReference(Object.class));
-			comment.insertBefore(call);
-			comment.delete();
-		}
-	}
-
-	private static void removeIllegalDummyStatements(CtType<?> clonedInitialClass) {
-		for (Object o : clonedInitialClass.filterChildren(new TypeFilter<>(CtReturn.class)).list()) {
-			CtStatement returnStmt = (CtStatement) o;
-			CtBlock block = (CtBlock) returnStmt.getParent();
-			for (int i = block.getStatements().size() - 1; i > 0; i--) {
-				CtStatement currentStatement = block.getStatement(i);
-				if (currentStatement == returnStmt) {
-					break;
-				} else {
-					currentStatement.delete();
-				}
-			}
 		}
 	}
 

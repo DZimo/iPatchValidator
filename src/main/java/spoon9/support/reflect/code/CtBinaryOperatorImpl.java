@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.code;
 
@@ -13,9 +13,7 @@ import spoon9.reflect.code.CtBinaryOperator;
 import spoon9.reflect.code.CtExpression;
 import spoon9.reflect.visitor.CtVisitor;
 
-import static spoon9.reflect.path.CtRole.LEFT_OPERAND;
-import static spoon9.reflect.path.CtRole.OPERATOR_KIND;
-import static spoon9.reflect.path.CtRole.RIGHT_OPERAND;
+import static spoon9.reflect.path.CtRole.*;
 
 public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBinaryOperator<T> {
 	private static final long serialVersionUID = 1L;

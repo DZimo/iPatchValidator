@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor.filter;
 
@@ -14,12 +14,7 @@ import spoon9.reflect.declaration.CtElement;
 import spoon9.reflect.declaration.CtType;
 import spoon9.reflect.declaration.CtTypeInformation;
 import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.visitor.chain.CtConsumableFunction;
-import spoon9.reflect.visitor.chain.CtConsumer;
-import spoon9.reflect.visitor.chain.CtQuery;
-import spoon9.reflect.visitor.chain.CtQueryAware;
-import spoon9.reflect.visitor.chain.CtScannerListener;
-import spoon9.reflect.visitor.chain.ScanningMode;
+import spoon9.reflect.visitor.chain.*;
 import spoon9.support.SpoonClassNotFoundException;
 
 import java.util.Set;
@@ -217,7 +212,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			try {
 				type = typeRef.getTypeDeclaration();
 			} catch (SpoonClassNotFoundException e) {
-				if (!typeRef.getFactory().getEnvironment().getNoClasspath()) {
+				if (typeRef.getFactory().getEnvironment().getNoClasspath() == false) {
 					throw e;
 				}
 				type = null;
@@ -225,7 +220,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		}
 		//if the type is unknown, than we expect it is interface, otherwise we would visit java.lang.Object too, even for interfaces
 		isClass = type instanceof CtClass;
-		if (!isClass && !includingInterfaces) {
+		if (isClass == false && includingInterfaces == false) {
 			//the input is interface, but this scanner should visit only interfaces. Finish
 			return;
 		}
@@ -241,7 +236,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			}
 		}
 		if (mode == ScanningMode.NORMAL) {
-			if (!isClass) {
+			if (isClass == false) {
 				visitSuperInterfaces(typeRef, outputConsumer);
 				if (interfacesExtendObject) {
 					//last visit Object.class, because interface inherits all public type members of Object.class
@@ -312,7 +307,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			return;
 		}
 		sendResult(classRef, outputConsumer);
-		if (mode == ScanningMode.NORMAL && !query.isTerminated()) {
+		if (mode == ScanningMode.NORMAL && query.isTerminated() == false) {
 			runNext.accept(classRef);
 		}
 		exit(classRef, isClass);

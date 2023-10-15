@@ -1,55 +1,23 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.visitor;
 
 import spoon9.compiler.Environment;
 import spoon9.experimental.CtUnresolvedImport;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtComment;
-import spoon9.reflect.code.CtFor;
-import spoon9.reflect.code.CtForEach;
-import spoon9.reflect.code.CtIf;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtTypeAccess;
-import spoon9.reflect.declaration.CtAnnotation;
-import spoon9.reflect.declaration.CtCompilationUnit;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModifiable;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtSealable;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.reflect.declaration.CtTypedElement;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.code.*;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.factory.Factory;
-import spoon9.reflect.reference.CtActualTypeContainer;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
-import spoon9.reflect.reference.CtPackageReference;
-import spoon9.reflect.reference.CtTypeMemberWildcardImportReference;
-import spoon9.reflect.reference.CtTypeReference;
+import spoon9.reflect.reference.*;
 import spoon9.reflect.visitor.PrintingContext.Writable;
 import spoon9.reflect.visitor.printer.CommentOffset;
 import spoon9.support.reflect.CtExtendedModifier;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class ElementPrinterHelper {
@@ -176,12 +144,13 @@ public class ElementPrinterHelper {
 	 */
 	public void writeElementList(List<CtTypeMember> elements) {
 		for (CtTypeMember element : elements) {
-			if (!element.isImplicit()) {
+			if (element instanceof CtConstructor && element.isImplicit()) {
+				continue;
+			}
+			printer.writeln();
+			prettyPrinter.scan(element);
+			if (!env.isPreserveLineNumbers()) {
 				printer.writeln();
-				prettyPrinter.scan(element);
-				if (!env.isPreserveLineNumbers()) {
-					printer.writeln();
-				}
 			}
 		}
 	}
@@ -240,47 +209,23 @@ public class ElementPrinterHelper {
 
 	/**
 	 * Writes actual type arguments in a {@link CtActualTypeContainer} element.
-	 * Passes {@link PrintTypeArguments#ONLY_PRINT_EXPLICIT_TYPES}.
 	 *
-	 * @param ctGenericElementReference Reference with actual type arguments.
-	 * @see #writeActualTypeArguments(CtActualTypeContainer, PrintTypeArguments)
-	 * @deprecated use {@link #writeActualTypeArguments(CtActualTypeContainer, PrintTypeArguments)}. This method is
-	 * only kept for backwards compatibility.
+	 * @param ctGenericElementReference
+	 * 		Reference with actual type arguments.
 	 */
-	@Deprecated
 	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
-		writeActualTypeArguments(ctGenericElementReference, PrintTypeArguments.ONLY_PRINT_EXPLICIT_TYPES);
-	}
-
-	/**
-	 * Writes actual type arguments in a {@link CtActualTypeContainer} element.
-	 *
-	 * @param ctGenericElementReference Reference with actual type arguments.
-	 * @param handleImplicit Whether to print type arguments if they are all implicit
-	 */
-	public void writeActualTypeArguments(
-		CtActualTypeContainer ctGenericElementReference,
-		PrintTypeArguments handleImplicit
-	) {
-		Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
-		if (arguments == null || arguments.isEmpty()) {
-			return;
+		final Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
+		if (arguments != null && !arguments.isEmpty()) {
+			printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
+				null, false, "<", false, false, ",", true, false, ">",
+				argument -> {
+					if (prettyPrinter.getContext().forceWildcardGenerics()) {
+						printer.writeSeparator("?");
+					} else {
+						prettyPrinter.scan(argument);
+					}
+				});
 		}
-
-		boolean allImplicit = arguments.stream().allMatch(CtElement::isImplicit);
-		if (allImplicit && handleImplicit == PrintTypeArguments.ONLY_PRINT_EXPLICIT_TYPES) {
-			return;
-		}
-
-		printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
-			null, false, "<", false, false, ",", true, false, ">",
-			argument -> {
-				if (prettyPrinter.getContext().forceWildcardGenerics()) {
-					printer.writeSeparator("?");
-				} else {
-					prettyPrinter.scan(argument);
-				}
-			});
 	}
 
 	private boolean isJavaLangClasses(String importType) {
@@ -435,7 +380,7 @@ public class ElementPrinterHelper {
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				continue;
 			}
-			if (!comment.getPosition().isValidPosition() || !element.getPosition().isValidPosition()) {
+			if (comment.getPosition().isValidPosition() == false || element.getPosition().isValidPosition() == false) {
 				if (offset == CommentOffset.BEFORE) {
 					commentsToPrint.add(comment);
 				}
@@ -570,42 +515,5 @@ public class ElementPrinterHelper {
 				elementPrinter.accept(item);
 			}
 		}
-	}
-
-	/**
-	 * Prints the {@code permits} keyword followed by the permitted
-	 * types of a {@link CtSealable}.
-	 * <p>
-	 * If the given sealed type does not have any
-	 * explicit permitted types, nothing is printed.
-	 *
-	 * @param sealable the sealed type to print the permitted types for.
-	 */
-	protected void printPermits(CtSealable sealable) {
-		if (sealable.getPermittedTypes().isEmpty() || sealable.getPermittedTypes().stream().allMatch(CtElement::isImplicit)) {
-			return;
-		}
-		printer.writeln().incTab().writeKeyword("permits").writeSpace();
-		printList(sealable.getPermittedTypes(), null, false, null, false, false, ",", true, false, null, prettyPrinter::scan);
-		printer.decTab();
-	}
-
-	/**
-	 * Whether to print generic types for references. This affects e.g. explicit type arguments for constructor
-	 * or method calls.
-	 *
-	 * A diamond operator is only valid in some places. This enum controls whether they can and should be printed at
-	 * a given location.
-	 */
-	public enum PrintTypeArguments {
-		/**
-		 * Only print explicit type argument. Implicit (i.e. inferred types) are not printed. Consequently, this will
-		 * also not print a diamond operator.
-		 */
-		ONLY_PRINT_EXPLICIT_TYPES,
-		/**
-		 * Print explicit type arguments, but also print a diamond operator if implicit type arguments were used.
-		 */
-		ALSO_PRINT_DIAMOND_OPERATOR
 	}
 }

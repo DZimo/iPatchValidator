@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.template;
 
@@ -48,7 +48,7 @@ public abstract class Substitution {
 	 * target is a class), inner types, and super interfaces (except
 	 * {@link Template}) from a given template by substituting all the template
 	 * parameters by their values. Members annotated with
-	 * {@link spoon.template.Local} or {@link Parameter} are not inserted.
+	 * {@link Local} or {@link Parameter} are not inserted.
 	 *
 	 * @param targetType
 	 * 		the target type
@@ -84,7 +84,7 @@ public abstract class Substitution {
 	 *
 	 * Note!
 	 * This algorithm does NOT handle interfaces or annotations
-	 * {@link Template}, {@link spoon.template.Local}, {@link TemplateParameter} or {@link Parameter}
+	 * {@link Template}, {@link Local}, {@link TemplateParameter} or {@link Parameter}
 	 * in a special way, it means they all will be added to the generated type too.
 	 * If you do not want to add them then clone your templateOfType and remove these nodes from that model before.
 	 *
@@ -170,7 +170,7 @@ public abstract class Substitution {
 	/**
 	 * Inserts all the methods from a given template by substituting all the
 	 * template parameters by their values. Members annotated with
-	 * {@link spoon.template.Local} or {@link Parameter} are not inserted.
+	 * {@link Local} or {@link Parameter} are not inserted.
 	 *
 	 * @param targetType
 	 * 		the target type
@@ -185,7 +185,7 @@ public abstract class Substitution {
 	/**
 	 * Inserts all the methods from a given template by substituting all the
 	 * template parameters by their values. Members annotated with
-	 * {@link spoon.template.Local} or {@link Parameter} are not inserted.
+	 * {@link Local} or {@link Parameter} are not inserted.
 	 *
 	 * @param targetType
 	 * 		the target type
@@ -223,7 +223,7 @@ public abstract class Substitution {
 	/**
 	 * Inserts all the fields from a given template by substituting all the
 	 * template parameters by their values. Members annotated with
-	 * {@link spoon.template.Local} or {@link Parameter} are not inserted.
+	 * {@link Local} or {@link Parameter} are not inserted.
 	 *
 	 * @param targetType
 	 * 		the target type
@@ -244,7 +244,7 @@ public abstract class Substitution {
 	/**
 	 * Inserts the field by substituting all the
 	 * template parameters by their values. Field annotated with
-	 * {@link spoon.template.Local} or {@link Parameter} is not inserted.
+	 * {@link Local} or {@link Parameter} is not inserted.
 
 	 * @param targetType
 	 * @param template
@@ -265,7 +265,7 @@ public abstract class Substitution {
 	/**
 	 * Inserts all the nested types from a given template by substituting all the
 	 * template parameters by their values. Members annotated with
-	 * {@link spoon.template.Local} are not inserted.
+	 * {@link Local} are not inserted.
 	 *
 	 * @param targetType
 	 * 		the target type
@@ -286,7 +286,7 @@ public abstract class Substitution {
 	/**
 	 * Inserts the nestedType by substituting all the
 	 * template parameters by their values. Nested type annotated with
-	 * {@link spoon.template.Local} is not inserted.
+	 * {@link Local} is not inserted.
 	 *  @param targetType
 	 * 		the target type
 	 * @param template
@@ -306,7 +306,7 @@ public abstract class Substitution {
 	/**
 	 * Inserts all constructors and initialization blocks from a given template
 	 * by substituting all the template parameters by their values. Members
-	 * annotated with {@link spoon.template.Local} or {@link Parameter} are not
+	 * annotated with {@link Local} or {@link Parameter} are not
 	 * inserted.
 	 *
 	 * @param targetType
@@ -322,7 +322,7 @@ public abstract class Substitution {
 	/**
 	 * Inserts all constructors and initialization blocks from a given template
 	 * by substituting all the template parameters by their values. Members
-	 * annotated with {@link spoon.template.Local} or {@link Parameter} are not
+	 * annotated with {@link Local} or {@link Parameter} are not
 	 * inserted.
 	 *
 	 * @param targetType

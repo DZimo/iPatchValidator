@@ -1,70 +1,31 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.compiler.jdt;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.jspecify.annotations.Nullable;
-
 import spoon9.SpoonException;
-import spoon9.reflect.code.CtAbstractSwitch;
-import spoon9.reflect.code.CtBinaryOperator;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtBodyHolder;
-import spoon9.reflect.code.CtCase;
-import spoon9.reflect.code.CtCatch;
-import spoon9.reflect.code.CtComment;
-import spoon9.reflect.code.CtConditional;
-import spoon9.reflect.code.CtIf;
-import spoon9.reflect.code.CtLambda;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.code.CtNewArray;
-import spoon9.reflect.code.CtStatement;
-import spoon9.reflect.code.CtStatementList;
-import spoon9.reflect.code.CtSwitch;
-import spoon9.reflect.code.CtSwitchExpression;
+import spoon9.reflect.code.*;
 import spoon9.reflect.cu.CompilationUnit;
 import spoon9.reflect.cu.SourcePosition;
 import spoon9.reflect.cu.position.BodyHolderSourcePosition;
 import spoon9.reflect.cu.position.DeclarationSourcePosition;
-import spoon9.reflect.declaration.CtAnnotation;
-import spoon9.reflect.declaration.CtAnnotationType;
-import spoon9.reflect.declaration.CtAnonymousExecutable;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtCompilationUnit;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.declaration.CtInterface;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtPackageDeclaration;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.declaration.CtVariable;
-import spoon9.reflect.declaration.ParentNotInitializedException;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.factory.Factory;
 import spoon9.reflect.reference.CtReference;
 import spoon9.reflect.visitor.CtInheritanceScanner;
 import spoon9.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon9.reflect.visitor.EarlyTerminatingScanner;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -75,7 +36,7 @@ import java.util.regex.Pattern;
  */
 public class JDTCommentBuilder {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final CompilationUnitDeclaration declarationUnit;
 	private CompilationUnit spoonUnit;
@@ -158,7 +119,7 @@ public class JDTCommentBuilder {
 		int smallDistance = Integer.MAX_VALUE;
 
 		for (CtElement element : elements) {
-			if (!element.getPosition().isValidPosition()) {
+			if (element.getPosition().isValidPosition() == false) {
 				continue;
 			}
 			if (element.isImplicit()) {
@@ -438,11 +399,6 @@ public class JDTCommentBuilder {
 			}
 
 			@Override
-			public <T> void visitCtLiteral(CtLiteral<T> e) {
-				e.addComment(comment);
-			}
-
-			@Override
 			public void scanCtStatement(CtStatement s) {
 				if (!(s instanceof CtStatementList || s instanceof CtSwitch || s instanceof CtVariable)) {
 					s.addComment(comment);
@@ -548,7 +504,7 @@ public class JDTCommentBuilder {
 					return;
 				}
 				CtElement body = getBody(element);
-				if (body != null && !body.getPosition().isValidPosition()) {
+				if (body != null && body.getPosition().isValidPosition() == false) {
 					body = null;
 				}
 
@@ -574,7 +530,7 @@ public class JDTCommentBuilder {
 	 * @param e
 	 * @return body of element or null if this element has no body
 	 */
-	static @Nullable CtElement getBody(CtElement e) {
+	static CtElement getBody(CtElement e) {
 		if (e instanceof CtBodyHolder) {
 			return ((CtBodyHolder) e).getBody();
 		}

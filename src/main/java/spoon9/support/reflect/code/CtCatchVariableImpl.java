@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.code;
 
@@ -11,12 +11,7 @@ import spoon9.reflect.ModelElementContainerDefaultCapacities;
 import spoon9.reflect.annotations.MetamodelPropertyField;
 import spoon9.reflect.code.CtCatchVariable;
 import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.declaration.CtModifiable;
-import spoon9.reflect.declaration.CtMultiTypedElement;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtTypedElement;
-import spoon9.reflect.declaration.CtVariable;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtCatchVariableReference;
 import spoon9.reflect.reference.CtTypeReference;
@@ -120,7 +115,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		setMultiTypes(type == null ? emptyList() : Collections.singletonList(type));
 		return (C) this;
 	}

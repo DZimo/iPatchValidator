@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.template;
 
@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * This annotation should be placed on templates' fields or methods to indicate
  * that they represent template parameters. It is only mandatory for names,
  * literals, and types, where it avoids having to use
- * {@link spoon.template.TemplateParameter} and allows for the direct accesses
+ * {@link TemplateParameter} and allows for the direct accesses
  * of the parameters. A parameter is never considered as a templated element and
  * it is not necessary to annotate it with a {@link Local} annotation.
  */

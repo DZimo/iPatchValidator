@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor;
 
@@ -45,13 +45,10 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 		}
 		if (!result.getActualTypeArguments().isEmpty()) {
 			//we have to adapt actual type arguments recursive too
-			if (!isCopy) {
-				CtElement parent = result.isParentInitialized() ? result.getParent() : null;
+			if (isCopy == false) {
+				CtElement parent = result.getParent();
 				result = result.clone();
-				if (parent != null) {
-					result.setParent(parent);
-				}
-
+				result.setParent(parent);
 				List<CtTypeReference<?>> actTypeArgs = new ArrayList<>(result.getActualTypeArguments());
 				for (int i = 0; i < actTypeArgs.size(); i++) {
 					CtTypeReference adaptedTypeArgs = adaptType(actTypeArgs.get(i));
@@ -75,9 +72,7 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 
 	private CtTypeReference<?> adaptTypeParameterReferenceBoundingType(CtWildcardReference typeParamRef, CtTypeReference<?> boundingType) {
 		CtWildcardReference typeParamRefAdapted = typeParamRef.clone();
-		if (typeParamRef.isParentInitialized()) {
-			typeParamRefAdapted.setParent(typeParamRef.getParent());
-		}
+		typeParamRefAdapted.setParent(typeParamRef.getParent());
 		typeParamRefAdapted.setBoundingType(boundingType.equals(boundingType.getFactory().Type().getDefaultBoundingType()) ? boundingType.getFactory().Type().getDefaultBoundingType() : adaptType(boundingType));
 		return typeParamRefAdapted;
 	}

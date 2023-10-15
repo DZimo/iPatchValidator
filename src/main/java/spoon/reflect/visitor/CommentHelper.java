@@ -1,19 +1,21 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
-import java.util.Collection;
-import java.util.function.Function;
-import java.util.stream.Stream;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.support.Internal;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * Computes source code representation of the Comment literal
@@ -21,6 +23,10 @@ import spoon.support.Internal;
 @Internal
 public class CommentHelper {
 
+	/**
+	 * RegExp which matches all possible line separators
+	 */
+	private static final Pattern LINE_SEPARATORS_RE = Pattern.compile("\\n\\r|\\n|\\r");
 
 	private CommentHelper() {
 	}
@@ -78,35 +84,27 @@ public class CommentHelper {
 	static void printCommentContent(PrinterHelper printer, CtComment comment, Function<String, String> transfo) {
 		CtComment.CommentType commentType = comment.getCommentType();
 		String content = comment.getContent();
-
-		content.lines().forEach(line -> {
+		String[] lines = LINE_SEPARATORS_RE.split(content);
+		for (String com : lines) {
 			if (commentType == CtComment.CommentType.BLOCK) {
-				printer.write(line);
-				if (hasMoreThanOneElement(content.lines())) {
+				printer.write(com);
+				if (lines.length > 1) {
 					printer.write(CtComment.LINE_SEPARATOR);
 				}
 			} else {
-				printer.write(transfo.apply(line)).writeln(); // removing spaces at the end of the space
+				printer.write(transfo.apply(com)).writeln(); // removing spaces at the end of the space
 			}
-		});
+		}
 		if (comment instanceof CtJavaDoc) {
+			List<CtJavaDocTag> tags = null;
 			Collection<CtJavaDocTag> javaDocTags = ((CtJavaDoc) comment).getTags();
-			if (javaDocTags != null && !javaDocTags.isEmpty()) {
+			if (javaDocTags != null && javaDocTags.isEmpty() == false) {
 				printer.write(transfo.apply("")).writeln();
 				for (CtJavaDocTag docTag : javaDocTags) {
 					printJavaDocTag(printer, docTag, transfo);
 				}
 			}
 		}
-	}
-
-	/**
-	 * Checks if the given stream has more than one element.
-	 * @param stream  the stream to check
-	 * @return  true if the stream has more than one element, false otherwise.
-	 */
-	private static boolean hasMoreThanOneElement(Stream<?> stream) {
-		return stream.skip(1).findAny().isPresent();
 	}
 
 	static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag, Function<String, String> transfo) {
@@ -117,11 +115,13 @@ public class CommentHelper {
 			printer.write(docTag.getParam()).writeln();
 		}
 
-		docTag.getContent().lines().forEach(com -> {
+		String[] tagLines = LINE_SEPARATORS_RE.split(docTag.getContent());
+		for (int i = 0; i < tagLines.length; i++) {
+			String com = tagLines[i];
 			if (docTag.getType().hasParam()) {
 				printer.write(transfo.apply("\t\t"));
 			}
 			printer.write(com.trim()).writeln();
-		});
+		}
 	}
 }

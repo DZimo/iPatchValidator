@@ -1,43 +1,23 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9;
 
 
 import spoon9.reflect.CtModelImpl;
-import spoon9.reflect.code.CtArrayWrite;
-import spoon9.reflect.code.CtAssignment;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtFieldWrite;
-import spoon9.reflect.code.CtLambda;
-import spoon9.reflect.code.CtVariableWrite;
+import spoon9.reflect.code.*;
 import spoon9.reflect.cu.CompilationUnit;
 import spoon9.reflect.cu.SourcePosition;
-import spoon9.reflect.declaration.CtAnonymousExecutable;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModifiable;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtShadowable;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.reflect.declaration.ParentNotInitializedException;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.path.CtPath;
 import spoon9.reflect.path.CtPathException;
 import spoon9.reflect.path.CtPathStringBuilder;
 import spoon9.reflect.path.CtRole;
-import spoon9.reflect.reference.CtExecutableReference;
-import spoon9.reflect.reference.CtFieldReference;
-import spoon9.reflect.reference.CtReference;
-import spoon9.reflect.reference.CtTypeParameterReference;
-import spoon9.reflect.reference.CtTypeReference;
+import spoon9.reflect.reference.*;
 import spoon9.reflect.visitor.CtBiScannerDefault;
 import spoon9.reflect.visitor.CtScanner;
 import spoon9.reflect.visitor.JavaIdentifiers;
@@ -51,13 +31,7 @@ import spoon9.support.visitor.equals.EqualsVisitor;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static spoon9.testing.utils.Check.assertNotNull;
 
@@ -217,7 +191,7 @@ public class ContractVerifier {
 					return;
 				}
 				final CtType<T> typeDeclaration = reference.getTypeDeclaration();
-				assertNotNull(reference + " cannot be found in ", typeDeclaration);
+				assertNotNull(reference.toString() + " cannot be found in ", typeDeclaration);
 				assertEquals(reference.getSimpleName(), typeDeclaration.getSimpleName());
 				assertEquals(reference.getQualifiedName(), typeDeclaration.getQualifiedName());
 
@@ -235,7 +209,7 @@ public class ContractVerifier {
 					return;
 				}
 				final CtExecutable<T> executableDeclaration = reference.getExecutableDeclaration();
-				assertNotNull("cannot find decl for " + reference, executableDeclaration);
+				assertNotNull("cannot find decl for " + reference.toString(), executableDeclaration);
 				assertEquals(reference.getSimpleName(), executableDeclaration.getSimpleName());
 
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
@@ -265,7 +239,7 @@ public class ContractVerifier {
 				}
 
 				if (reference.getDeclaration() == null && CtShadowable.class.isAssignableFrom(executableDeclaration.getClass())) {
-					assertTrue("execDecl at " + reference + " must be shadow ", ((CtShadowable) executableDeclaration).isShadow());
+					assertTrue("execDecl at " + reference.toString() + " must be shadow ", ((CtShadowable) executableDeclaration).isShadow());
 				}
 
 			}
@@ -400,7 +374,7 @@ public class ContractVerifier {
 			CtExpression assigned = assign.getAssigned();
 			if (!(assigned instanceof CtFieldWrite
 					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
-				throw new AssertionError("AssignmentContract error:" + assign.getPosition() + "\n" + assign + "\nAssigned is " + assigned.getClass());
+				throw new AssertionError("AssignmentContract error:" + assign.getPosition() + "\n" + assign.toString() + "\nAssigned is " + assigned.getClass());
 			}
 		}
 	}
@@ -415,7 +389,7 @@ public class ContractVerifier {
 	public void checkParentConsistency(CtElement element) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
-			private Deque<CtElement> previous = new ArrayDeque<>();
+			private Deque<CtElement> previous = new ArrayDeque();
 
 			@Override
 			protected void enter(CtElement e) {
@@ -464,7 +438,7 @@ public class ContractVerifier {
 			Exception firstStack = allElements.put(ele, secondStack);
 			if (firstStack != null) {
 				if (firstStack == dummyException) {
-					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele + " is shared");
+					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
 				}
 				//the element ele was already visited. It means it used on more places
 				//report the stacktrace of first and second usage, so that place can be found easily
@@ -542,7 +516,7 @@ public class ContractVerifier {
 			} catch (CtPathException e) {
 				throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
 			} catch (AssertionError e) {
-				throw new AssertionError("Path " + pathStr + " detection failed on " + element.getClass().getSimpleName() + ": " + element, e);
+				throw new AssertionError("Path " + pathStr + " detection failed on " + element.getClass().getSimpleName() + ": " + element.toString(), e);
 			}
 		});
 	}

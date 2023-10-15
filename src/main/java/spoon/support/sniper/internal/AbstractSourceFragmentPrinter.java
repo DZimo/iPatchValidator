@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.sniper.internal;
 
@@ -58,7 +58,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		if (index != -1) { // means we have found a source code fragment corresponding to this event
 
 			// we print all spaces and comments before this fragment
-			printSpaces(getLastNonSpaceNonCommentBefore(index, prevIndex), index);
+			printSpaces(getLastNonSpaceNonCommentBefore(index), index);
 
 			SourceFragment fragment = childFragments.get(index);
 			event.printSourceFragment(fragment, isFragmentModified(fragment));
@@ -277,9 +277,8 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	protected int findIFragmentIndexCorrespondingToEvent(PrinterEvent event) {
 		CtRole role = event.getRole();
 		if (role != null) {
-			if ((event.getElement() instanceof CtModifiable && event.getElement().getPosition().isValidPosition())
-					|| role == CtRole.MODIFIER || role == CtRole.TYPE) {
-				// using only roles for handling modifiers and preexisting modifiables correctly
+			if (event.getElement() instanceof CtModifiable || role == CtRole.MODIFIER) {
+				// using only roles for handling modifiers correctly
 				return findIndexOfNextChildTokenOfRole(childFragmentIdx + 1, role);
 			}
 			return findIndexOfNextChildTokenOfElement(event.getElement());
@@ -307,37 +306,15 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		separatorActions.clear();
 	}
 
-	private int getLastNonSpaceNonCommentBefore(int index, int prevIndex) {
+	private int getLastNonSpaceNonCommentBefore(int index) {
 		for (int i = index - 1; i >= 0; i--) {
 			SourceFragment fragment = childFragments.get(i);
-			if (isSpaceFragment(fragment)
-					|| isCommentFragment(fragment)
-					|| isRecentlySkippedModifierCollectionFragment(i, prevIndex)) {
+			if (isSpaceFragment(fragment) || isCommentFragment(fragment)) {
 				continue;
 			}
 			return i + 1;
 		}
 		return 0;
-	}
-
-	/**
-	 * Determines if the fragment at index is a "recently skipped" collection fragment
-	 * containing modifiers. "Recently skipped" entails that the modifier fragment has not been
-	 * printed, and that the last printed fragment occurs before the modifier fragment.
-	 *
-	 * It is necessary to detect such fragments as whitespace and comments may otherwise be lost
-	 * when completely removing modifier lists. See issue #3732 for details.
-	 *
-	 * @param index Index of the fragment.
-	 * @param prevIndex Index of the last printed fragment.
-	 * @return true if the fragment is a recently skipped collection fragment with modifiers.
-	 */
-	private boolean isRecentlySkippedModifierCollectionFragment(int index, int prevIndex) {
-		SourceFragment fragment = childFragments.get(index);
-		return prevIndex < index
-				&& fragment instanceof CollectionSourceFragment
-				&& ((CollectionSourceFragment) fragment).getItems().stream()
-						.anyMatch(ElementSourceFragment::isModifierFragment);
 	}
 
 	@Override

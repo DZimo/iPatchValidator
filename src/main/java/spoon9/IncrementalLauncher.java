@@ -1,42 +1,27 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InvalidClassException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.codehaus.plexus.util.CollectionUtils;
-
 import spoon9.reflect.cu.CompilationUnit;
 import spoon9.reflect.declaration.CtPackage;
 import spoon9.reflect.declaration.CtType;
 import spoon9.reflect.factory.Factory;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.support.SerializationModelStreamer;
+
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Create a Spoon launcher for incremental build
@@ -94,8 +79,8 @@ public class IncrementalLauncher extends Launcher {
 	}
 
 	private static void saveFactory(Factory factory, File file) {
-		try (FileOutputStream fileStream = new FileOutputStream(file)) {
-			new SerializationModelStreamer().save(factory, fileStream);
+		try {
+			new SerializationModelStreamer().save(factory, new FileOutputStream(file));
 		} catch (IOException e) {
 			throw new SpoonException("unable to save factory");
 		}
@@ -223,7 +208,7 @@ public class IncrementalLauncher extends Launcher {
 
 			Collection<CtPackage> oldPackages = oldFactory.Package().getAll();
 			for (CtPackage pkg : oldPackages) {
-				if (pkg.isEmpty() && !pkg.isUnnamedPackage()) {
+				if (pkg.getTypes().isEmpty() && pkg.getPackages().isEmpty() && !pkg.isUnnamedPackage()) {
 					pkg.delete();
 				}
 			}

@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.reference;
 
@@ -25,7 +25,6 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 	CtTypeReference<?> componentType;
 
 	public CtArrayTypeReferenceImpl() {
-		setDeclarationKind(DeclarationKind.TYPE);
 	}
 
 	@Override
@@ -126,48 +125,5 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 			componentType.setSimplyQualified(isSimplyQualified);
 		}
 		return this;
-	}
-
-	public enum DeclarationKind {
-		/**
-		 * Brackets are after type.
-		 * int[] array;
-		 */
-		TYPE,
-
-		/**
-		 * Brackets are after identifier.
-		 * int array[];
-		 */
-		IDENTIFIER,
-
-		// We do not consider declarations where square brackets are after type _and_ identifier.
-		// For example, int[] array[]. See https://github.com/INRIA/spoon/issues/4315#issuecomment-991894796.
-	}
-
-	/**
-	 * Sets the kind of array declaration.
-	 *
-	 * @param declarationKind one of {@link DeclarationKind}
-	 * @param <C> type of this instance
-	 * @return this instance
-	 */
-	public <C extends CtArrayTypeReference<T>> C setDeclarationKind(DeclarationKind declarationKind) {
-		this.putMetadata(DeclarationKind.class.getSimpleName(), declarationKind);
-		return (C) this;
-	}
-
-	/**
-	 * Gets the kind of array declaration.
-	 *
-	 * @return {@link DeclarationKind} of this instance
-	 */
-	public DeclarationKind getDeclarationKind() {
-		return (DeclarationKind) this.getMetadata(DeclarationKind.class.getSimpleName());
-	}
-
-	@Override
-	public boolean isGenerics() {
-		return getArrayType().isGenerics();
 	}
 }

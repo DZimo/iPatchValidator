@@ -1,26 +1,22 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import spoon9.reflect.annotations.MetamodelPropertyField;
 import spoon9.reflect.cu.position.NoSourcePosition;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtNamedElement;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtShadowable;
-import spoon9.reflect.declaration.CtType;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.path.CtRole;
 import spoon9.reflect.reference.CtPackageReference;
 import spoon9.reflect.visitor.CtVisitor;
-import spoon9.support.util.internal.ElementNameMap;
+import spoon9.support.comparator.QualifiedNameComparator;
+import spoon9.support.util.ModelSet;
+
+import java.util.Set;
 
 /**
  * The implementation for {@link CtPackage}.
@@ -31,7 +27,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
-	protected ElementNameMap<CtPackage> packs = new ElementNameMap<CtPackage>() {
+	protected ModelSet<CtPackage> packs = new ModelSet<CtPackage>(QualifiedNameComparator.INSTANCE) {
 		private static final long serialVersionUID = 1L;
 		@Override
 		protected CtElement getOwner() {
@@ -44,25 +40,31 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		}
 
 		@Override
-		public CtPackage put(String simpleName, CtPackage pack) {
-			if (pack == null || pack == CtPackageImpl.this) {
-				return null;
+		public boolean add(CtPackage pack) {
+			if (pack == null) {
+				return false;
+			}
+			// they are the same
+			if (CtPackageImpl.this.getQualifiedName().equals(pack.getQualifiedName())) {
+				addAllTypes(pack, CtPackageImpl.this);
+				addAllPackages(pack, CtPackageImpl.this);
+				return false;
 			}
 
 			// it already exists
-			CtPackage ctPackage = get(simpleName);
-			if (ctPackage != null) {
-				addAllTypes(pack, ctPackage);
-				addAllPackages(pack, ctPackage);
-				return null;
+			for (CtPackage p1 : packs) {
+				if (p1.getQualifiedName().equals(pack.getQualifiedName())) {
+					addAllTypes(pack, p1);
+					addAllPackages(pack, p1);
+						return false;
+				}
 			}
-
-			return super.put(simpleName, pack);
+			return super.add(pack);
 		}
 	};
 
 	@MetamodelPropertyField(role = CtRole.CONTAINED_TYPE)
-	private final ElementNameMap<CtType<?>> types = new ElementNameMap<CtType<?>>() {
+	private ModelSet<CtType<?>> types = new ModelSet<CtType<?>>(QualifiedNameComparator.INSTANCE) {
 		private static final long serialVersionUID = 1L;
 		@Override
 		protected CtElement getOwner() {
@@ -84,17 +86,14 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addPackage(CtPackage pack) {
-		if (pack == null) {
-			return (T) this;
-		}
-		this.packs.put(pack.getSimpleName(), pack);
+		this.packs.add(pack);
 		return (T) this;
 	}
 
 	/** add all types of "from" in "to" */
 	private void addAllTypes(CtPackage from, CtPackage to) {
-		for (CtType<?> t : from.getTypes()) {
-			for (CtType<?> t2: to.getTypes()) {
+		for (CtType t : from.getTypes()) {
+			for (CtType t2: to.getTypes()) {
 				if (t2.getQualifiedName().equals(t.getQualifiedName()) && !t2.equals(t)) {
 					throw new IllegalStateException("types with same qualified names and different code cannot be merged");
 				}
@@ -112,39 +111,40 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public boolean removePackage(CtPackage pack) {
-		return packs.remove(pack.getSimpleName()) != null;
+		return packs.remove(pack);
 	}
 
 	@Override
 	public CtModule getDeclaringModule() {
-		return getParent(CtModule.class);
+		try {
+			return getParent(CtModule.class);
+		} catch (ParentNotInitializedException e) {
+			return null;
+		}
 	}
 
 	@Override
 	public CtPackage getDeclaringPackage() {
-		return getParent(CtPackage.class);
+		try {
+			return getParent(CtPackage.class);
+		} catch (ParentNotInitializedException e) {
+			return null;
+		}
 	}
 
 	@Override
-	public CtPackage getPackage(String simpleName) {
-		return this.packs.get(simpleName);
+	public CtPackage getPackage(String name) {
+		for (CtPackage p : packs) {
+			if (p.getSimpleName().equals(name)) {
+				return p;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public Set<CtPackage> getPackages() {
-		return new LinkedHashSet<>(packs.values());
-	}
-
-	@Override
-	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
-		String oldName = getSimpleName();
-		super.setSimpleName(simpleName);
-
-		if (parent instanceof CtPackageImpl) {
-			((CtPackageImpl) parent).updatePackageName(this, oldName);
-		}
-
-		return (T) this;
+		return packs;
 	}
 
 	@Override
@@ -159,31 +159,30 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends CtType<?>> T getType(String simpleName) {
-		return (T) types.get(simpleName);
+		for (CtType<?> t : types) {
+			if (t.getSimpleName().equals(simpleName)) {
+				return (T) t;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public Set<CtType<?>> getTypes() {
-		return new LinkedHashSet<>(types.values());
+		return types;
 	}
 
 	@Override
 	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
-		this.packs.clear();
-		for (CtPackage pack : packs) {
-			this.packs.put(pack.getSimpleName(), pack);
+		this.packs.set(packs);
+			return (T) this;
 		}
-		return (T) this;
-	}
 
 	@Override
 	public <T extends CtPackage> T setTypes(Set<CtType<?>> types) {
-		this.types.clear();
-		for (CtType<?> type : types) {
-			this.types.put(type.getSimpleName(), type);
+		this.types.set(types);
+			return (T) this;
 		}
-		return (T) this;
-	}
 
 	@Override
 	public CtPackageReference getReference() {
@@ -192,17 +191,14 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addType(CtType<?> type) {
-		if (type == null) {
-			return (T) this;
-		}
-		// type map will take care of setting the parent
-		types.put(type.getSimpleName(), type);
+		// ModelSet of types will take care of setting the parent
+		types.add(type);
 		return (T) this;
 	}
 
 	@Override
 	public void removeType(CtType<?> type) {
-		types.remove(type.getSimpleName());
+		types.remove(type);
 	}
 
 	@Override
@@ -242,24 +238,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public boolean isEmpty() {
-		return !hasPackages() && !hasTypes();
-	}
-
-	@Override
-	public boolean hasTypes() {
-		return !types.isEmpty();
-	}
-
-	@Override
-	public boolean hasPackages() {
-		return !packs.isEmpty();
-	}
-
-	void updateTypeName(CtType<?> newType, String oldName) {
-		types.updateKey(oldName, newType.getSimpleName());
-	}
-
-	void updatePackageName(CtPackage newPackage, String oldName) {
-		packs.updateKey(oldName, newPackage.getSimpleName());
+		return getPackages().isEmpty() && getTypes().isEmpty();
 	}
 }

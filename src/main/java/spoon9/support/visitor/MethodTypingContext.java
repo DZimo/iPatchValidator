@@ -1,34 +1,24 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.visitor;
-
-import static spoon9.support.visitor.ClassTypingContext.getTypeReferences;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
 
 import spoon9.SpoonException;
 import spoon9.reflect.code.CtExpression;
 import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeParameter;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.factory.Factory;
 import spoon9.reflect.reference.CtExecutableReference;
 import spoon9.reflect.reference.CtTypeParameterReference;
 import spoon9.reflect.reference.CtTypeReference;
+
+import java.util.*;
+
+import static spoon9.support.visitor.ClassTypingContext.getTypeReferences;
 
 /**
  * For the scope method or constructor and super type hierarchy of it's declaring type,
@@ -61,7 +51,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 			}
 			if (classTypingContext.getAdaptationScope() != declType) {
 				//the method is declared in different type. We have to adapt it to required classTypingContext
-				if (!classTypingContext.isSubtypeOf(declType.getReference())) {
+				if (classTypingContext.isSubtypeOf(declType.getReference()) == false) {
 					throw new SpoonException("Cannot create MethodTypingContext for method declared in different ClassTypingContext");
 				}
 				/*
@@ -171,20 +161,17 @@ public class MethodTypingContext extends AbstractTypingContext {
 	 */
 	@Override
 	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
-		if (typeParam == null) {
-			return null;
-		}
 		CtFormalTypeDeclarer typeParamDeclarer = typeParam.getTypeParameterDeclarer();
 		if (typeParamDeclarer instanceof CtType<?>) {
 			return getEnclosingGenericTypeAdapter().adaptType(typeParam);
 		}
 		//only method to method or constructor to constructor can be adapted
 		if (typeParamDeclarer instanceof CtMethod<?>) {
-			if (!(scopeMethod instanceof CtMethod)) {
+			if ((scopeMethod instanceof CtMethod<?>) == false) {
 				return null;
 			}
 		} else if (typeParamDeclarer instanceof CtConstructor<?>) {
-			if (!(scopeMethod instanceof CtConstructor)) {
+			if ((scopeMethod instanceof CtConstructor<?>) == false) {
 				return null;
 			}
 		} else {
@@ -198,7 +185,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 		 * 2) Where A1, ..., An are the type parameters of M and B1, ..., Bn are the type parameters of N, let T=[B1:=A1, ..., Bn:=An].
 		 * Then, for all i (1 ≤ i ≤ n), the bound of Ai is the same type as T applied to the bound of Bi.
 		 */
-		if (!hasSameMethodFormalTypeParameters(typeParamDeclarer)) {
+		if (hasSameMethodFormalTypeParameters(typeParamDeclarer) == false) {
 			//the methods formal type parameters are different. We cannot adapt such parameters
 			return null;
 		}
@@ -232,7 +219,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 			//the methods has same count of formal parameters
 			//check that bounds of formal type parameters are same after adapting
 			for (int i = 0; i < thisTypeParameters.size(); i++) {
-				if (!isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i))) {
+				if (isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
 					return false;
 				}
 			}

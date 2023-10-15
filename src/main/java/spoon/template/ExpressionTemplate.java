@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.template;
 
@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtType;
  * <p>
  * To define a new expression template parameter, you must subclass this class
  * and implement the {@link #expression()} method, which actually defines the
- * Java expression. It corresponds to a {@link spoon.reflect.code.CtExpression}.
+ * Java expression. It corresponds to a {@link CtExpression}.
  */
 public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpression<T>> {
 

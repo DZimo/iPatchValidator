@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
 
@@ -249,26 +249,22 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Gets the first parent that matches the given type.
-	 *
-	 * @return the nearest matching parent; null if no match is found or this element has no parent
 	 */
-	<P extends CtElement> P getParent(Class<P> parentType);
+	<P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException;
 
 	/**
 	 * Gets the first parent that matches the filter.
-	 *
-	 * @return the nearest matching parent; null if no match is found or this element has no parent
+	 * If the receiver (this) matches the filter, it is also returned
 	 */
-	<E extends CtElement> E getParent(Filter<E> filter);
+	<E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException;
 
 	/**
 	 * Manually sets the parent element of the current element.
 	 *
-	 * @param parent parent reference.
-	 * @param <E> this element's type
-	 * @return this element
+	 * @param parent
+	 * 		parent reference.
 	 */
-	<E extends CtElement> E setParent(CtElement parent);
+	<E extends CtElement> E setParent(E parent);
 
 	/**
 	 * Tells if this parent has been initialized.

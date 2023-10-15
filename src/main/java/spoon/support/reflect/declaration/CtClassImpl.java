@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.declaration;
 
@@ -19,7 +19,6 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -36,16 +35,15 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
 import static spoon.reflect.path.CtRole.CONSTRUCTOR;
+import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 /**
- * The implementation for {@link spoon.reflect.declaration.CtClass}.
+ * The implementation for {@link CtClass}.
  *
  * @author Renaud Pawlak
  */
@@ -54,9 +52,6 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 
 	@MetamodelPropertyField(role = SUPER_TYPE)
 	CtTypeReference<?> superClass;
-
-	@MetamodelPropertyField(role = CtRole.PERMITTED_TYPE)
-	Set<CtTypeReference<?>> permittedTypes = emptySet();
 
 	@Override
 	public void accept(CtVisitor v) {
@@ -178,7 +173,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 	@Override
 	public boolean isAnonymous() {
 		// case 1: the java.lang.Class convention
-		if (getSimpleName().isEmpty()) {
+		if ("".equals(getSimpleName())) {
 			return true;
 		}
 		// case 2: the Spoon convention (the number in the class file)
@@ -267,7 +262,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 		}
 	}
 
-	private static class NewInstanceClassloader extends URLClassLoader {
+	private class NewInstanceClassloader extends URLClassLoader {
 		NewInstanceClassloader(File binaryOutputDirectory) throws MalformedURLException {
 			super(new URL[] { binaryOutputDirectory.toURI().toURL()});
 		}
@@ -293,45 +288,5 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 			l.add(anon.getReference());
 		}
 		return l;
-	}
-
-	@Override
-	public Set<CtTypeReference<?>> getPermittedTypes() {
-		return Collections.unmodifiableSet(permittedTypes);
-	}
-
-	@Override
-	public CtClass<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
-		Collection<CtTypeReference<?>> types = permittedTypes != null ? permittedTypes : CtElementImpl.emptySet();
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.PERMITTED_TYPE, this.permittedTypes, new LinkedHashSet<>(this.permittedTypes));
-		this.permittedTypes.clear();
-		for (CtTypeReference<?> type : types) {
-			addPermittedType(type);
-		}
-		return this;
-	}
-
-	@Override
-	public CtClass<T> addPermittedType(CtTypeReference<?> type) {
-		if (type == null) {
-			return this;
-		}
-		if (this.permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			this.permittedTypes = new LinkedHashSet<>();
-		}
-		type.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.PERMITTED_TYPE, this.permittedTypes, type);
-		this.permittedTypes.add(type);
-		return this;
-	}
-
-	@Override
-	public CtClass<T> removePermittedType(CtTypeReference<?> type) {
-		if (this.permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			return this;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, CtRole.PERMITTED_TYPE, this.permittedTypes, type);
-		this.permittedTypes.remove(type);
-		return this;
 	}
 }

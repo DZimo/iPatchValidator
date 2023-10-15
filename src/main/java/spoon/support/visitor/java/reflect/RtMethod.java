@@ -1,13 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.java.reflect;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import spoon.SpoonException;
 
 public class RtMethod {
 	private final Class<?> clazz;
@@ -134,16 +137,37 @@ public class RtMethod {
 		return getDeclaringClass().getName().hashCode() ^ getName().hashCode();
 	}
 
-	/**
-	 * @param method is the {@link Method} which is to be wrapped in a RtMethod
-	 * @return a wrapper around the passed method
-	 */
 	public static RtMethod create(Method method) {
 		return new RtMethod(method.getDeclaringClass(), method, method.getName(), method.getReturnType(),
 				method.getGenericReturnType(), method.getTypeParameters(), method.getParameterTypes(), method.getGenericParameterTypes(), method.getExceptionTypes(),
 				method.getModifiers(), method.getDeclaredAnnotations(), method.getParameterAnnotations(),
-				method.isVarArgs(),
-				method.isDefault());
+				method.isVarArgs(), //spoon is compatible with Java 7, so compilation fails here
+				//method.isDefault());
+				_java8_isDefault(method));
+	}
+
+	private static Method _method_isDefault;
+	static {
+		try {
+			_method_isDefault = Method.class.getMethod("isDefault");
+		} catch (NoSuchMethodException | SecurityException e) {
+			//spoon is running with java 7 JDK
+			_method_isDefault = null;
+		}
+	}
+
+	private static boolean _java8_isDefault(Method method) {
+		if (_method_isDefault == null) {
+			//spoon is running with java 7 JDK, all methods are not default, because java 7 does not have default methods
+			return false;
+		}
+		try {
+			return (Boolean) _method_isDefault.invoke(method);
+		} catch (IllegalAccessException | IllegalArgumentException e) {
+			throw new SpoonException("Calling of Java8 Method#isDefault() failed", e);
+		} catch (InvocationTargetException e) {
+			throw new SpoonException("Calling of Java8 Method#isDefault() failed", e.getTargetException());
+		}
 	}
 
 	public static <T> RtMethod[] methodsOf(Class<T> clazz) {

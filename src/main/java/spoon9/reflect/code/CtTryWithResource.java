@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.code;
 
@@ -30,30 +30,28 @@ public interface CtTryWithResource extends CtTry {
 	/**
 	 * Gets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
-	 *
-	 * The returned list is immutable for sake of proper encapsulation.
 	 */
 	@PropertyGetter(role = TRY_RESOURCE)
-	List<CtResource<?>> getResources();
+	List<CtLocalVariable<?>> getResources();
 
 	/**
 	 * Sets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
 	 */
 	@PropertySetter(role = TRY_RESOURCE)
-	<T extends CtTryWithResource> T setResources(List<? extends CtResource<?>> resources);
+	<T extends CtTryWithResource> T setResources(List<CtLocalVariable<?>> resources);
 
 	/**
 	 * Adds a resource.
 	 */
 	@PropertySetter(role = TRY_RESOURCE)
-	<T extends CtTryWithResource> T addResource(CtResource<?> resource);
+	<T extends CtTryWithResource> T addResource(CtLocalVariable<?> resource);
 
 	/**
 	 * Removes a resource.
 	 */
 	@PropertySetter(role = TRY_RESOURCE)
-	boolean removeResource(CtResource<?> resource);
+	boolean removeResource(CtLocalVariable<?> resource);
 
 	@Override
 	CtTryWithResource clone();

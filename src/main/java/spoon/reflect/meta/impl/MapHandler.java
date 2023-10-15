@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.meta.impl;
 
@@ -43,7 +43,7 @@ abstract class MapHandler<T, V> extends AbstractRoleHandler<T, Map<String, V>, V
 
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public <W, X> java.util.Collection<X> asCollection(W element) {
+	public <W, X> Collection<X> asCollection(W element) {
 		return (Collection) asMap(element).values();
 	}
 
@@ -55,7 +55,7 @@ abstract class MapHandler<T, V> extends AbstractRoleHandler<T, Map<String, V>, V
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
-			public Set<Map.Entry<String, X>> entrySet() {
+			public Set<Entry<String, X>> entrySet() {
 				return (Set) MapHandler.this.entrySet(element);
 			}
 

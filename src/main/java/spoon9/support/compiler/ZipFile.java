@@ -1,74 +1,36 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.compiler;
 
-import spoon9.SpoonException;
 import spoon9.compiler.SpoonFile;
 import spoon9.compiler.SpoonFolder;
-import spoon9.support.Internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class ZipFile implements SpoonFile {
 
-	private final String name;
-	private final ZipFolder parent;
-	private final Path tempFile;
-	private final byte[] content;
+	byte[] buffer;
 
-	/**
-	 * Creates a new zip file. Should never be called manually.
-	 *
-	 * @param parent the parent folder
-	 * @param name the name of the file
-	 * @param content the content of the file
-	 * @deprecated use {@link ZipFile#ZipFile(ZipFolder, String, Path)}
-	 */
-	@Deprecated
-	public ZipFile(ZipFolder parent, String name, byte[] content) {
-		this.content = content;
+	String name;
+
+	ZipFolder parent;
+
+	public ZipFile(ZipFolder parent, String name, byte[] buffer) {
+		this.buffer = buffer;
 		this.name = name;
 		this.parent = parent;
-		this.tempFile = null;
-	}
-
-	/**
-	 * Creates a new zip file. Should never be called manually.
-	 *
-	 * @param parent the parent folder
-	 * @param name the name of the file
-	 * @param tempFile the temporary file it was cached to
-	 */
-	@Internal
-	public ZipFile(ZipFolder parent, String name, Path tempFile) {
-		this.parent = parent;
-		this.name = name;
-		this.tempFile = tempFile;
-		this.content = null;
 	}
 
 	@Override
 	public InputStream getContent() {
-		if (content != null) {
-			return new ByteArrayInputStream(content);
-		}
-		try {
-			return Files.newInputStream(Objects.requireNonNull(tempFile));
-		} catch (IOException e) {
-			throw new SpoonException(e);
-		}
+		return new ByteArrayInputStream(buffer);
 	}
 
 	@Override
@@ -98,9 +60,6 @@ public class ZipFile implements SpoonFile {
 
 	@Override
 	public String getPath() {
-		if (tempFile != null) {
-			return tempFile.toAbsolutePath().toString();
-		}
 		return toString();
 	}
 
@@ -121,29 +80,17 @@ public class ZipFile implements SpoonFile {
 
 	@Override
 	public boolean isActualFile() {
-		return tempFile != null;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = Objects.hash(name, parent, tempFile);
-		result = 31 * result + Arrays.hashCode(content);
-		return result;
+		return false;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof ZipFile)) {
-			return false;
-		}
-		ZipFile zipFile = (ZipFile) obj;
-		return Objects.equals(name, zipFile.name)
-			&& Objects.equals(parent, zipFile.parent)
-			&& Objects.equals(tempFile, zipFile.tempFile)
-			&& Arrays.equals(content, zipFile.content);
+		return toString().equals(obj.toString());
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
 	}
 
 }

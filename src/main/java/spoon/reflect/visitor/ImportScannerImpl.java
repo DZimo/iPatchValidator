@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.visitor;
 
@@ -179,11 +179,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			String bracket = m.group(1);
 			String tag = m.group(2);
 			if ("{".equals(bracket)) {
-				if (!inlineTags.contains(tag)) {
+				if (inlineTags.contains(tag) == false) {
 					continue;
 				}
 			} else {
-				if (!mainTags.contains(tag)) {
+				if (mainTags.contains(tag) == false) {
 					continue;
 				}
 			}
@@ -361,7 +361,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
-		if (targetType != null && !targetType.canAccess(ref)) {
+		if (targetType != null && targetType.canAccess(ref) == false) {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
 			return false;
 		}
@@ -772,6 +772,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (parent != null) {
 			CtBlock block = (CtBlock) parent;
+			boolean innerClass = false;
 
 			// now we have the first container block, we want to check if we're not in an inner class
 			while (parent != null && !(parent instanceof CtClass)) {

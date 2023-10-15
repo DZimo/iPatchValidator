@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.factory;
 
@@ -55,7 +55,6 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -81,8 +80,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
@@ -123,7 +120,7 @@ public interface CoreFactory {
 	 * @param <T>     the element's type
 	 * @param element the element
 	 * @return a clone of <code>element</code>
-	 * @see spoon.reflect.declaration.CtElement#clone()
+	 * @see CtElement#clone()
 	 */
 	<T extends CtElement> T clone(T element);
 
@@ -622,22 +619,4 @@ public interface CoreFactory {
 	 * Creates a TextBlock String Literal
 	 */
 	CtTextBlock createTextBlock();
-
-	/**
-	 * Creates a Type Pattern
-	 * @return a new Type Pattern instance.
-	 */
-	CtTypePattern createTypePattern();
-
-	/**
-	 * Creates a record.
-	 * @return the created record.
-	 */
-	CtRecord createRecord();
-
-	/**
-	 * Creates a record component.
-	 * @return  the created record component.
-	 */
-	CtRecordComponent createRecordComponent();
 }

@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.reference;
 
@@ -69,9 +69,13 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 			throw e;
 		}
 		try {
-			return clazz.getDeclaredField(getSimpleName());
-		} catch (NoSuchFieldException e) {
-			throw new SpoonException("The field " + getQualifiedName() + " was not found", e);
+			if (clazz.isAnnotation()) {
+				return clazz.getDeclaredMethod(getSimpleName());
+			} else {
+				return clazz.getDeclaredField(getSimpleName());
+			}
+		} catch (NoSuchMethodException | NoSuchFieldException e) {
+			throw new SpoonException("The field " + getQualifiedName() + " not found", e);
 		}
 	}
 
@@ -79,6 +83,61 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 	protected AnnotatedElement getActualAnnotatedElement() {
 		return (AnnotatedElement) getActualField();
 	}
+
+	// @Override
+	// public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+	// A annotation = super.getAnnotation(annotationType);
+	// if (annotation != null) {
+	// return annotation;
+	// }
+	// // use reflection
+	// Class<?> c = getDeclaringType().getActualClass();
+	// if (c.isAnnotation()) {
+	// for (Method m : RtHelper.getAllMethods(c)) {
+	// if (!getSimpleName().equals(m.getName())) {
+	// continue;
+	// }
+	// m.setAccessible(true);
+	// return m.getAnnotation(annotationType);
+	// }
+	// } else {
+	// for (Field f : RtHelper.getAllFields(c)) {
+	// if (!getSimpleName().equals(f.getName())) {
+	// continue;
+	// }
+	// f.setAccessible(true);
+	// return f.getAnnotation(annotationType);
+	// }
+	// }
+	// return null;
+	// }
+
+	// @Override
+	// public Annotation[] getAnnotations() {
+	// Annotation[] annotations = super.getAnnotations();
+	// if (annotations != null) {
+	// return annotations;
+	// }
+	// // use reflection
+	// Class<?> c = getDeclaringType().getActualClass();
+	// for (Field f : RtHelper.getAllFields(c)) {
+	// if (!getSimpleName().equals(f.getName())) {
+	// continue;
+	// }
+	// f.setAccessible(true);
+	// return f.getAnnotations();
+	// }
+	// // If the fields belong to an annotation type, they are actually
+	// // methods
+	// for (Method m : RtHelper.getAllMethods(c)) {
+	// if (!getSimpleName().equals(m.getName())) {
+	// continue;
+	// }
+	// m.setAccessible(true);
+	// return m.getAnnotations();
+	// }
+	// return null;
+	// }
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -168,12 +227,6 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		// special-case the length field of array, as it doesn't have a declaration
-		// as arrays only have one field, we do not need to check the name additionally
-		CtTypeReference<?> declaringType = getDeclaringType();
-		if (declaringType != null && declaringType.isArray()) {
-			return Set.of(ModifierKind.PUBLIC, ModifierKind.FINAL);
-		}
 		CtVariable<?> v = getDeclaration();
 		if (v != null) {
 			return v.getModifiers();

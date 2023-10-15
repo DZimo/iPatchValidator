@@ -1,66 +1,45 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.factory;
 
 import spoon9.Launcher;
 import spoon9.SpoonException;
+import spoon9.experimental.CtUnresolvedImport;
 import spoon9.reflect.code.CtNewClass;
 import spoon9.reflect.cu.SourcePosition;
 import spoon9.reflect.cu.position.NoSourcePosition;
-import spoon9.reflect.declaration.CtClass;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtInterface;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.experimental.CtUnresolvedImport;
-import spoon9.reflect.reference.CtActualTypeContainer;
-import spoon9.reflect.reference.CtArrayTypeReference;
-import spoon9.reflect.declaration.CtImport;
-import spoon9.reflect.reference.CtIntersectionTypeReference;
-import spoon9.reflect.reference.CtReference;
-import spoon9.reflect.reference.CtTypeParameterReference;
-import spoon9.reflect.reference.CtTypeReference;
-import spoon9.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon9.reflect.declaration.*;
+import spoon9.reflect.reference.*;
 import spoon9.reflect.visitor.CtAbstractVisitor;
 import spoon9.reflect.visitor.CtScanner;
 import spoon9.reflect.visitor.filter.TypeFilter;
 import spoon9.support.DefaultCoreFactory;
 import spoon9.support.StandardEnvironment;
+import spoon9.support.util.internal.MapUtils;
 import spoon9.support.visitor.ClassTypingContext;
 import spoon9.support.visitor.GenericTypeAdapter;
 import spoon9.support.visitor.MethodTypingContext;
 import spoon9.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * The {@link CtType} sub-factory.
  */
 public class TypeFactory extends SubFactory {
 
-	private static final Set<String> NULL_PACKAGE_CLASSES = Set.of(
-			"void", "boolean", "byte", "short", "char", "int", "float", "long", "double",
-			// TODO (leventov) it is questionable to me that nulltype should also be here
-			CtTypeReference.NULL_TYPE_NAME);
+	private static final Set<String> NULL_PACKAGE_CLASSES = Collections.unmodifiableSet(new HashSet<>(
+			Arrays.asList("void", "boolean", "byte", "short", "char", "int", "float", "long", "double",
+					// TODO (leventov) it is questionable to me that nulltype should also be here
+					CtTypeReference.NULL_TYPE_NAME)));
 
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
@@ -92,9 +71,7 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
 	public final CtTypeReference<?> OMITTED_TYPE_ARG_TYPE = createReference(CtTypeReference.OMITTED_TYPE_ARG_NAME);
 
-	// This map MUST provide a useful computeIfAbsent method in the face of concurrency.
-	// Therefore, we declare it as a ConcurrentHashMap directly.
-	private final ConcurrentHashMap<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
+	private final Map<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Returns a reference on the null type (type of null).
@@ -292,9 +269,6 @@ public class TypeFactory extends SubFactory {
 	 */
 	public CtArrayTypeReference<?> createArrayReference(CtTypeReference<?> reference, int n) {
 		CtTypeReference<?> componentType;
-		if (n < 1) {
-			throw new SpoonException("Array dimension must be >= 1");
-		}
 		if (n == 1) {
 			return createArrayReference(reference);
 		}
@@ -451,7 +425,8 @@ public class TypeFactory extends SubFactory {
 				return null;
 			}
 			String className = qualifiedName.substring(inertTypeIndex + 1);
-			if (t.isLocalType()) {
+			final CtTypeReference<T> reference = t.getReference();
+			if (reference.isLocalType()) {
 				final List<CtClass<T>> enclosingClasses = t.getElements(new TypeFilter<CtClass<T>>(CtClass.class) {
 					@Override
 					public boolean matches(CtClass<T> element) {
@@ -467,9 +442,10 @@ public class TypeFactory extends SubFactory {
 				// If the class name is an integer, the class is an anonymous class, otherwise,
 				// it is a standard class.
 				//TODO reset cache when type is modified
-				return getAnonymousTypeFromCache(t, className, k -> {
+				return getFromCache(t, className, () -> {
 					//the searching for declaration of anonymous class is expensive
 					//do that only once and store it in cache of CtType
+					Integer.parseInt(className);
 					final List<CtNewClass> anonymousClasses = t.getElements(new TypeFilter<CtNewClass>(CtNewClass.class) {
 						@Override
 						public boolean matches(CtNewClass element) {
@@ -488,19 +464,15 @@ public class TypeFactory extends SubFactory {
 		return null;
 	}
 
-	private static final String ANONYMOUS_TYPES_CACHE_KEY = TypeFactory.class.getName() + "-AnnonymousTypeCache";
+	private static final String CACHE_KEY = TypeFactory.class.getName() + "-AnnonymousTypeCache";
 
-	private <T, K> T getAnonymousTypeFromCache(CtElement element, K key, Function<K, T> valueResolver) {
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
-		synchronized (element) {
-			@SuppressWarnings("unchecked")
-			Map<K, T> cache = (Map<K, T>) element.getMetadata(ANONYMOUS_TYPES_CACHE_KEY);
-			if (cache == null) {
-				cache = new HashMap<>();
-				element.putMetadata(ANONYMOUS_TYPES_CACHE_KEY, cache);
-			}
-			return cache.computeIfAbsent(key, valueResolver);
+	private <T, K> T getFromCache(CtElement element, K key, Supplier<T> valueResolver) {
+		Map<K, T> cache = (Map<K, T>) element.getMetadata(CACHE_KEY);
+		if (cache == null) {
+			cache = new HashMap<>();
+			element.putMetadata(CACHE_KEY, cache);
 		}
+		return MapUtils.getOrCreate(cache, key, valueResolver);
 	}
 
 	private boolean isNumber(String str) {
@@ -561,33 +533,35 @@ public class TypeFactory extends SubFactory {
 	public <T> CtType<T> get(Class<?> cl) {
 		final CtType<T> aType = get(cl.getName());
 		if (aType == null) {
-			return (CtType<T>) this.shadowCache.computeIfAbsent(cl, this::buildNewShadowClass);
+			final CtType<T> shadowClass = (CtType<T>) this.shadowCache.get(cl);
+			if (shadowClass == null) {
+				CtType<T> newShadowClass;
+				try {
+					newShadowClass = new JavaReflectionTreeBuilder(getShadowFactory()).scan((Class<T>) cl);
+				} catch (Throwable e) {
+					Launcher.LOGGER.warn("cannot create shadow class: {}", cl.getName(), e);
+
+					newShadowClass = getShadowFactory().Core().createClass();
+					newShadowClass.setSimpleName(cl.getSimpleName());
+					newShadowClass.setShadow(true);
+					getShadowFactory().Package().getOrCreate(cl.getPackage().getName()).addType(newShadowClass);
+				}
+				newShadowClass.setFactory(factory);
+				newShadowClass.accept(new CtScanner() {
+					@Override
+					public void scan(CtElement element) {
+						if (element != null) {
+							element.setFactory(factory);
+						}
+					}
+				});
+				this.shadowCache.put(cl, newShadowClass);
+				return newShadowClass;
+			} else {
+				return shadowClass;
+			}
 		}
 		return aType;
-	}
-
-	private CtType<?> buildNewShadowClass(Class<?> cl) {
-		CtType<?> newShadowClass;
-		try {
-			newShadowClass = new JavaReflectionTreeBuilder(getShadowFactory()).scan(cl);
-		} catch (Throwable e) {
-			Launcher.LOGGER.warn("cannot create shadow class: {}", cl.getName(), e);
-
-			newShadowClass = getShadowFactory().Core().createClass();
-			newShadowClass.setSimpleName(cl.getSimpleName());
-			newShadowClass.setShadow(true);
-			getShadowFactory().Package().getOrCreate(cl.getPackage().getName()).addType(newShadowClass);
-		}
-		newShadowClass.setFactory(factory);
-		newShadowClass.accept(new CtScanner() {
-			@Override
-			public void scan(CtElement element) {
-				if (element != null) {
-					element.setFactory(factory);
-				}
-			}
-		});
-		return newShadowClass;
 	}
 
 	private transient Factory shadowFactory;

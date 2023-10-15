@@ -1,21 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.pattern.internal;
 
-import java.util.List;
-
 import spoon9.SpoonException;
-import spoon9.reflect.code.CtBlock;
-import spoon9.reflect.code.CtExpression;
-import spoon9.reflect.code.CtInvocation;
-import spoon9.reflect.code.CtLiteral;
-import spoon9.reflect.code.CtNewArray;
-import spoon9.reflect.code.CtStatement;
+import spoon9.reflect.code.*;
 import spoon9.reflect.declaration.CtElement;
 import spoon9.reflect.declaration.CtExecutable;
 import spoon9.reflect.declaration.CtNamedElement;
@@ -25,6 +18,8 @@ import spoon9.reflect.reference.CtExecutableReference;
 import spoon9.reflect.reference.CtReference;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.support.visitor.SignaturePrinter;
+
+import java.util.List;
 
 /**
  * Converts the individual parameter values to required type

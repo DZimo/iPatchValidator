@@ -1,14 +1,12 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.sniper.internal;
 
-
-import org.jspecify.annotations.Nullable;
 import spoon9.SpoonException;
 import spoon9.reflect.code.CtComment;
 import spoon9.reflect.code.CtLiteral;
@@ -32,15 +30,7 @@ import spoon9.support.Experimental;
 import spoon9.support.reflect.CtExtendedModifier;
 import spoon9.support.reflect.cu.position.SourcePositionImpl;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -236,27 +226,15 @@ public class ElementSourceFragment implements SourceFragment {
 	 * @param otherElement {@link SourcePositionHolder} whose {@link ElementSourceFragment} has to be added to `parentFragment`
 	 * @return new {@link ElementSourceFragment} created for `otherElement` or null if `otherElement` cannot be included
 	 */
-	private @Nullable ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
+	private ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
-		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)
-				// method imports have child type references from other files, see https://github.com/INRIA/spoon/issues/3743
-				&& fromSameFile(element, otherElement)) {
+		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, this.getRoleHandler(roleInParent, otherElement));
 			this.addChild(otherFragment);
 			return otherFragment;
 		}
 		//do not connect that undefined source position
 		return null;
-	}
-
-	private static boolean fromSameFile(SourcePositionHolder parent, SourcePositionHolder child) {
-		SourcePosition parentPos = parent.getPosition();
-		SourcePosition childPos = child.getPosition();
-
-		return parentPos.getFile().equals(childPos.getFile())
-				// we always consider the children of a compilation unit to be from the same file,
-				// as this is required e.g. to support sniper printing of renamed classes
-				|| parent instanceof CtCompilationUnit;
 	}
 
 	private RoleHandler getRoleHandler(CtRole roleInParent, SourcePositionHolder otherElement) {
@@ -370,7 +348,7 @@ public class ElementSourceFragment implements SourceFragment {
 			return CMP.OTHER_IS_PARENT;
 		}
 		//the fragments overlap - it is not allowed
-		throw new SpoonException("Cannot compare this: [" + getStart() + ", " + getEnd() + "] with other: [" + other.getStart() + ", " + other.getEnd() + "]");
+		throw new SpoonException("Cannot compare this: [" + getStart() + ", " + getEnd() + "] with other: [\"" + other.getStart() + "\", \"" + other.getEnd() + "\"]");
 	}
 
 	/**
@@ -413,7 +391,7 @@ public class ElementSourceFragment implements SourceFragment {
 					//we have found exact match
 					if (element != null && getElement() != element) {
 						if (firstChild == null) {
-							throw new SpoonException("There is no source fragment for element " + element + ". There is one for class " + getElement().toString());
+							throw new SpoonException("There is no source fragment for element " + element.toString() + ". There is one for class " + getElement().toString());
 						}
 						return firstChild.getSourceFragmentOf(element, start, end);
 					}
@@ -498,6 +476,7 @@ public class ElementSourceFragment implements SourceFragment {
 			if (child instanceof TokenSourceFragment) {
 				result.add(child);
 				i++;
+				continue;
 			} else if (child instanceof ElementSourceFragment) {
 				ElementSourceFragment esf = (ElementSourceFragment) child;
 				ContainerKind kind = esf.getContainerKindInParent();
@@ -513,7 +492,7 @@ public class ElementSourceFragment implements SourceFragment {
 				foundRoles.add(checkNotNull(esf.getRoleInParent()));
 				List<SourceFragment> childrenInSameCollection = new ArrayList<>();
 				//but first include prefix whitespace
-				SourceFragment spaceChild = removeNonCommentSuffixSpace(result);
+				SourceFragment spaceChild = removeSuffixSpace(result);
 				if (spaceChild != null) {
 					childrenInSameCollection.add(spaceChild);
 				}
@@ -535,6 +514,16 @@ public class ElementSourceFragment implements SourceFragment {
 					}
 					i++;
 				}
+				//add suffix space
+				/*
+				if (i < flatChildren.size()) {
+					SourceFragment nextChild = flatChildren.get(i);
+					if (isSpaceFragment(nextChild)) {
+						childrenInSameCollection.add(nextChild);
+						i++;
+					}
+				}
+				*/
 				result.add(new CollectionSourceFragment(childrenInSameCollection));
 			} else {
 				throw new SpoonException("Unexpected SourceFragment of type " + child.getClass());
@@ -543,16 +532,10 @@ public class ElementSourceFragment implements SourceFragment {
 		return result;
 	}
 
-	/**
-	 * Remove any suffix space, except if it follows directly after a comment. As comments are
-	 * treated as whitespace, the suffix space must be considered part of the comment, or we
-	 * sometimes fail to print it.
-	 */
-	private SourceFragment removeNonCommentSuffixSpace(List<SourceFragment> list) {
+	private SourceFragment removeSuffixSpace(List<SourceFragment> list) {
 		if (list.size() > 0) {
 			SourceFragment lastChild = list.get(list.size() - 1);
-			SourceFragment secondLastChild = list.size() > 1 ? list.get(list.size() - 2) : null;
-			if (isSpaceFragment(lastChild) && !isCommentFragment(secondLastChild)) {
+			if (isSpaceFragment(lastChild)) {
 				list.remove(list.size() - 1);
 				return lastChild;
 			}
@@ -667,7 +650,7 @@ public class ElementSourceFragment implements SourceFragment {
 			throw new SpoonException("Inconsistent start/end. Start=" + start + " is greater then End=" + end);
 		}
 		String sourceCode = getOriginalSourceCode();
-		if (sourceCode.isEmpty()) {
+		if (sourceCode.length() == 0) {
 			return;
 		}
 		StringBuilder buff = new StringBuilder();
@@ -695,14 +678,14 @@ public class ElementSourceFragment implements SourceFragment {
 			consumer.accept(new TokenSourceFragment(buff.toString(), TokenType.SPACE));
 			return;
 		}
-		char[] charArray = new char[buff.length()];
-		buff.getChars(0, buff.length(), charArray, 0);
+		char[] str = new char[buff.length()];
+		buff.getChars(0, buff.length(), str, 0);
 		int off = 0;
-		while (off < charArray.length) {
+		while (off < str.length) {
 			//detect java identifier or keyword
-			int lenOfIdentifier = detectJavaIdentifier(charArray, off);
+			int lenOfIdentifier = detectJavaIdentifier(str, off);
 			if (lenOfIdentifier > 0) {
-				String identifier = new String(charArray, off, lenOfIdentifier);
+				String identifier = new String(str, off, lenOfIdentifier);
 				if (javaKeywords.contains(identifier)) {
 					//it is a java keyword
 					consumer.accept(new TokenSourceFragment(identifier, TokenType.KEYWORD));
@@ -716,13 +699,13 @@ public class ElementSourceFragment implements SourceFragment {
 			//detect longest match in matchers
 			StringMatcher longestMatcher = null;
 			for (StringMatcher strMatcher : matchers) {
-				if (strMatcher.isMatch(charArray, off)) {
+				if (strMatcher.isMatch(str, off)) {
 					longestMatcher = strMatcher.getLonger(longestMatcher);
 				}
 			}
 			// nothing has matched, best effort token
 			if (longestMatcher == null) {
-				consumer.accept(new TokenSourceFragment(Arrays.toString(charArray), TokenType.CODE_SNIPPET));
+				consumer.accept(new TokenSourceFragment(str.toString(), TokenType.CODE_SNIPPET));
 				return;
 			}
 			consumer.accept(new TokenSourceFragment(longestMatcher.toString(), longestMatcher.getType()));
@@ -742,7 +725,7 @@ public class ElementSourceFragment implements SourceFragment {
 				o++;
 				while (o < len) {
 					c = buff[o];
-					if (!Character.isJavaIdentifierPart(c)) {
+					if (Character.isJavaIdentifierPart(c) == false) {
 						break;
 					}
 					o++;
@@ -901,11 +884,4 @@ public class ElementSourceFragment implements SourceFragment {
 		return fragment instanceof ElementSourceFragment && ((ElementSourceFragment) fragment).getElement() instanceof CtComment;
 	}
 
-	/**
-	 * @return true if {@link SourceFragment} represents a modifier
-	 */
-	static boolean isModifierFragment(SourceFragment fragment) {
-		return fragment instanceof ElementSourceFragment
-				&& ((ElementSourceFragment) fragment).getRoleInParent() == CtRole.MODIFIER;
-	}
 }

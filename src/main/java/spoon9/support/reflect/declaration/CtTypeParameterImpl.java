@@ -1,32 +1,22 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.reflect.declaration;
 
-import spoon9.SpoonException;
 import spoon9.reflect.annotations.MetamodelPropertyField;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtField;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtModifiable;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeMember;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtExecutableReference;
 import spoon9.reflect.reference.CtFieldReference;
 import spoon9.reflect.reference.CtTypeParameterReference;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.reflect.visitor.CtVisitor;
 import spoon9.support.DerivedProperty;
-import spoon9.support.adaption.TypeAdaptor;
 import spoon9.support.UnsettableProperty;
+import spoon9.support.visitor.GenericTypeAdapter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -81,7 +71,11 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	public CtFormalTypeDeclarer getTypeParameterDeclarer() {
-		return getParent(CtFormalTypeDeclarer.class);
+		try {
+			return getParent(CtFormalTypeDeclarer.class);
+		} catch (ParentNotInitializedException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -246,25 +240,15 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 		if (superTypeRef instanceof CtTypeParameterReference) {
 			//the type is type parameter too. Use appropriate sub type checking algorithm
 			CtTypeParameter superTypeParam = (CtTypeParameter) superTypeRef.getDeclaration();
-			TypeAdaptor typeAdaptor;
-			if (getTypeParameterDeclarer() instanceof CtType) {
-				typeAdaptor = new TypeAdaptor((CtType<?>) getTypeParameterDeclarer());
-			} else if (getTypeParameterDeclarer() instanceof CtMethod) {
-				typeAdaptor = new TypeAdaptor((CtMethod<?>) getTypeParameterDeclarer());
-			} else if (getTypeParameterDeclarer() instanceof CtConstructor) {
-				typeAdaptor = new TypeAdaptor((CtConstructor<?>) getTypeParameterDeclarer());
-			} else {
-				throw new SpoonException("Unknown type parameter declarer: " + getTypeParameterDeclarer());
-			}
-			return isSubtypeOf(typeAdaptor, this, superTypeParam);
+			return isSubtypeOf(getFactory().Type().createTypeAdapter(getTypeParameterDeclarer()), this, superTypeParam);
 		}
 		//type is normal type
 		return getTypeErasure().isSubtypeOf(superTypeRef);
 	}
 
-	private static boolean isSubtypeOf(TypeAdaptor typeAdaptor, CtTypeParameter subTypeParam, CtTypeParameter superTypeParam) {
+	private static boolean isSubtypeOf(GenericTypeAdapter typeAdapter, CtTypeParameter subTypeParam, CtTypeParameter superTypeParam) {
 		while (subTypeParam != null) {
-			if (isSameInSameScope(subTypeParam, typeAdaptor.adaptType(superTypeParam.getReference()))) {
+			if (isSameInSameScope(subTypeParam, typeAdapter.adaptType(superTypeParam))) {
 				//both type params are same
 				return true;
 			}

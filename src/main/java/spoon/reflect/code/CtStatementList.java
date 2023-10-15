@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.code;
 
@@ -19,7 +19,7 @@ import static spoon.reflect.path.CtRole.STATEMENT;
 /**
  * This code element represents a list of statements. It is not a valid Java
  * program element and is never used directly, on contrary to
- * a {@link spoon.reflect.code.CtBlock}.
+ * a {@link CtBlock}.
  */
 public interface CtStatementList extends CtCodeElement, Iterable<CtStatement> {
 	/**

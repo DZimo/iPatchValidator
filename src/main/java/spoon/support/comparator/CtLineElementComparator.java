@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.comparator;
 
@@ -17,7 +17,6 @@ import spoon.reflect.declaration.CtElement;
  * source files.
  */
 public class CtLineElementComparator implements Comparator<CtElement>, Serializable {
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Returns 0 if o1 has the same position as o2, or both positions are invalid and o1.equals(o2).

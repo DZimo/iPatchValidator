@@ -1,9 +1,9 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.metamodel;
 
@@ -22,7 +22,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
-import spoon.support.adaption.TypeAdaptor;
+import spoon.support.visitor.ClassTypingContext;
 
 /**
  * Represents a concept of the Spoon metamodel (eg {@link CtClass}).
@@ -45,6 +45,10 @@ public class MetamodelConcept {
 	 * List of super concepts of this concept
 	 */
 	private final List<MetamodelConcept> superConcepts = new ArrayList<>();
+	/**
+	 * List of sub concepts of this concept
+	 */
+	private final List<MetamodelConcept> subConcepts = new ArrayList<>();
 
 	/**
 	 * The {@link CtClass} linked to this {@link MetamodelConcept}. Is null in case of class without interface
@@ -56,9 +60,9 @@ public class MetamodelConcept {
 	private CtInterface<?> modelInterface;
 
 	/**
-	 * {@link TypeAdaptor} of this concept used to adapt methods from super type implementations to this {@link MetamodelConcept}
+	 * {@link ClassTypingContext} of this concept used to adapt methods from super type implementations to this {@link MetamodelConcept}
 	 */
-	private TypeAdaptor typeContext;
+	private ClassTypingContext typeContext;
 
 	/**
 	 * own methods of {@link MetamodelConcept}, which does not belong to any role
@@ -79,7 +83,7 @@ public class MetamodelConcept {
 
 
 	MetamodelProperty getOrCreateMMField(CtRole role) {
-		return role2Property.computeIfAbsent(role, k -> new MetamodelProperty(k.getCamelCaseName(), k, this));
+		return Metamodel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
 	}
 
 	/**
@@ -141,6 +145,7 @@ public class MetamodelConcept {
 			throw new SpoonException("Cannot add supertype to itself");
 		}
 		if (addUniqueObject(superConcepts, superType)) {
+			superType.subConcepts.add(this);
 			superType.role2Property.forEach((role, superMMField) -> {
 				MetamodelProperty mmField = getOrCreateMMField(role);
 				mmField.addSuperField(superMMField);
@@ -171,13 +176,13 @@ public class MetamodelConcept {
 	}
 
 	/**
-	 * @return {@link TypeAdaptor}, which can be used to adapt super type methods to this {@link MetamodelConcept}
+	 * @return {@link ClassTypingContext}, which can be used to adapt super type methods to this {@link MetamodelConcept}
 	 *
 	 * (package protected, not in the public API)
 	 */
-	TypeAdaptor getTypeContext() {
+	ClassTypingContext getTypeContext() {
 		if (typeContext == null) {
-			typeContext = new TypeAdaptor(modelClass != null ? modelClass : modelInterface);
+			typeContext = new ClassTypingContext(modelClass != null ? modelClass : modelInterface);
 		}
 		return typeContext;
 	}

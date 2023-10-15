@@ -1,22 +1,23 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.reflect.factory;
 
+
+import spoon9.reflect.declaration.CtModule;
+import spoon9.reflect.declaration.CtPackage;
+import spoon9.reflect.declaration.CtPackageDeclaration;
+import spoon9.reflect.declaration.CtType;
+import spoon9.reflect.reference.CtPackageReference;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
-import spoon9.SpoonException;
-import spoon9.reflect.declaration.CtModule;
-import spoon9.reflect.declaration.CtPackage;
-import spoon9.reflect.declaration.CtPackageDeclaration;
-import spoon9.reflect.reference.CtPackageReference;
 
 
 /**
@@ -101,7 +102,7 @@ public class PackageFactory extends SubFactory {
 		if (parent == null) {
 			return getOrCreate(simpleName);
 		} else {
-			return getOrCreate(parent + CtPackage.PACKAGE_SEPARATOR + simpleName);
+			return getOrCreate(parent.toString() + CtPackage.PACKAGE_SEPARATOR + simpleName);
 		}
 	}
 
@@ -154,74 +155,19 @@ public class PackageFactory extends SubFactory {
 	 * @return a found package or null
 	 */
 	public CtPackage get(String qualifiedName) {
-
-		// Find package with the most contained types. If a module exports package "foo.bar" and the
-		// other "foo.bar.baz", *both modules* will contain a "foo.bar" package in spoon. As
-		// javac (yes, javac. This is not in the spec but would be a colossal pain for many things if
-		// it were ever allowed) does not allow overlapping packages, one of them will be a synthetic
-		// package spoon creates as a parent for "foo.bar.baz". This package will *never* have any
-		// types in it.
-		// JDT does allow it, but the chances of a real-word program actually having overlap are slim.
-		//
-		// However, if the "foo.bar.baz" module is found first in "getAllModules()", we will find the
-		// synthetic "foo.bar" package in it. As that one contains no types, all queries for types in
-		// it will fail!
-		//
-		// To solve this we look for the package with at least one contained type, effectively
-		// filtering out any synthetic packages.
-		int foundPackageCount = 0;
-		CtPackage packageWithTypes = null;
-		CtPackage lastNonNullPackage = null;
-		for (CtModule module : factory.getModel().getAllModules()) {
-			CtPackage aPackage = getPackageFromModule(qualifiedName, module);
-			if (aPackage == null) {
-				continue;
-			}
-			lastNonNullPackage = aPackage;
-			if (aPackage.hasTypes()) {
-				packageWithTypes = aPackage;
-				foundPackageCount++;
+		if (qualifiedName.contains(CtType.INNERTTYPE_SEPARATOR)) {
+			throw new RuntimeException("Invalid package name " + qualifiedName);
+		}
+		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
+		CtPackage current = factory.getModel().getRootPackage();
+		if (token.hasMoreElements()) {
+			current = current.getPackage(token.nextToken());
+			while (token.hasMoreElements() && current != null) {
+				current = current.getPackage(token.nextToken());
 			}
 		}
 
-		if (foundPackageCount > 1) {
-			throw new SpoonException(
-					"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
-							+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
-							+ "Error details: Found " + foundPackageCount + " non-empty packages with name "
-							+ "'" + qualifiedName + "'"
-			);
-		}
-
-		// Return a non synthetic package but if *no* package had any types we return the last one.
-		// This ensures that you can also retrieve empty packages with this API
-		return packageWithTypes != null ? packageWithTypes : lastNonNullPackage;
-	}
-
-	/**
-	 * @param qualifiedName Qualified name of a package.
-	 * @param ctModule A module in which to search for the package.
-	 * @return The package if found in this module, otherwise null.
-	 */
-	private static CtPackage getPackageFromModule(String qualifiedName, CtModule ctModule) {
-		int index = 0;
-		int nextIndex;
-		CtPackage current = ctModule.getRootPackage();
-
-		if (qualifiedName.isEmpty() || current == null) {
-			return current;
-		}
-
-		while ((nextIndex = qualifiedName.indexOf(CtPackage.PACKAGE_SEPARATOR_CHAR, index)) >= 0) {
-			current = current.getPackage(qualifiedName.substring(index, nextIndex));
-			index = nextIndex + 1;
-
-			if (current == null) {
-				return null;
-			}
-		}
-
-		return current.getPackage(qualifiedName.substring(index));
+		return current;
 	}
 
 	/**

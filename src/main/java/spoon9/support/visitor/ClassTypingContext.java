@@ -1,23 +1,14 @@
-/*
+/**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * Copyright (C) 2006-2023 INRIA and contributors
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) or the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon9.support.visitor;
 
 import spoon9.SpoonException;
-import spoon9.reflect.declaration.CtConstructor;
-import spoon9.reflect.declaration.CtElement;
-import spoon9.reflect.declaration.CtExecutable;
-import spoon9.reflect.declaration.CtFormalTypeDeclarer;
-import spoon9.reflect.declaration.CtMethod;
-import spoon9.reflect.declaration.CtParameter;
-import spoon9.reflect.declaration.CtType;
-import spoon9.reflect.declaration.CtTypeInformation;
-import spoon9.reflect.declaration.CtTypeParameter;
-import spoon9.reflect.declaration.ModifierKind;
+import spoon9.reflect.declaration.*;
 import spoon9.reflect.reference.CtTypeParameterReference;
 import spoon9.reflect.reference.CtTypeReference;
 import spoon9.reflect.reference.CtWildcardReference;
@@ -26,13 +17,7 @@ import spoon9.reflect.visitor.chain.ScanningMode;
 import spoon9.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon9.support.SpoonClassNotFoundException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Helper class created from type X or reference to X.
@@ -126,7 +111,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 			//the superTypeRef was not found in super type hierarchy
 			return false;
 		}
-		if (!isSubTypeByActualTypeArguments(superTypeRef, adaptedArgs)) {
+		if (isSubTypeByActualTypeArguments(superTypeRef, adaptedArgs) == false) {
 			return false;
 		}
 		CtTypeReference<?> enclosingTypeRef = getEnclosingType(superTypeRef);
@@ -264,7 +249,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 		CtType<?> thatDeclType = thatMethod.getDeclaringType();
 		CtType<?> thisDeclType = getAdaptationScope();
 		if (thatDeclType != thisDeclType) {
-			if (!isSubtypeOf(thatDeclType.getReference())) {
+			if (isSubtypeOf(thatDeclType.getReference()) == false) {
 				//the declaringType of that method must be superType of this scope type
 				return false;
 			}
@@ -298,7 +283,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * @return true if this method and thatMethod has same signature
 	 */
 	public boolean isSameSignature(CtExecutable<?> thisExecutable, CtMethod<?> thatExecutable) {
-		if (thatExecutable instanceof CtConstructor) {
+		if ((thatExecutable instanceof CtMethod || thatExecutable instanceof CtConstructor) == false) {
 			//only method or constructor can have same signature
 			return false;
 		}
@@ -364,10 +349,6 @@ public class ClassTypingContext extends AbstractTypingContext {
 			if (declType == null) {
 				return null;
 			}
-			if (type.isInterface()) {
-				// Case: we have a declaring type and the inner type is an interface. So the nested interface is implicitly static.
-				return null;
-			}
 			if (declType.isInterface()) {
 				//nested types of interfaces are static
 				return null;
@@ -391,7 +372,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 			throw new SpoonException("You cannot adapt a null type parameter.");
 		}
 		CtFormalTypeDeclarer declarer = typeParam.getTypeParameterDeclarer();
-		if (!(declarer instanceof CtType)) {
+		if ((declarer instanceof CtType<?>) == false) {
 			return null;
 		}
 		//get the actual type argument values for the declarer of `typeParam`
@@ -479,7 +460,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	}
 
 	private CtTypeReference<?> resolveTypeParameter(CtFormalTypeDeclarer declarer, CtTypeParameterReference typeParamRef, CtTypeParameter typeParam, CtTypeReference<?> typeRef) {
-		if (!(declarer instanceof CtType)) {
+		if ((declarer instanceof CtType<?>) == false) {
 			/*
 			 * The declarer is probably out of the scope of this ClassTypingContext.
 			 * For example outer class or method declares type parameter,
@@ -504,7 +485,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 			return typeRef;
 		}
 		if (actualTypeArguments.size() != typeDeclarer.getFormalCtTypeParameters().size()) {
-			if (!actualTypeArguments.isEmpty()) {
+			if (actualTypeArguments.isEmpty() == false) {
 				throw new SpoonException("Unexpected actual type arguments " + actualTypeArguments + " on " + typeDeclarer);
 			}
 			/*
@@ -576,7 +557,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 		for (int i = 0; i < subTypeArgs.size(); i++) {
 			CtTypeReference<?> superArg = superTypeArgs.get(i);
 			CtTypeReference<?> subArg = subTypeArgs.get(i);
-			if (!isSubTypeArg(subArg, superArg)) {
+			if (isSubTypeArg(subArg, superArg) == false) {
 				return false;
 			}
 		}
@@ -654,7 +635,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 			CtFormalTypeDeclarer thatDeclarer = (CtFormalTypeDeclarer) thatExecutable;
 			CtFormalTypeDeclarer thisDeclarer = getAdaptationScope();
 			CtExecutable<?> thisExecutable = (CtExecutable<?>) thisDeclarer;
-			if (!thatExecutable.getSimpleName().equals(thisExecutable.getSimpleName())) {
+			if (thatExecutable.getSimpleName().equals(thisExecutable.getSimpleName()) == false) {
 				return false;
 			}
 			if (thisExecutable.getParameters().size() != thatExecutable.getParameters().size()) {
@@ -667,17 +648,17 @@ public class ClassTypingContext extends AbstractTypingContext {
 			if (thisTypeParameters.size() == thatTypeParameters.size()) {
 				//the methods have same count of formal parameters
 				//check that formal type parameters are same
-				if (!hasSameMethodFormalTypeParameters((CtFormalTypeDeclarer) thatExecutable)) {
+				if (hasSameMethodFormalTypeParameters((CtFormalTypeDeclarer) thatExecutable) == false) {
 					return false;
 				}
 			} else {
 				//the methods have different count of formal type parameters.
-				if (!canTypeErasure) {
+				if (canTypeErasure == false) {
 					//type erasure is not allowed. So non-generic methods cannot match with generic methods
 					return false;
 				}
 				//non-generic method can override a generic one if type erasure is allowed
-				if (!thisTypeParameters.isEmpty()) {
+				if (thisTypeParameters.isEmpty() == false) {
 					//scope method has some parameters. It is generic too, it is not a subsignature of that method
 					return false;
 				}
@@ -710,12 +691,12 @@ public class ClassTypingContext extends AbstractTypingContext {
 					if (actualTA instanceof CtWildcardReference) {
 						CtWildcardReference wildcardReference = (CtWildcardReference) actualTA;
 						if (wildcardReference.isDefaultBoundingType()) {
-							thatType.setActualTypeArguments(Collections.emptyList());
+							thatType.setActualTypeArguments(Collections.EMPTY_LIST);
 						}
 					}
 				}
 
-				if (!thisType.equals(thatType)) {
+				if (thisType.equals(thatType) == false) {
 					return false;
 				}
 			}
