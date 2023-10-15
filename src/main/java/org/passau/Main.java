@@ -198,11 +198,11 @@ public class Main implements Runnable {
     public static void main (String[] args) {
         try {
 
-            Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples","OriginalCodeLogPassau"); // Instance for the original code
-            Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCode");
+            //Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples","OriginalCodeLogPassau"); // Instance for the original code
+            //Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCode");
 
-            Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples","PatchedlCodeLogPassau"); // Instance for the original code
-            Thread t2 = new Thread(mainInstancePatchedPassau, "originalCode");
+            //Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples","PatchedlCodeLogPassau"); // Instance for the original code
+            //Thread t2 = new Thread(mainInstancePatchedPassau, "originalCode");
 
             Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","SourceCodeLogSpoon"); // Instance for the patched code
             Thread t3 = new Thread(mainInstanceOriginaldSpoon, "patchedCode");

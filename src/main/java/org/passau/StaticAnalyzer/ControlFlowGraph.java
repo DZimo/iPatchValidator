@@ -18,13 +18,13 @@ import java.util.List;
 
 public class ControlFlowGraph {
 
-  private static ControlFlowGraph controlFlowGraph; // Class that build CFG
+  private ControlFlowGraph controlFlowGraph; // Class that build CFG
 
-  private static StmtGraph statementGraph; // Statement graph that contains predecessors and successors
+  private StmtGraph statementGraph; // Statement graph that contains predecessors and successors
 
-  private static List<Stmt> allStatements; // All retrieved statements
+  private List<Stmt> allStatements; // All retrieved statements
 
-  private static SootClass<JavaSootClassSource> sootClass;
+  private SootClass<JavaSootClassSource> sootClass;
 
   String scriptCode;
 
