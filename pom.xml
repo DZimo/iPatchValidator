@@ -110,6 +110,12 @@
             <version>2.0.9</version>
         </dependency>
         <dependency>
+            <groupId>fr.inria.gforge.spoon</groupId>
+            <artifactId>spoon-core</artifactId>
+            <!-- See rendered release value at http://spoon.gforge.inria.fr/ -->
+            <version>9.1.0</version>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.14.0</version>
@@ -220,23 +226,23 @@
 
             <!-- ADD THE SOURCE OF SPOON TO INCLUDE IT IN COMPILATION -->
             <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>3.0.0</version>
-            <executions>
-                <execution>
-                    <phase>generate-sources</phase>
-                    <goals>
-                        <goal>add-source</goal>
-                    </goals>
-                    <configuration>
-                        <sources>
-                            <source>spoon/src/main/java/spoon9</source>
-                            <source>spoon/src/main/java/spoon</source>
-                        </sources>
-                    </configuration>
-                </execution>
-            </executions>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>spoon/src/main/java/spoon</source>
+                                <source>spoon9/src/main/java/spoon9</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
