@@ -219,7 +219,7 @@ public class Main implements Runnable {
             Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","OriginalLogSpoon"); // Instance for the patched code
             Thread t3 = new Thread(mainInstanceOriginaldSpoon, "originalCodeSpoon");
 
-            Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon","PatchedCodeLogSpoon"); // Instance for the patched code
+            Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon9","PatchedCodeLogSpoon"); // Instance for the patched code
             Thread t4 = new Thread(mainInstancePatchedSpoon, "patchedCodeSpoon");
 
             t1.start(); // Start Original code passau thread
