@@ -190,8 +190,8 @@ public class Main implements Runnable {
                         graph.setStartingStmt(statementGraph.getStartingStmt());
                         Iterator<Stmt> iterator = statementGraph.iterator();
                         System.out.println("CFG for SOURCE CODE : " + sootClass.getName());
+                        controlFlowGraph.printMethodName(methodToBuildName, iPatchWriter); // Print the Method name
                         controlFlowGraph.printTheControlFlowGraph(iPatchWriter); // Print the CFG
-                        controlFlowGraph.printMethodName(methodToBuildName, iPatchWriter);
                     }
 //                else {
 //                    System.err.println("Error: statementGraph is null for " + methodToBuildName + " in class " + classToBuildName);
@@ -210,10 +210,10 @@ public class Main implements Runnable {
     public static void main (String[] args) {
         try {
 
-            Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples","OriginallCodeLogPassau"); // Instance for the original code
+            Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","OriginallCodeLogPassau"); // Instance for the original code
             Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCodePassau");
 
-            Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/PatchExamples","PatchedlCodeLogPassau"); // Instance for the original code
+            Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples/PatchedCode","PatchedlCodeLogPassau"); // Instance for the original code
             Thread t2 = new Thread(mainInstancePatchedPassau, "patchedCodePassau");
 
             Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","OriginalLogSpoon"); // Instance for the patched code
@@ -233,6 +233,9 @@ public class Main implements Runnable {
 
             t3.join();
             t4.join();
+
+            // Compute Differences in LOG
+
         } catch (InterruptedException e) {
             System.out.println("Error with threads:" + e.getMessage());
         }

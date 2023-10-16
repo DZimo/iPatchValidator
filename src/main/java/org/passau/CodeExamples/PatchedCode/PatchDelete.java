@@ -1,4 +1,4 @@
-package org.passau.CodeExamples;
+package org.passau.CodeExamples.PatchedCode;
 
 import org.passau.SourceCode.Packet;
 

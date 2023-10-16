@@ -1,4 +1,4 @@
-package org.passau.PatchExamples;
+package org.passau.CodeExamples.OriginalCode;
 
 public class SourceCodeSimple {
 

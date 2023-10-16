@@ -1,8 +1,6 @@
 package CodeExamples;
 import org.junit.jupiter.api.Test;
-import org.passau.CodeExamples.SourceCodeSimple;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.passau.CodeExamples.OriginalCode.SourceCodeSimple;
 
 public class SourceCodeSimpleTest {
 

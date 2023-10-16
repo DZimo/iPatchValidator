@@ -1,4 +1,4 @@
-package org.passau.CodeExamples;
+package org.passau.CodeExamples.OriginalCode;
 
 public class classB extends classA{
 
