@@ -5,22 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b6e0630-861c-4f5c-b785-80be68a2babc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/PatchDelete.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/PatchedCode/PatchDelete.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/PatchIFcondition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/PatchedCode/PatchIFcondition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/SourceCodeNullPointer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/SourceCodeNullPointer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/SourceCodeSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/SourceCodeSimple.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/classA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/classB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/classB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/classB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/classB.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/PatchExamples/PatchDelete.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/PatchExamples/PatchIFcondition.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/PatchExamples/SourceCodeNullPointer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/PatchExamples/SourceCodeSimple.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/PatchExamples/classA.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/PatchExamples/classB.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/CodeExamples/SourceCodeSimpleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/CodeExamples/SourceCodeSimpleTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,19 +151,9 @@
           <line>56</line>
           <option name="timeStamp" value="39" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/passau/Main.java</url>
-          <line>184</line>
-          <option name="timeStamp" value="55" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/passau/Main.java</url>
-          <line>193</line>
-          <option name="timeStamp" value="58" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/passau/Main.java</url>
-          <line>118</line>
+          <line>130</line>
           <option name="timeStamp" value="59" />
         </line-breakpoint>
       </breakpoints>

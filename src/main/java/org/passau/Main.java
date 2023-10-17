@@ -2,6 +2,7 @@ package org.passau;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.passau.Parser.ClassModel;
 import org.passau.Parser.ClassParser;
@@ -117,8 +118,19 @@ public class Main implements Runnable {
              * OUR CURRENT ISSUE STARTS HERE
              */
             Optional<SootMethod> opt = (Optional<SootMethod>) sootClass.getMethods().stream()
-                    .filter(a -> a.getSignature().getSubSignature().getName().toString().equals(methodToBuildName))
+                    .filter(a -> {
+                        boolean nameMatches = a.getSignature().getSubSignature().getName().equals(methodToBuildName);
+                        List<String> sootParamTypes = a.getSignature().getSubSignature().getParameterTypes().stream()
+                                .map(Object::toString)
+                                .collect(Collectors.toList());
+                        boolean paramTypesMatch = sootParamTypes.equals(paramToBuildType);
+                        paramTypesMatch = true;
+                        return nameMatches && paramTypesMatch;
+                    })
                     .findFirst();
+            /*Optional<SootMethod> opt = (Optional<SootMethod>) sootClass.getMethods().stream()
+                    .filter(a -> a.getSignature().getSubSignature().getName().toString().equals(methodToBuildName) && a.getSignature().getSubSignature().getParameterTypes().equals(paramToBuildType))
+                    .findFirst();*/
 
 
 
@@ -210,6 +222,8 @@ public class Main implements Runnable {
     public static void main (String[] args) {
         try {
 
+
+            // STATIC CFG
             Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","OriginallCodeLogPassau"); // Instance for the original code
             Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCodePassau");
 
@@ -233,6 +247,10 @@ public class Main implements Runnable {
 
             t3.join();
             t4.join();
+
+            // DYNAMIC CFG
+            // run a test case and get jimpl Code
+            // Call the CFG builder on that JimplCode
 
             // Compute Differences in LOG
 
