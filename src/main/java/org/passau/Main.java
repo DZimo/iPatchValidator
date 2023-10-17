@@ -249,8 +249,17 @@ public class Main implements Runnable {
             t4.join();
 
             // DYNAMIC CFG
-            // run a test case and get jimpl Code
+            // run a test case and get jimpl Code or Bytecode
+
+
+
             // Call the CFG builder on that JimplCode
+            /*
+            Main mainInstanceTestCase = new Main("/src/main/java/spoon9","PatchedCodeLogSpoon"); // Instance for the patched code
+            Thread t5 = new Thread(mainInstanceTestCase, "testCase");
+            t5.start(); // Start Original code passau thread
+            t5.join();
+            */
 
             // Compute Differences in LOG
 
