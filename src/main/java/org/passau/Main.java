@@ -220,40 +220,41 @@ public class Main implements Runnable {
     }
 
     public static void main (String[] args) {
-        try {
+        /*
+        // STATIC CFG
+        System.out.println("RUNNING STATIC ANALYSIS");
+
+        Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","OriginallCodeLogPassau"); // Instance for the original code
+        Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCodePassau");
+
+        Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples/PatchedCode","PatchedlCodeLogPassau"); // Instance for the original code
+        Thread t2 = new Thread(mainInstancePatchedPassau, "patchedCodePassau");
+
+        Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","OriginalLogSpoon"); // Instance for the patched code
+        Thread t3 = new Thread(mainInstanceOriginaldSpoon, "originalCodeSpoon");
+
+        Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon9","PatchedCodeLogSpoon"); // Instance for the patched code
+        Thread t4 = new Thread(mainInstancePatchedSpoon, "patchedCodeSpoon");
+
+        t1.start(); // Start Original code passau thread
+        t2.start(); // Start Patched code passau thread
+
+        t3.start(); // Start Original code spoon thread
+        t4.start(); // Start Patched code spoon thread
+
+        t1.join();
+        t2.join();
+
+        t3.join();
+        t4.join();
+        */
 
 
-            // STATIC CFG
-            Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","OriginallCodeLogPassau"); // Instance for the original code
-            Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCodePassau");
+        // DYNAMIC CFG
+        // run a test case and get jimpl Code or Bytecode
+        System.out.println("RUNNING DYNAMIC ANALYSIS");
 
-            Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples/PatchedCode","PatchedlCodeLogPassau"); // Instance for the original code
-            Thread t2 = new Thread(mainInstancePatchedPassau, "patchedCodePassau");
-
-            Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","OriginalLogSpoon"); // Instance for the patched code
-            Thread t3 = new Thread(mainInstanceOriginaldSpoon, "originalCodeSpoon");
-
-            Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon9","PatchedCodeLogSpoon"); // Instance for the patched code
-            Thread t4 = new Thread(mainInstancePatchedSpoon, "patchedCodeSpoon");
-
-            t1.start(); // Start Original code passau thread
-            t2.start(); // Start Patched code passau thread
-
-            t3.start(); // Start Original code spoon thread
-            t4.start(); // Start Patched code spoon thread
-
-            t1.join();
-            t2.join();
-
-            t3.join();
-            t4.join();
-
-            // DYNAMIC CFG
-            // run a test case and get jimpl Code or Bytecode
-
-
-
-            // Call the CFG builder on that JimplCode
+        // Call the CFG builder on that JimplCode
             /*
             Main mainInstanceTestCase = new Main("/src/main/java/spoon9","PatchedCodeLogSpoon"); // Instance for the patched code
             Thread t5 = new Thread(mainInstanceTestCase, "testCase");
@@ -261,11 +262,8 @@ public class Main implements Runnable {
             t5.join();
             */
 
-            // Compute Differences in LOG
+        // Compute Differences in LOG
 
-        } catch (InterruptedException e) {
-            System.out.println("Error with threads:" + e.getMessage());
-        }
     }
 
 
