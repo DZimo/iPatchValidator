@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b6e0630-861c-4f5c-b785-80be68a2babc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/test.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/targetForDyanmic/classA.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/coverage_report.xml" beforeDir="false" afterPath="$PROJECT_DIR$/coverage_report.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/ByteBuddy/TemporaryClassGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/ByteBuddy/TemporaryClassGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.class" beforeDir="false" afterPath="$PROJECT_DIR$/targetForDyanmic/test.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,24 +54,30 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "V3",
-    "last_opened_file_path": "C:/Users/Admin/Desktop/iPatchValidator/src/main/java",
+    "last_opened_file_path": "C:/Users/Ismail/IdeaProjects/iPatchValidator/targetForDyanmic",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.39425287",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Ismail\IdeaProjects\iPatchValidator\targetForDyanmic" />
       <recent name="C:\Users\Admin\Desktop\iPatchValidator\src\main\java" />
       <recent name="C:\Users\Admin\Desktop\iPatchValidator\src\main" />
       <recent name="C:\Users\Admin\Desktop\iPatchValidator\src\main\java\org\passau\PatchExamples" />
       <recent name="C:\Users\Admin\Desktop\iPatchValidator\target\classes\org\passau\CodeExamples" />
-      <recent name="C:\Users\Admin\Desktop\iPatchValidator\src\main\java\org\passau\CodeExamples" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Ismail\IdeaProjects\iPatchValidator\targetForDyanmic" />
       <recent name="C:\Users\Admin\Desktop\iPatchValidator\src\main\java" />
       <recent name="C:\Users\Admin\Desktop\iPatchValidator\src\main\java\org\passau\CodeExamples" />
       <recent name="C:\Users\Admin\Desktop\iPatchValidator" />
@@ -79,7 +86,7 @@
       <recent name="org.passau.CodeExamples" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.TemporaryClassGenerator">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="JacocoReport" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.passau.Jacoco.JacocoReport" />
       <module name="iPatchValidator" />
@@ -157,6 +164,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1696611001245</updated>
+      <workItem from="1697635835281" duration="2963000" />
     </task>
     <servers />
   </component>
@@ -199,6 +207,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/org/passau/Main.java</url>
           <line>130</line>
           <option name="timeStamp" value="59" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/passau/Main.java</url>
+          <line>174</line>
+          <option name="timeStamp" value="61" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -74,6 +74,7 @@ public class TemporaryClassGenerator {
 
 
     public static void main(String[] args) throws Exception {
+
         byte[] tempClassBytes = generateTempClassFromXML(new File("coverage_report.xml"), classA.class);
 
         System.out.println(Arrays.toString(tempClassBytes));

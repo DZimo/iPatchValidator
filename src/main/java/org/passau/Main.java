@@ -219,8 +219,8 @@ public class Main implements Runnable {
         }
     }
 
-    public static void main (String[] args) {
-        /*
+    public static void main (String[] args) { try {
+         /*
         // STATIC CFG
         System.out.println("RUNNING STATIC ANALYSIS");
 
@@ -255,15 +255,15 @@ public class Main implements Runnable {
         System.out.println("RUNNING DYNAMIC ANALYSIS");
 
         // Call the CFG builder on that JimplCode
-            /*
-            Main mainInstanceTestCase = new Main("/src/main/java/spoon9","PatchedCodeLogSpoon"); // Instance for the patched code
-            Thread t5 = new Thread(mainInstanceTestCase, "testCase");
-            t5.start(); // Start Original code passau thread
-            t5.join();
-            */
-
+        Main testDynamic = new Main("/targetForDyanmic","testDynamic"); // Instance for the patched code
+        Thread t5 = new Thread(testDynamic, "testDynamic");
+        t5.start(); // Start Original code passau thread
+        t5.join();
         // Compute Differences in LOG
-
+    }
+    catch (Exception e) {
+        throw new RuntimeException(e);
+    }
     }
 
 
