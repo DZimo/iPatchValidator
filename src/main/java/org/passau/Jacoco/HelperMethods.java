@@ -6,9 +6,16 @@ import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.report.IMultiReportOutput;
 import org.jacoco.report.IReportVisitor;
 import org.jacoco.report.xml.XMLFormatter;
+import org.passau.CodeExamples.OriginalCode.classA;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
 import java.util.Objects;
+
+import static org.passau.Jacoco.JacocoReport.generateCoverageReports;
 
 public class HelperMethods {
     /**
@@ -71,5 +78,60 @@ public class HelperMethods {
             return defineClass(name, b, 0, b.length);
         }
     }
+
+    /**
+     * Generates coverage reports for the specified source directory and saves them as XML files.
+     *
+     * @param sourceDirectory The directory where the compiled test classes are located.
+     */
+    public static void generateAndSaveCoverageReports(String sourceDirectory) {
+        try {
+            // Convert the source directory path to a URI for class loading
+            URI uri = new URI("file", sourceDirectory + "/target/test-classes/", null);
+            URL[] urls = new URL[]{uri.toURL()};
+
+            // Create a class loader to load the test class from the specified directory
+            ClassLoader loader = new URLClassLoader(urls);
+
+            // Load the test class using the custom class loader
+            Class<?> testClass = Class.forName("CodeExamples.classATest", true, loader);
+
+            // Generate coverage reports using the specified method and test class
+            List<String> reportXml = generateCoverageReports(classA.class, "methodA", testClass);
+
+            // Print the generated XML reports to the console
+            for (String report : reportXml) {
+                System.out.println(report);
+            }
+
+            // Define the path where the reports will be saved
+            String folderPath = sourceDirectory + "/Coverage_Reports/";
+
+            // Create the directory if it doesn't exist
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                boolean dirsCreated = folder.mkdirs();
+                if (!dirsCreated) {
+                    throw new IOException("Failed to create directories: " + folder.getAbsolutePath());
+                }
+            }
+
+            // Iterate through the generated reports and save each as an XML file
+            for (int i = 0; i < reportXml.size(); i++) {
+                String report = reportXml.get(i);
+                String fileName = "coverage_report_" + (i + 1) + ".xml";
+                File reportFile = new File(folder, fileName);
+
+                // Write the XML content to the file
+                try (FileWriter writer = new FileWriter(reportFile)) {
+                    writer.write(report);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
