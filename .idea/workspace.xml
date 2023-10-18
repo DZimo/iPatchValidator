@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b6e0630-861c-4f5c-b785-80be68a2babc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/passau/Jacoco/HelperMethods.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/passau/Jacoco/JacocoReport.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +75,20 @@
       <recent name="org.passau.CodeExamples" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="Application.JacocoReport">
+    <configuration name="JacocoReport" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.passau.Jacoco.JacocoReport" />
+      <module name="iPatchValidator" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.passau.Jacoco.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -105,11 +119,13 @@
     </configuration>
     <list>
       <item itemvalue="Application.Main" />
+      <item itemvalue="Application.JacocoReport" />
       <item itemvalue="Application.ParseTest" />
       <item itemvalue="JAR Application.Unnamed" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.JacocoReport" />
         <item itemvalue="Application.ParseTest" />
       </list>
     </recent_temporary>

@@ -231,71 +231,43 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>17</release>
-                </configuration>
-            </plugin>
-
-
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>-Xmx1G</argLine>
-                </configuration>
-            </plugin>
+            <!-- ... other plugins ... -->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
-            </plugin>
-            <!-- ADD THE SOURCE OF SPOON TO INCLUDE IT IN COMPILATION -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>spoon/src/main/java/spoon</source>
-                                <source>spoon91/src/main/java/spoon91</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <!-- JaCoCo will append its JVM arguments after this -->
+                    <argLine>-Xmx1G ${argLine}</argLine>
+                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.7.201606060606</version>
+                <version>0.8.7</version>
                 <executions>
                     <execution>
+                        <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <dataFile>target/jacoco.exec</dataFile>
+                            <outputDirectory>target/my-reports</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
-
     </build>
+
 </project>
