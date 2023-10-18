@@ -3,20 +3,20 @@ package org.passau.ByteBuddy;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FixedValue;
+import org.apache.commons.io.FileUtils;
 import org.passau.CodeExamples.OriginalCode.classA;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import sootup.core.model.SootClass;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
@@ -74,9 +74,12 @@ public class TemporaryClassGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        byte[] tempClassBytes = generateTempClassFromXML(new File("/path/to/coverage_report.xml"), classA.class);
+        byte[] tempClassBytes = generateTempClassFromXML(new File("coverage_report.xml"), classA.class);
 
+        System.out.println(Arrays.toString(tempClassBytes));
 
+//        Files.write( Path , tempClassBytes, new File("test1.class"));
+        FileUtils.writeByteArrayToFile(new File("test.class"), tempClassBytes);
     }
 
 

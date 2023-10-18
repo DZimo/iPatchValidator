@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b6e0630-861c-4f5c-b785-80be68a2babc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/passau/ByteBuddy/TemporaryClassGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/coverage_report.xml" beforeDir="false" afterPath="$PROJECT_DIR$/coverage_report.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/ByteBuddy/TemporaryClassGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/ByteBuddy/TemporaryClassGenerator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +55,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "V3",
     "last_opened_file_path": "C:/Users/Admin/Desktop/iPatchValidator/src/main/java",
+    "node.js.selected.package.tslint": "(autodetect)",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.39425287",
@@ -217,5 +218,8 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/iPatchValidator$Main.ic" NAME="Main Coverage Results" MODIFIED="1697182856962" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/iPatchValidator$classATest.ic" NAME="classATest Coverage Results" MODIFIED="1697619567912" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>CodeExamples.*</FILTER>
+    </SUITE>
   </component>
 </project>
