@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b6e0630-861c-4f5c-b785-80be68a2babc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/targetForDyanmic/classA.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/ByteBuddy/TemporaryClassGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/ByteBuddy/TemporaryClassGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.class" beforeDir="false" afterPath="$PROJECT_DIR$/targetForDyanmic/test.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report.xml" beforeDir="false" afterPath="$PROJECT_DIR$/coverage_report.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/passau/Jacoco/JacocoReport.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/passau/Jacoco/JacocoReport.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +84,7 @@
       <recent name="org.passau.CodeExamples" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="Application.JacocoReport">
     <configuration name="JacocoReport" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.passau.Jacoco.JacocoReport" />
       <module name="iPatchValidator" />
@@ -150,8 +148,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.TemporaryClassGenerator" />
         <item itemvalue="Application.JacocoReport" />
+        <item itemvalue="Application.TemporaryClassGenerator" />
         <item itemvalue="Application.ParseTest" />
       </list>
     </recent_temporary>
@@ -164,7 +162,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1696611001245</updated>
-      <workItem from="1697635835281" duration="2963000" />
+      <workItem from="1697635835281" duration="4028000" />
     </task>
     <servers />
   </component>

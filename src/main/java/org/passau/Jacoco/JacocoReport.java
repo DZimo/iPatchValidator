@@ -66,7 +66,7 @@ public class JacocoReport {
 
 
         // Create a report visitor. The exact type and configuration will depend on how the createReportVisitor() method is implemented.
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        /*ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final IReportVisitor visitor = createReportVisitor(baos);
         // Start the report with session information and execution data.
         visitor.visitInfo(sessionInfos.getInfos(), executionData.getContents());
@@ -76,7 +76,27 @@ public class JacocoReport {
         visitor.visitBundle(coverageBuilder.getBundle(testClass.getName()), new DirectorySourceFileLocator(
                 new File("/Users/shifatsahariar/Downloads/java/iPatchValidator"), "utf-8", 4));
         // End the report generation.
+        visitor.visitEnd();*/
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final IReportVisitor visitor = createReportVisitor(baos);
+        // Start the report with session information and execution data.
+        visitor.visitInfo(sessionInfos.getInfos(), executionData.getContents());
+        // Analyze the structure of the class and add its coverage information to the report.
+        final CoverageBuilder coverageBuilder = analyzeStructure(testClass, executionData);
+        // Get the source directory path from the "iPatchValidator" environment variable same with the one we used for Static Analysis.
+        String sourceDirectory = System.getenv("iPatchValidator");
+        if (sourceDirectory != null) {
+            visitor.visitBundle(coverageBuilder.getBundle(testClass.getName()), new DirectorySourceFileLocator(
+                    new File(sourceDirectory), "utf-8", 4));
+        } else {
+            // Handle the case when the environment variable is not set or is empty.
+            System.err.println("The 'iPatchValidator' environment variable is not set.");
+
+        }
+
         visitor.visitEnd();
+
 
 
         // This assumes the report visitor writes to a ByteArrayOutputStream. The report is returned as a string in XML format.
