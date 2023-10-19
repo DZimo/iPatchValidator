@@ -136,7 +136,7 @@ public class XMLParsing {
         String outputFilePath = outputDirectory + outputFileName;
         removeMissedLinesFromSourceFile(sourceFilePath, missedLines, outputFilePath);
 
-        String javaFilePath = "/Users/shifatsahariar/Downloads/java/iPatchValidator/TemporaryClasses/classA.java";
+        String javaFilePath = sourceDirectory+"/TemporaryClasses/classA.java";
         if(compileJavaFile(javaFilePath)) {
             System.out.println("Compilation successful!");
         } else {
