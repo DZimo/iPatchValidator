@@ -20,24 +20,41 @@ import java.util.Arrays;
 import java.util.List;
 
 public class XMLParsing {
+    static String sourceDirectory = System.getenv("iPatchValidator");
+    /**
+     * Parses the provided XML coverage report to extract the line numbers of the missed lines.
+     *
+     * @param xmlFilePath The path to the XML coverage report file.
+     * @return A list of integers representing the line numbers of the missed lines.
+     * @throws Exception If there's an error during XML parsing or file reading.
+     */
     public static List<Integer> getMissedLinesFromXML(String xmlFilePath) throws Exception {
         List<Integer> missedLines = new ArrayList<>();
 
-        // Parse XML
+        // Load and parse the XML document
         File fXmlFile = new File(xmlFilePath);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+
+        // Disable loading of external DTD to avoid potential network calls or access to local files
         dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(fXmlFile);
+
+        // Normalize the parsed XML structure for easier traversal
         doc.getDocumentElement().normalize();
 
-        // Extract missed line numbers
+        // Iterate over all "line" elements in the XML document
         NodeList nodeList = doc.getElementsByTagName("line");
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) node;
+
+                // Check if the line has missed instructions
                 int missedInstructions = Integer.parseInt(element.getAttribute("mi"));
+
+                // If the line has missed instructions, add it's number to the list
                 if (missedInstructions > 0) {
                     missedLines.add(Integer.parseInt(element.getAttribute("nr")));
                 }
@@ -46,42 +63,75 @@ public class XMLParsing {
 
         return missedLines;
     }
+
+    /**
+     * Removes the lines from the source file that are indicated as missed, and writes the modified
+     * content to the specified output file. If the output file does not exist, it will be created.
+     *
+     * @param sourceFilePath Path to the original source file.
+     * @param missedLines    List of line numbers that should be removed.
+     * @param outputFilePath Path where the modified source content should be written.
+     * @throws IOException If there's an error during file reading or writing.
+     */
     public static void removeMissedLinesFromSourceFile(String sourceFilePath, List<Integer> missedLines, String outputFilePath) throws IOException {
+        // Read all lines from the source file into a list
         List<String> lines = Files.readAllLines(Paths.get(sourceFilePath));
         StringBuilder modifiedSource = new StringBuilder();
 
+        // Iterate over each line of the source file
         for (int i = 0; i < lines.size(); i++) {
+            // Check if the current line (adjusted for 0-based index) is not in the list of missed lines
             if (!missedLines.contains(i + 1)) { // +1 because line numbers start from 1
                 modifiedSource.append(lines.get(i)).append("\n");
             }
         }
 
-        // Ensure that the directories leading up to the file exist
+        // Ensure that the directories leading up to the output file exist, creating them if necessary
         Path path = Paths.get(outputFilePath);
         Files.createDirectories(path.getParent());
 
-        // This will create the file if it doesn't exist or overwrite it if it does
+        // Write the modified source content to the specified output file.
+        // This will create the file if it doesn't exist or overwrite it if it does.
         Files.write(path, modifiedSource.toString().getBytes());
     }
+
+    /**
+     * Compiles a Java file and stores the resulting bytecode (.class file) in the same directory as the source file.
+     *
+     * @param filePath Path to the Java file to be compiled.
+     * @return {@code true} if the compilation was successful, {@code false} otherwise.
+     */
     public static boolean compileJavaFile(String filePath) {
+        // Obtain a JavaCompiler instance, which provides facilities for compiling Java source files
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+        // Get a StandardJavaFileManager instance, which provides access to file-based Java FileObjects
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
+        // Convert the provided file path into an iterable collection of file objects
         Iterable<? extends JavaFileObject> sources = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(filePath));
 
-        // Define the compilation options (in this case, specifying the directory where the class files should be saved)
+        // Specify the directory where the generated .class files should be saved, which in this case
+        // is the same directory as the source .java file
         String outputDir = new File(filePath).getParent();
+
+        // Set the compilation options, particularly specifying the output directory
         Iterable<String> options = Arrays.asList("-d", outputDir);
 
+        // Prepare a compilation task. This doesn't actually execute the compilation yet.
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, options, null, sources);
+
+        // Execute the compilation and return the result (true if successful, false otherwise)
         return task.call();
     }
 
     public static void main(String[] args) throws Exception {
-        String sourceFilePath = "/Users/shifatsahariar/Downloads/java/iPatchValidator/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java";
-        String xmlFilePath = "/Users/shifatsahariar/Downloads/java/iPatchValidator/Coverage_Reports/coverage_report_2.xml";
+        // THIS IS JUST TEST PURPOSE IMPLEMENTATION SO STILL WE HAVE SOME HARD CODE HERE
+        // LATER WHEN WE WILL AUTOMATE THE PROCESS INSIDE THE LOOP >> WE WILL AUTOMATICALLY GET THE JAVA FILE AND OTHER FILES AS WELL
+        String sourceFilePath = sourceDirectory+ "/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java";
+        String xmlFilePath = sourceDirectory+"/Coverage_Reports/coverage_report_2.xml";
         List<Integer> missedLines = getMissedLinesFromXML(xmlFilePath);
-        String outputDirectory = "/Users/shifatsahariar/Downloads/java/iPatchValidator/TemporaryClasses/";
+        String outputDirectory = sourceDirectory+"/TemporaryClasses/";
         String outputFileName = "classA.java";
         String outputFilePath = outputDirectory + outputFileName;
         removeMissedLinesFromSourceFile(sourceFilePath, missedLines, outputFilePath);
