@@ -267,7 +267,7 @@ public class Main implements Runnable {
         // >>>>>>>>>>>>>>> STEP 1 <<<<<<<<<<<<<<<
         // GENERATE REPORT AS XML
         XMLParsing xmlParsingInstance = new XMLParsing();
-        xmlParsingInstance.main(null);
+        XMLParsing.main(null);
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
         Main mainInstanceTestcasePassPassau = new Main("/TemporaryClasses/SourceCode","TestCasePass"); // Instance for the original code
         Thread t1 = new Thread(mainInstanceTestcasePassPassau, "mainInstanceTestcasePassPassau");

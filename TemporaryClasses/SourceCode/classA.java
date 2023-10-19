@@ -1,4 +1,4 @@
-package org.passau.CodeExamples.OriginalCode;
+package SourceCode;
 
 public class classA {
     int a;

@@ -77,15 +77,36 @@ public class XMLParsing {
      * @throws IOException If there's an error during file reading or writing.
      */
     public static void removeMissedLinesFromSourceFile(String sourceFilePath, List<Integer> missedLines, String outputFilePath) throws IOException {
+        // Define the root directory
+        String rootDir = INPUT_LOCATION_PATH+"/TemporaryClasses";
+
         // Read all lines from the source file into a list
         List<String> lines = Files.readAllLines(Paths.get(sourceFilePath));
         StringBuilder modifiedSource = new StringBuilder();
 
+        // Get the directory portion of the outputFilePath
+        String directoryPath = new File(outputFilePath).getParent();
+
+        // Generate the new package name based on the output directory
+        String newPackage =
+                directoryPath.replace(rootDir, "")
+                .replace("/", ".")
+                .replace(File.separator, ".")
+                .replaceAll("^\\.|\\.$", "");  // Remove leading or trailing dots
+        if (newPackage.endsWith(".")) {
+            newPackage = newPackage.substring(0, newPackage.length() - 1); // remove trailing dot
+        }
+
         // Iterate over each line of the source file
-        for (int i = 0; i < lines.size(); i++) {
+        for (String line : lines) {
+            // Check if the line starts with the word "package"
+            if (line.trim().startsWith("package")) {
+                line = "package " + newPackage + ";";  // Replace with new package name
+            }
+
             // Check if the current line (adjusted for 0-based index) is not in the list of missed lines
-            if (!missedLines.contains(i + 1)) { // +1 because line numbers start from 1
-                modifiedSource.append(lines.get(i)).append("\n");
+            if (!missedLines.contains(lines.indexOf(line) + 1)) {
+                modifiedSource.append(line).append("\n");
             }
         }
 
@@ -93,10 +114,10 @@ public class XMLParsing {
         Path path = Paths.get(outputFilePath);
         Files.createDirectories(path.getParent());
 
-        // Write the modified source content to the specified output file.
-        // This will create the file if it doesn't exist or overwrite it if it does.
+        // Write the modified source content to the specified output file
         Files.write(path, modifiedSource.toString().getBytes());
     }
+
 
     /**
      * Compiles a Java file and stores the resulting bytecode (.class file) in the same directory as the source file.
@@ -116,10 +137,10 @@ public class XMLParsing {
 
         // Specify the directory where the generated .class files should be saved, which in this case
         // is the same directory as the source .java file
-        String outputDir = new File(filePath).getParent() + "/target/";
+        String outputDir = INPUT_LOCATION_PATH+"/TemporaryClasses";
 
         // Set the compilation options, particularly specifying the output directory
-        Iterable<String> options = Arrays.asList(outputDir);
+        Iterable<String> options = List.of(outputDir);
 
         // Prepare a compilation task. This doesn't actually execute the compilation yet.
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, null, null, sources);
