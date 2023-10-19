@@ -117,10 +117,10 @@ public class XMLParsing {
         String outputDir = new File(filePath).getParent() + "/target/";
 
         // Set the compilation options, particularly specifying the output directory
-        Iterable<String> options = Arrays.asList("-d", outputDir);
+        Iterable<String> options = Arrays.asList(outputDir);
 
         // Prepare a compilation task. This doesn't actually execute the compilation yet.
-        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, options, null, sources);
+        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, null, null, sources);
 
         // Execute the compilation and return the result (true if successful, false otherwise)
         return task.call();

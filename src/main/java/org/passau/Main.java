@@ -269,7 +269,7 @@ public class Main implements Runnable {
         XMLParsing xmlParsingInstance = new XMLParsing();
         xmlParsingInstance.main(null);
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
-        Main mainInstanceTestcasePassPassau = new Main("/TemporaryClasses/org/passau/CodeExamples/OriginalCode","TestCasePass"); // Instance for the original code
+        Main mainInstanceTestcasePassPassau = new Main("/TemporaryClasses/SourceCode","TestCasePass"); // Instance for the original code
         Thread t1 = new Thread(mainInstanceTestcasePassPassau, "mainInstanceTestcasePassPassau");
         t1.start(); t1.join();
 
