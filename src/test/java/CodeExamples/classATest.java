@@ -1,6 +1,7 @@
 package CodeExamples;
 
 import org.junit.jupiter.api.Test;
+import org.passau.CodeExamples.OriginalCode.classA;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
