@@ -41,6 +41,10 @@ public class Main implements Runnable {
 
     //private static final String pathToClasses = "/src/main/java/org/";
 
+    private String pathToCompiledFiles = "target.classes.";
+
+    //private String pathToCompiledFiles = "TemporaryClasses.SourceCode.";
+
     private String pathToClasses;
 
     private String classToBuildName; // Class that we want to build CFG for
@@ -195,7 +199,7 @@ public class Main implements Runnable {
                     methodToBuildName = method.getMethodName() ;
                     typeToBuildName = method.getMethodReturnType();
                     paramToBuildType = method.getListOfParamType();
-                    constructMethodInformation("target.classes." + classToBuildName , methodToBuildName, typeToBuildName, paramToBuildType);  // This will initialize the variables
+                    constructMethodInformation(pathToCompiledFiles + classToBuildName , methodToBuildName, typeToBuildName, paramToBuildType);  // This will initialize the variables
                     if(!buildGraph())
                     {
                         continue; // Skip to next method if there is no graph
@@ -225,12 +229,14 @@ public class Main implements Runnable {
         // SET THE PATH
         SootPathSetter sootPathSetter = new SootPathSetter();  // We first set the path and then validate it
         INPUT_LOCATION_PATH = SootPathSetter.INPUT_LOCATION_PATH;
+
          /*
         // STATIC CFG
         System.out.println("RUNNING STATIC ANALYSIS");
 
         Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","OriginallCodeLogPassau"); // Instance for the original code
         Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCodePassau");
+  */
 
         Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples/PatchedCode","PatchedlCodeLogPassau"); // Instance for the original code
         Thread t2 = new Thread(mainInstancePatchedPassau, "patchedCodePassau");
@@ -241,18 +247,15 @@ public class Main implements Runnable {
         Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon9","PatchedCodeLogSpoon"); // Instance for the patched code
         Thread t4 = new Thread(mainInstancePatchedSpoon, "patchedCodeSpoon");
 
-        t1.start(); // Start Original code passau thread
         t2.start(); // Start Patched code passau thread
 
         t3.start(); // Start Original code spoon thread
         t4.start(); // Start Patched code spoon thread
 
-        t1.join();
         t2.join();
 
         t3.join();
         t4.join();
-        */
 
 
         // DYNAMIC CFG
@@ -270,8 +273,8 @@ public class Main implements Runnable {
         XMLParsing.main(null);
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
         Main mainInstanceTestcasePassPassau = new Main("/TemporaryClasses/SourceCode","TestCasePass"); // Instance for the original code
-        Thread t1 = new Thread(mainInstanceTestcasePassPassau, "mainInstanceTestcasePassPassau");
-        t1.start(); t1.join();
+        //Thread t1 = new Thread(mainInstanceTestcasePassPassau, "mainInstanceTestcasePassPassau");
+       // t1.start(); t1.join();
 
         //>>>>>>>>>>>>>> STEP 2 <<<<<<<<<<<<<< byte buddy code ..
         // GENERATE BYTECODE
