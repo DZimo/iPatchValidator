@@ -88,8 +88,8 @@ public class XMLParsing {
         String directoryPath = new File(outputFilePath).getParent();
 
         // Generate the new package name based on the output directory
-        String newPackage =
-                directoryPath.replace(rootDir, "")
+        // Generate the new package name based on the output directory
+        String newPackage = directoryPath.replaceAll(".*TemporaryClasses", "")  // remove everything up to and including TemporaryClasses
                 .replace("/", ".")
                 .replace(File.separator, ".")
                 .replaceAll("^\\.|\\.$", "");  // Remove leading or trailing dots
