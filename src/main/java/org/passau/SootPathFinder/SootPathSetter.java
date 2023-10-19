@@ -7,6 +7,9 @@ public class SootPathSetter {
     public static String INPUT_LOCATION_PATH;
     public static String INPUT_LOCATION_ENV = "iPatchValidator";
 
+    public static String PATH_TO_TEMPORARY_PACKAGE = "/TemporaryClasses/SourceCode/"; // The path that we will get from the INPUT_LOCATION_ENV
+
+
     public SootPathSetter() {
         setThePath();
     }

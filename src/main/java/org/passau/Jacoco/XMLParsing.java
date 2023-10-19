@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.passau.SootPathFinder.SootPathSetter.INPUT_LOCATION_PATH;
+import static org.passau.SootPathFinder.SootPathSetter.PATH_TO_TEMPORARY_PACKAGE;
+
 
 public class XMLParsing {
     /**
@@ -132,12 +134,12 @@ public class XMLParsing {
         String sourceFilePath = INPUT_LOCATION_PATH + "/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java";
         String xmlFilePath = INPUT_LOCATION_PATH+"/Coverage_Reports/coverage_report_2.xml";
         List<Integer> missedLines = getMissedLinesFromXML(xmlFilePath);
-        String outputDirectory = INPUT_LOCATION_PATH + "/TemporaryClasses/SourceCode/";
+        String outputDirectory = INPUT_LOCATION_PATH + "";
         String outputFileName = "classA.java";
         String outputFilePath = outputDirectory + outputFileName;
         removeMissedLinesFromSourceFile(sourceFilePath, missedLines, outputFilePath);
 
-        String javaFilePath = INPUT_LOCATION_PATH+"/TemporaryClasses/SourceCode/classA.java";
+        String javaFilePath = INPUT_LOCATION_PATH + PATH_TO_TEMPORARY_PACKAGE + "classA.java";
         if(compileJavaFile(javaFilePath)) {
             System.out.println("Compilation successful!");
         } else {
