@@ -19,8 +19,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.passau.SootPathFinder.SootPathSetter.INPUT_LOCATION_PATH;
+
 public class XMLParsing {
-    static String sourceDirectory = System.getenv("iPatchValidator");
     /**
      * Parses the provided XML coverage report to extract the line numbers of the missed lines.
      *
@@ -113,7 +114,7 @@ public class XMLParsing {
 
         // Specify the directory where the generated .class files should be saved, which in this case
         // is the same directory as the source .java file
-        String outputDir = new File(filePath).getParent();
+        String outputDir = new File(filePath).getParent() + "/target/";
 
         // Set the compilation options, particularly specifying the output directory
         Iterable<String> options = Arrays.asList("-d", outputDir);
@@ -128,15 +129,15 @@ public class XMLParsing {
     public static void main(String[] args) throws Exception {
         // THIS IS JUST TEST PURPOSE IMPLEMENTATION SO STILL WE HAVE SOME HARD CODE HERE
         // LATER WHEN WE WILL AUTOMATE THE PROCESS INSIDE THE LOOP >> WE WILL AUTOMATICALLY GET THE JAVA FILE AND OTHER FILES AS WELL
-        String sourceFilePath = sourceDirectory+ "/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java";
-        String xmlFilePath = sourceDirectory+"/Coverage_Reports/coverage_report_2.xml";
+        String sourceFilePath = INPUT_LOCATION_PATH + "/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java";
+        String xmlFilePath = INPUT_LOCATION_PATH+"/Coverage_Reports/coverage_report_2.xml";
         List<Integer> missedLines = getMissedLinesFromXML(xmlFilePath);
-        String outputDirectory = sourceDirectory+"/TemporaryClasses/";
+        String outputDirectory = INPUT_LOCATION_PATH + "/TemporaryClasses/SourceCode/";
         String outputFileName = "classA.java";
         String outputFilePath = outputDirectory + outputFileName;
         removeMissedLinesFromSourceFile(sourceFilePath, missedLines, outputFilePath);
 
-        String javaFilePath = sourceDirectory+"/TemporaryClasses/classA.java";
+        String javaFilePath = INPUT_LOCATION_PATH+"/TemporaryClasses/SourceCode/classA.java";
         if(compileJavaFile(javaFilePath)) {
             System.out.println("Compilation successful!");
         } else {

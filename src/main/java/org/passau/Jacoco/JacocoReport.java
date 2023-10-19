@@ -19,9 +19,9 @@ import java.util.List;
 
 
 import static org.passau.Jacoco.HelperMethods.*;
+import static org.passau.SootPathFinder.SootPathSetter.INPUT_LOCATION_PATH;
 
 public class JacocoReport {
-    static String sourceDirectory = System.getenv("iPatchValidator");
     /**
      * 1. Initializing JaCoCo runtime and data structures:
      * 2. Instrument the provided test class to enable coverage collection:
@@ -81,8 +81,8 @@ public class JacocoReport {
             visitor.visitInfo(sessionInfos.getInfos(), executionData.getContents());
             final CoverageBuilder coverageBuilder = analyzeStructure(originalClass, executionData);
 
-            if (sourceDirectory != null) {
-                visitor.visitBundle(coverageBuilder.getBundle(loadedTestClass.getName()), new DirectorySourceFileLocator(new File(sourceDirectory), "utf-8", 4));
+            if (INPUT_LOCATION_PATH != null) {
+                visitor.visitBundle(coverageBuilder.getBundle(loadedTestClass.getName()), new DirectorySourceFileLocator(new File(INPUT_LOCATION_PATH), "utf-8", 4));
             } else {
                 System.err.println("The 'iPatchValidator' environment variable is not set.");
             }
@@ -98,7 +98,7 @@ public class JacocoReport {
     public static void main(String[] args) {
         // Generate Report for each test cases for the Class
         // will record lines for each test cases from the class
-        generateAndSaveCoverageReports(sourceDirectory);
+        generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
 
     }
 

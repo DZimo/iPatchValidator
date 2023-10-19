@@ -5,6 +5,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.passau.Jacoco.XMLParsing;
 import org.passau.Parser.ClassModel;
 import org.passau.Parser.ClassParser;
 import org.passau.Parser.FilePathFinder;
@@ -265,7 +266,13 @@ public class Main implements Runnable {
          */
         // >>>>>>>>>>>>>>> STEP 1 <<<<<<<<<<<<<<<
         // GENERATE REPORT AS XML
+        XMLParsing xmlParsingInstance = new XMLParsing();
+        xmlParsingInstance.main(null);
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
+        Main mainInstanceTestcasePassPassau = new Main("/TemporaryClasses/org/passau/CodeExamples/OriginalCode","TestCasePass"); // Instance for the original code
+        Thread t1 = new Thread(mainInstanceTestcasePassPassau, "mainInstanceTestcasePassPassau");
+        t1.start(); t1.join();
+
         //>>>>>>>>>>>>>> STEP 2 <<<<<<<<<<<<<< byte buddy code ..
         // GENERATE BYTECODE
         // ITERATE OVER THE FOLDER AND GET THE CLASS BYTECODE FOR EACH REPORT
