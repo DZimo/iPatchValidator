@@ -21,14 +21,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
+import static org.passau.SootPathFinder.SootPathSetter.INPUT_LOCATION_PATH;
 
 public class TemporaryClassGenerator {
     static String sourceDirectory = System.getenv("iPatchValidator");
     public static void main(String[] args) throws Exception {
 
         // ITERATE OVER THE FOLDER AND GET THE CLASS BYTECODE FOR EACH REPORT
-        List<byte[]> tempClassBytesList = generateByteArrayListFromReports(sourceDirectory+"/Coverage_Reports", classA.class);
-        storeByteArrayListAsClasses(tempClassBytesList, sourceDirectory + "/TemporaryClasses");
+        List<byte[]> tempClassBytesList = generateByteArrayListFromReports(INPUT_LOCATION_PATH+"/Coverage_Reports", classA.class);
+        storeByteArrayListAsClasses(tempClassBytesList, INPUT_LOCATION_PATH + "/TemporaryClasses");
 
         System.out.println(Arrays.toString(tempClassBytesList.iterator().next()));
 

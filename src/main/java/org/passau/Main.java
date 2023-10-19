@@ -37,8 +37,7 @@ import static org.passau.Jacoco.HelperMethods.generateAndSaveCoverageReports;
 
 public class Main implements Runnable {
     static String targetDirectory ="targetForDyanmic";
-    static String sourceDirectory = System.getenv("iPatchValidator");
-    // PATH TO JAVA SOURCE CODE
+
     private static final String INPUT_LOCATION_ENV = "iPatchValidator"; // Please add your target/classes to path with the name of this variable ( // compiled ones )
 
     private static String INPUT_LOCATION_PATH; // The path that we will get from the INPUT_LOCATION_ENV
@@ -184,8 +183,6 @@ public class Main implements Runnable {
         try{
             MutableStmtGraph graph = new MutableBlockStmtGraph();
             IPatchWriter iPatchWriter = new IPatchWriter(logName);
-            SootPathSetter sootPathSetter = new SootPathSetter();  // We first set the path and then validate it
-            INPUT_LOCATION_PATH = SootPathSetter.INPUT_LOCATION_PATH;
             String lastClassName = null;
             ClassParser classParser = new ClassParser();
             FilePathFinder filePathFinder = new FilePathFinder();
@@ -230,6 +227,9 @@ public class Main implements Runnable {
     }
 
     public static void main (String[] args) { try {
+        // SET THE PATH
+        SootPathSetter sootPathSetter = new SootPathSetter();  // We first set the path and then validate it
+        INPUT_LOCATION_PATH = SootPathSetter.INPUT_LOCATION_PATH;
          /*
         // STATIC CFG
         System.out.println("RUNNING STATIC ANALYSIS");
@@ -271,12 +271,12 @@ public class Main implements Runnable {
          */
         // >>>>>>>>>>>>>>> STEP 1 <<<<<<<<<<<<<<<
         // GENERATE REPORT AS XML
-        generateAndSaveCoverageReports(sourceDirectory);
+        generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
         //>>>>>>>>>>>>>> STEP 2 <<<<<<<<<<<<<<
         // GENERATE BYTECODE
         // ITERATE OVER THE FOLDER AND GET THE CLASS BYTECODE FOR EACH REPORT
-        List<byte[]> tempClassBytesList = generateByteArrayListFromReports(sourceDirectory+"/Coverage_Reports", classA.class);
-        storeByteArrayListAsClasses(tempClassBytesList, sourceDirectory + "/TemporaryClasses");
+        List<byte[]> tempClassBytesList = generateByteArrayListFromReports(INPUT_LOCATION_PATH+"/Coverage_Reports", classA.class);
+        storeByteArrayListAsClasses(tempClassBytesList, INPUT_LOCATION_PATH + "/TemporaryClasses");
         // >>>>>>>>>>>> STEP 3 <<<<<<<<<
         /**
          * WE HAVE TO FIND THE CLASS DYNAMICALLY
@@ -288,15 +288,15 @@ public class Main implements Runnable {
          * 3. FOLDER name where we want to copy the file temporarily
          * N>B : each iteration we will remove all files from this folder after getting CFG
          */
-        copyClassFromXMLReportInDirectory(sourceDirectory+"/Coverage_Reports",
-                sourceDirectory+"/src/main/java", targetDirectory);
+        copyClassFromXMLReportInDirectory(INPUT_LOCATION_PATH+"/Coverage_Reports",
+                INPUT_LOCATION_PATH+"/src/main/java", targetDirectory);
         // >>>>>>>>>>>> STEP 4 + 5 <<<<<<<<<
         // Copy each classfile[Bytecode] to that temporary folder
         // loop start here for each class file from the TEMPORARY-CLASS FOLDER
         // CFG
 
         // Call the CFG builder on that JimplCode for each class file and generate separate log file for each
-        processFilesInFolder(sourceDirectory+"/TemporaryClasses",sourceDirectory+"/targetForDyanmic");
+        processFilesInFolder(INPUT_LOCATION_PATH+"/TemporaryClasses",INPUT_LOCATION_PATH+"/targetForDyanmic");
         // Compute Differences in LOG
     }
     catch (Exception e) {
