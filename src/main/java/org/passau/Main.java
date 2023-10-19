@@ -306,8 +306,8 @@ public class Main implements Runnable {
 
     /**
      * Processes and copies `.class` files from the source folder to the target folder.
-     * For each `.class` file in the source folder, the corresponding `.class` file in the target folder
-     * will be replaced if it exists, and a new thread will be started to run the Main class.
+     * Before copying each `.class` file, existing `.class` files in the target folder are removed.
+     * A new thread is started for each `.class` file to run the Main class.
      *
      * @param sourceFolder The path to the source folder containing `.class` files.
      * @param targetFolder The path to the target folder where `.class` files will be copied to.
@@ -315,48 +315,50 @@ public class Main implements Runnable {
     public static void processFilesInFolder(String sourceFolder, String targetFolder) throws IOException {
         Path sourcePath = Paths.get(sourceFolder);
         Path targetPath = Paths.get(targetFolder);
+
         // Ensure LogFiles directory exists
         Path logFilesPath = Paths.get("LogFiles");
         if (!Files.exists(logFilesPath)) {
             Files.createDirectories(logFilesPath);
         }
-        try {
-            // Ensure target directory exists
-            if (!Files.exists(targetPath)) {
-                Files.createDirectories(targetPath);
-            } else {
-                // Remove any existing .class files in the target directory
+
+        // Ensure target directory exists
+        if (!Files.exists(targetPath)) {
+            Files.createDirectories(targetPath);
+        }
+
+        // Iterate through each .class file in the source directory
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(sourcePath, "*.class")) {
+            for (Path file : stream) {
+
+                // Remove any existing .class files in the target directory before copying new one
                 try (DirectoryStream<Path> targetStream = Files.newDirectoryStream(targetPath, "*.class")) {
                     for (Path existingFile : targetStream) {
                         Files.deleteIfExists(existingFile);
                     }
                 }
-            }
 
-            // Iterate through each .class file in the source directory
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(sourcePath, "*.class")) {
-                for (Path file : stream) {
-                    // Copy the file to target directory
-                    Path dest = targetPath.resolve(file.getFileName());
-                    Files.copy(file, dest, StandardCopyOption.REPLACE_EXISTING);
+                // Copy the file to target directory
+                Path dest = targetPath.resolve(file.getFileName());
+                Files.copy(file, dest, StandardCopyOption.REPLACE_EXISTING);
 
-                    // Execute your code
-                    String logName = dest.getFileName().toString().replace(".class", "");
-                    // Specify the path for the log files
-                    String logFilePath = logFilesPath.resolve(logName).toString();
-                    Main testDynamic = new Main("/targetForDyanmic", logFilePath); // Modified to use filename as logName
-                    Thread t5 = new Thread(testDynamic, logName);
-                    t5.start();
-                    try {
-                        t5.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                // Execute your code
+                String logName = dest.getFileName().toString().replace(".class", "");
+                // Specify the path for the log files
+                String logFilePath = logFilesPath.resolve(logName).toString();
+                Main testDynamic = new Main("/targetForDyanmic", logFilePath);
+                Thread t5 = new Thread(testDynamic, logName);
+                t5.start();
+                try {
+                    t5.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
 }
