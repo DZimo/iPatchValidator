@@ -41,9 +41,9 @@ public class Main implements Runnable {
 
     //private static final String pathToClasses = "/src/main/java/org/";
 
-    private String pathToCompiledFiles = "target.classes.";
+    //private String pathToCompiledFiles = "target.classes.";
 
-    //private String pathToCompiledFiles = "TemporaryClasses.SourceCode.";
+    private String pathToCompiledFiles = "target.classes.";
 
     private String pathToClasses;
 
@@ -229,33 +229,38 @@ public class Main implements Runnable {
         // SET THE PATH
         SootPathSetter sootPathSetter = new SootPathSetter();  // We first set the path and then validate it
         INPUT_LOCATION_PATH = SootPathSetter.INPUT_LOCATION_PATH;
-
-         /*
         // STATIC CFG
         System.out.println("RUNNING STATIC ANALYSIS");
-
-        Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","OriginallCodeLogPassau"); // Instance for the original code
+/*
+        Main mainInstanceOriginalPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","LOGS/OriginalCodeLogPassau"); // Instance for the original code
         Thread t1 = new Thread(mainInstanceOriginalPassau, "originalCodePassau");
-  */
 
-        Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples/PatchedCode","PatchedlCodeLogPassau"); // Instance for the original code
+        Main mainInstancePatchedPassau = new Main("/src/main/java/org/passau/CodeExamples/PatchedCode","LOGS/PatchedlCodeLogPassau"); // Instance for the original code
         Thread t2 = new Thread(mainInstancePatchedPassau, "patchedCodePassau");
 
-        Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","OriginalLogSpoon"); // Instance for the patched code
+        Main mainInstanceOriginaldSpoon = new Main("/src/main/java/spoon","LOGS/OriginalLogSpoon"); // Instance for the patched code
         Thread t3 = new Thread(mainInstanceOriginaldSpoon, "originalCodeSpoon");
 
-        Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon9","PatchedCodeLogSpoon"); // Instance for the patched code
+        Main mainInstancePatchedSpoon = new Main("/src/main/java/spoon9","LOGS/PatchedCodeLogSpoon"); // Instance for the patched code
         Thread t4 = new Thread(mainInstancePatchedSpoon, "patchedCodeSpoon");
 
+        t1.start(); // Start Original code passau thread
         t2.start(); // Start Patched code passau thread
 
         t3.start(); // Start Original code spoon thread
         t4.start(); // Start Patched code spoon thread
 
+        t1.join();
         t2.join();
 
         t3.join();
         t4.join();
+*/
+
+        // STATIC CFG
+        Main mainInstanceStaticPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","StaticClassA"); // Instance for the original code
+        Thread t1 = new Thread(mainInstanceStaticPassau, "mainInstanceStaticPassau");
+
 
 
         // DYNAMIC CFG
@@ -272,9 +277,13 @@ public class Main implements Runnable {
         XMLParsing xmlParsingInstance = new XMLParsing();
         XMLParsing.main(null);
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
-        Main mainInstanceTestcasePassPassau = new Main("/TemporaryClasses/SourceCode","TestCasePass"); // Instance for the original code
-        //Thread t1 = new Thread(mainInstanceTestcasePassPassau, "mainInstanceTestcasePassPassau");
-       // t1.start(); t1.join();
+        Main mainInstanceDynamicPassau = new Main("/TemporaryClasses/SourceCode","DynamicClassA"); // Instance for the original code
+        Thread t2 = new Thread(mainInstanceDynamicPassau, "mainInstanceTestcasePassPassau");
+        t1.start();
+        t2.start();
+
+        t1.join();
+        t2.join();
 
         //>>>>>>>>>>>>>> STEP 2 <<<<<<<<<<<<<< byte buddy code ..
         // GENERATE BYTECODE
