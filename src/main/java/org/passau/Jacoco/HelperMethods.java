@@ -3,7 +3,6 @@ package org.passau.Jacoco;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.data.ExecutionDataStore;
-import org.jacoco.report.IMultiReportOutput;
 import org.jacoco.report.IReportVisitor;
 import org.jacoco.report.xml.XMLFormatter;
 import org.passau.CodeExamples.OriginalCode.classA;
@@ -18,7 +17,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Objects;
 

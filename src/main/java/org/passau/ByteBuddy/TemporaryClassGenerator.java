@@ -4,7 +4,6 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FixedValue;
 import org.apache.commons.io.FileUtils;
-import org.passau.CodeExamples.OriginalCode.classA;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -14,8 +13,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,16 +22,16 @@ import static org.passau.SootPathFinder.SootPathSetter.INPUT_LOCATION_PATH;
 
 public class TemporaryClassGenerator {
     static String sourceDirectory = System.getenv("iPatchValidator");
-    public static void main(String[] args) throws Exception {
-
-        // ITERATE OVER THE FOLDER AND GET THE CLASS BYTECODE FOR EACH REPORT
-        List<byte[]> tempClassBytesList = generateByteArrayListFromReports(INPUT_LOCATION_PATH+"/Coverage_Reports", classA.class);
-        storeByteArrayListAsClasses(tempClassBytesList, INPUT_LOCATION_PATH + "/TemporaryClasses");
-
-        System.out.println(Arrays.toString(tempClassBytesList.iterator().next()));
-
-
-    }
+//    public static void main(String[] args) throws Exception {
+//
+//        // ITERATE OVER THE FOLDER AND GET THE CLASS BYTECODE FOR EACH REPORT
+//        List<byte[]> tempClassBytesList = generateByteArrayListFromReports(INPUT_LOCATION_PATH+"/Coverage_Reports", classA.class);
+//        storeByteArrayListAsClasses(tempClassBytesList, INPUT_LOCATION_PATH + "/TemporaryClasses");
+//
+//        System.out.println(Arrays.toString(tempClassBytesList.iterator().next()));
+//
+//
+//    }
 
 
 

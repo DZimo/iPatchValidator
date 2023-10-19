@@ -9,13 +9,9 @@ import org.jacoco.core.runtime.RuntimeData;
 import org.jacoco.report.*;
 
 import org.junit.jupiter.api.Test;
-import org.passau.CodeExamples.OriginalCode.classA;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;

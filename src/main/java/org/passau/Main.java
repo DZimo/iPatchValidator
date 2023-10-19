@@ -2,11 +2,9 @@ package org.passau;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.passau.CodeExamples.OriginalCode.classA;
 import org.passau.Parser.ClassModel;
 import org.passau.Parser.ClassParser;
 import org.passau.Parser.FilePathFinder;
@@ -27,12 +25,8 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaLanguage;
 
-import static org.passau.ByteBuddy.TemporaryClassGenerator.generateByteArrayListFromReports;
-import static org.passau.ByteBuddy.TemporaryClassGenerator.storeByteArrayListAsClasses;
-import static org.passau.Jacoco.HelperMethods.copyClassFromXMLReportInDirectory;
 import static org.passau.Jacoco.HelperMethods.generateAndSaveCoverageReports;
 
 public class Main implements Runnable {
@@ -272,11 +266,11 @@ public class Main implements Runnable {
         // >>>>>>>>>>>>>>> STEP 1 <<<<<<<<<<<<<<<
         // GENERATE REPORT AS XML
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
-        //>>>>>>>>>>>>>> STEP 2 <<<<<<<<<<<<<<
+        //>>>>>>>>>>>>>> STEP 2 <<<<<<<<<<<<<< byte buddy code ..
         // GENERATE BYTECODE
         // ITERATE OVER THE FOLDER AND GET THE CLASS BYTECODE FOR EACH REPORT
-        List<byte[]> tempClassBytesList = generateByteArrayListFromReports(INPUT_LOCATION_PATH+"/Coverage_Reports", classA.class);
-        storeByteArrayListAsClasses(tempClassBytesList, INPUT_LOCATION_PATH + "/TemporaryClasses");
+        //List<byte[]> tempClassBytesList = generateByteArrayListFromReports(INPUT_LOCATION_PATH+"/Coverage_Reports", classA.class);
+       // storeByteArrayListAsClasses(tempClassBytesList, INPUT_LOCATION_PATH + "/TemporaryClasses");
         // >>>>>>>>>>>> STEP 3 <<<<<<<<<
         /**
          * WE HAVE TO FIND THE CLASS DYNAMICALLY
@@ -288,15 +282,15 @@ public class Main implements Runnable {
          * 3. FOLDER name where we want to copy the file temporarily
          * N>B : each iteration we will remove all files from this folder after getting CFG
          */
-        copyClassFromXMLReportInDirectory(INPUT_LOCATION_PATH+"/Coverage_Reports",
-                INPUT_LOCATION_PATH+"/src/main/java", targetDirectory);
+      //  copyClassFromXMLReportInDirectory(INPUT_LOCATION_PATH+"/Coverage_Reports",
+       //         INPUT_LOCATION_PATH+"/src/main/java", targetDirectory);
         // >>>>>>>>>>>> STEP 4 + 5 <<<<<<<<<
         // Copy each classfile[Bytecode] to that temporary folder
         // loop start here for each class file from the TEMPORARY-CLASS FOLDER
         // CFG
 
         // Call the CFG builder on that JimplCode for each class file and generate separate log file for each
-        processFilesInFolder(INPUT_LOCATION_PATH+"/TemporaryClasses",INPUT_LOCATION_PATH+"/targetForDyanmic");
+      //  processFilesInFolder(INPUT_LOCATION_PATH+"/TemporaryClasses",INPUT_LOCATION_PATH+"/targetForDyanmic");
         // Compute Differences in LOG
     }
     catch (Exception e) {
