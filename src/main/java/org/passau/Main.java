@@ -1,9 +1,12 @@
 package org.passau;
 
 import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.passau.CodeExamples.OriginalCode.classA;
 import org.passau.Parser.ClassModel;
 import org.passau.Parser.ClassParser;
 import org.passau.Parser.FilePathFinder;
@@ -27,7 +30,14 @@ import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaLanguage;
 
+import static org.passau.ByteBuddy.TemporaryClassGenerator.generateByteArrayListFromReports;
+import static org.passau.ByteBuddy.TemporaryClassGenerator.storeByteArrayListAsClasses;
+import static org.passau.Jacoco.HelperMethods.copyClassFromXMLReportInDirectory;
+import static org.passau.Jacoco.HelperMethods.generateAndSaveCoverageReports;
+
 public class Main implements Runnable {
+    static String targetDirectory ="targetForDyanmic";
+    static String sourceDirectory = System.getenv("iPatchValidator");
     // PATH TO JAVA SOURCE CODE
     private static final String INPUT_LOCATION_ENV = "iPatchValidator"; // Please add your target/classes to path with the name of this variable ( // compiled ones )
 
@@ -253,12 +263,40 @@ public class Main implements Runnable {
         // DYNAMIC CFG
         // run a test case and get jimpl Code or Bytecode
         System.out.println("RUNNING DYNAMIC ANALYSIS");
+        /**
+         * :: >> LETS THINK WE WILL LOOP FOR EACH CLASS AND REMOVE THE TEMP FILES AFTER THE OPERATION HAS BEEN DONE
+         * we will work on this later , now only for original code we are processing
+         * we have to do this same process through loop for patched code
+         * LOOP : original and patched code
+         */
+        // >>>>>>>>>>>>>>> STEP 1 <<<<<<<<<<<<<<<
+        // GENERATE REPORT AS XML
+        generateAndSaveCoverageReports(sourceDirectory);
+        //>>>>>>>>>>>>>> STEP 2 <<<<<<<<<<<<<<
+        // GENERATE BYTECODE
+        // ITERATE OVER THE FOLDER AND GET THE CLASS BYTECODE FOR EACH REPORT
+        List<byte[]> tempClassBytesList = generateByteArrayListFromReports(sourceDirectory+"/Coverage_Reports", classA.class);
+        storeByteArrayListAsClasses(tempClassBytesList, sourceDirectory + "/TemporaryClasses");
+        // >>>>>>>>>>>> STEP 3 <<<<<<<<<
+        /**
+         * WE HAVE TO FIND THE CLASS DYNAMICALLY
+         * POSSIBILITY 1 : PARSE XML > EASY TO FIND THE CLASS NAME
+         */
+        /*
+         * 1. XML file location to read and parse >> first one is enough to read
+         * 2. Base Directory from where the source file will retrieve
+         * 3. FOLDER name where we want to copy the file temporarily
+         * N>B : each iteration we will remove all files from this folder after getting CFG
+         */
+        copyClassFromXMLReportInDirectory(sourceDirectory+"/Coverage_Reports",
+                sourceDirectory+"/src/main/java", targetDirectory);
+        // >>>>>>>>>>>> STEP 4 + 5 <<<<<<<<<
+        // Copy each classfile[Bytecode] to that temporary folder
+        // loop start here for each class file from the TEMPORARY-CLASS FOLDER
+        // CFG
 
-        // Call the CFG builder on that JimplCode
-        Main testDynamic = new Main("/targetForDyanmic","testDynamic"); // Instance for the patched code
-        Thread t5 = new Thread(testDynamic, "testDynamic");
-        t5.start(); // Start Original code passau thread
-        t5.join();
+        // Call the CFG builder on that JimplCode for each class file and generate separate log file for each
+        processFilesInFolder(sourceDirectory+"/TemporaryClasses",sourceDirectory+"/targetForDyanmic");
         // Compute Differences in LOG
     }
     catch (Exception e) {
@@ -266,5 +304,59 @@ public class Main implements Runnable {
     }
     }
 
+    /**
+     * Processes and copies `.class` files from the source folder to the target folder.
+     * For each `.class` file in the source folder, the corresponding `.class` file in the target folder
+     * will be replaced if it exists, and a new thread will be started to run the Main class.
+     *
+     * @param sourceFolder The path to the source folder containing `.class` files.
+     * @param targetFolder The path to the target folder where `.class` files will be copied to.
+     */
+    public static void processFilesInFolder(String sourceFolder, String targetFolder) throws IOException {
+        Path sourcePath = Paths.get(sourceFolder);
+        Path targetPath = Paths.get(targetFolder);
+        // Ensure LogFiles directory exists
+        Path logFilesPath = Paths.get("LogFiles");
+        if (!Files.exists(logFilesPath)) {
+            Files.createDirectories(logFilesPath);
+        }
+        try {
+            // Ensure target directory exists
+            if (!Files.exists(targetPath)) {
+                Files.createDirectories(targetPath);
+            } else {
+                // Remove any existing .class files in the target directory
+                try (DirectoryStream<Path> targetStream = Files.newDirectoryStream(targetPath, "*.class")) {
+                    for (Path existingFile : targetStream) {
+                        Files.deleteIfExists(existingFile);
+                    }
+                }
+            }
+
+            // Iterate through each .class file in the source directory
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(sourcePath, "*.class")) {
+                for (Path file : stream) {
+                    // Copy the file to target directory
+                    Path dest = targetPath.resolve(file.getFileName());
+                    Files.copy(file, dest, StandardCopyOption.REPLACE_EXISTING);
+
+                    // Execute your code
+                    String logName = dest.getFileName().toString().replace(".class", "");
+                    // Specify the path for the log files
+                    String logFilePath = logFilesPath.resolve(logName).toString();
+                    Main testDynamic = new Main("/targetForDyanmic", logFilePath); // Modified to use filename as logName
+                    Thread t5 = new Thread(testDynamic, logName);
+                    t5.start();
+                    try {
+                        t5.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

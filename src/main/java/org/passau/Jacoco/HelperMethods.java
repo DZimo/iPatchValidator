@@ -7,11 +7,18 @@ import org.jacoco.report.IMultiReportOutput;
 import org.jacoco.report.IReportVisitor;
 import org.jacoco.report.xml.XMLFormatter;
 import org.passau.CodeExamples.OriginalCode.classA;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Objects;
 
@@ -132,6 +139,68 @@ public class HelperMethods {
             e.printStackTrace();
         }
     }
+    public static void copyClassFromXMLReportInDirectory(String xmlReportsDirectory, String baseDirectory, String targetDirectory) throws Exception {
+        // Navigate to the XML reports directory and get the first XML file
+        File directory = new File(xmlReportsDirectory);
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException(xmlReportsDirectory + " is not a valid directory.");
+        }
+
+        // Get XML files from the directory
+        File[] xmlFiles = directory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".xml");
+            }
+        });
+
+        if (xmlFiles == null || xmlFiles.length == 0) {
+            throw new IllegalArgumentException("No XML files found in the directory: " + xmlReportsDirectory);
+        }
+
+        File firstXmlFile = xmlFiles[0];
+
+        // Parse the XML file
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        configureFactoryToIgnoreDTD(factory);
+
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(firstXmlFile);
+
+        // Extract class location from XML
+        NodeList classNodes = document.getElementsByTagName("class");
+        if (classNodes.getLength() == 0) {
+            throw new IllegalArgumentException("No <class> element found in the XML report.");
+        }
+        Node classNode = classNodes.item(0);
+        String classLocation = classNode.getAttributes().getNamedItem("name").getNodeValue();
+        classLocation = classLocation.replace('.', '/') + ".java";  // Convert package structure to path and append ".class"
+
+        // Copy the .class file
+        Path sourcePath = Paths.get(baseDirectory, classLocation);
+        Path targetPath = Paths.get(targetDirectory, sourcePath.getFileName().toString());
+        if (Files.exists(targetPath)) {
+            System.out.println("File already exists: " + targetPath.toString());
+            // Uncomment the following line if you want to replace the existing file
+            // Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            Files.copy(sourcePath, targetPath);
+        }
+    }
+
+    private static void configureFactoryToIgnoreDTD(DocumentBuilderFactory factory) {
+        factory.setValidating(false);
+        factory.setNamespaceAware(true);
+        try {
+            factory.setFeature("http://xml.org/sax/features/namespaces", false);
+            factory.setFeature("http://xml.org/sax/features/validation", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 }
