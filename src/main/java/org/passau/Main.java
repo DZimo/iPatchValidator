@@ -29,6 +29,7 @@ import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.language.JavaLanguage;
 
 import static org.passau.Jacoco.HelperMethods.generateAndSaveCoverageReports;
+import static org.passau.SootPathFinder.SootPathSetter.PATH_TO_TEMPORARY_PACKAGE;
 
 public class Main implements Runnable {
     static String targetDirectory ="targetForDyanmic";
@@ -276,14 +277,14 @@ public class Main implements Runnable {
         // GENERATE REPORT AS XML
         XMLParsing xmlParsingInstance = new XMLParsing();
         // FIRST REPORT XML
-        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_1.xml"});
+        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_1.xml", PATH_TO_TEMPORARY_PACKAGE+"fail/"});
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
         Main mainInstanceDynamicClassApass = new Main("/TemporaryClasses/SourceCode","LOGS/DynamicClassApass"); // Instance for the original code
         Thread t2 = new Thread(mainInstanceDynamicClassApass, "mainInstanceDynamicClassApass");
 
         // SECOND REPORT XML
 
-        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_1.xml"});
+        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_1.xml", PATH_TO_TEMPORARY_PACKAGE+"/pass/"});
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
         Main mainInstanceDynamicClassAfail = new Main("/TemporaryClasses/SourceCode","LOGS/DynamicClassAfail"); // Instance for the original code
         Thread t3 = new Thread(mainInstanceDynamicClassAfail, "mainInstanceDynamicClassAfail");

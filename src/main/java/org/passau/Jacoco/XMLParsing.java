@@ -159,17 +159,17 @@ public class XMLParsing {
         String sourceFilePath = INPUT_LOCATION_PATH + "/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java";
         String xmlFilePath = INPUT_LOCATION_PATH+args[0];
         List<Integer> missedLines = getMissedLinesFromXML(xmlFilePath);
-        String outputDirectory = INPUT_LOCATION_PATH + PATH_TO_TEMPORARY_PACKAGE;
+        String outputDirectory = INPUT_LOCATION_PATH + args[1];
         String outputFileName = "classA.java";
         String outputFilePath = outputDirectory + outputFileName;
         removeMissedLinesFromSourceFile(sourceFilePath, missedLines, outputFilePath);
 
         String javaFilePath = INPUT_LOCATION_PATH + PATH_TO_TEMPORARY_PACKAGE + "classA.java";
-        if(compileJavaFile(javaFilePath)) {
+        /*if(compileJavaFile(javaFilePath)) {
             System.out.println("Compilation successful!");
         } else {
             System.out.println("Compilation failed!");
-        }
+        }*/
 
     }
 }
