@@ -258,7 +258,7 @@ public class Main implements Runnable {
 */
 
         // STATIC CFG
-        Main mainInstanceStaticPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","StaticClassA"); // Instance for the original code
+        Main mainInstanceStaticPassau = new Main("/src/main/java/org/passau/CodeExamples/OriginalCode","LOGS/StaticClassA"); // Instance for the original code
         Thread t1 = new Thread(mainInstanceStaticPassau, "mainInstanceStaticPassau");
 
 
@@ -275,15 +275,26 @@ public class Main implements Runnable {
         // >>>>>>>>>>>>>>> STEP 1 <<<<<<<<<<<<<<<
         // GENERATE REPORT AS XML
         XMLParsing xmlParsingInstance = new XMLParsing();
-        XMLParsing.main(null);
+        // FIRST REPORT XML
+        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_1.xml"});
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
-        Main mainInstanceDynamicPassau = new Main("/TemporaryClasses/SourceCode","DynamicClassA"); // Instance for the original code
-        Thread t2 = new Thread(mainInstanceDynamicPassau, "mainInstanceTestcasePassPassau");
+        Main mainInstanceDynamicClassApass = new Main("/TemporaryClasses/SourceCode","LOGS/DynamicClassApass"); // Instance for the original code
+        Thread t2 = new Thread(mainInstanceDynamicClassApass, "mainInstanceDynamicClassApass");
+
+        // SECOND REPORT XML
+
+        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_2.xml"});
+        generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
+        Main mainInstanceDynamicClassAfail = new Main("/TemporaryClasses/SourceCode","LOGS/DynamicClassAfail"); // Instance for the original code
+        Thread t3 = new Thread(mainInstanceDynamicClassAfail, "mainInstanceDynamicClassAfail");
+
         t1.start();
         t2.start();
-
         t1.join();
         t2.join();
+
+        t3.start();
+        t3.join();
 
         //>>>>>>>>>>>>>> STEP 2 <<<<<<<<<<<<<< byte buddy code ..
         // GENERATE BYTECODE

@@ -153,7 +153,7 @@ public class XMLParsing {
         // THIS IS JUST TEST PURPOSE IMPLEMENTATION SO STILL WE HAVE SOME HARD CODE HERE
         // LATER WHEN WE WILL AUTOMATE THE PROCESS INSIDE THE LOOP >> WE WILL AUTOMATICALLY GET THE JAVA FILE AND OTHER FILES AS WELL
         String sourceFilePath = INPUT_LOCATION_PATH + "/src/main/java/org/passau/CodeExamples/OriginalCode/classA.java";
-        String xmlFilePath = INPUT_LOCATION_PATH+"/Coverage_Reports/coverage_report_2.xml";
+        String xmlFilePath = INPUT_LOCATION_PATH+args[0];
         List<Integer> missedLines = getMissedLinesFromXML(xmlFilePath);
         String outputDirectory = INPUT_LOCATION_PATH + PATH_TO_TEMPORARY_PACKAGE;
         String outputFileName = "classA.java";

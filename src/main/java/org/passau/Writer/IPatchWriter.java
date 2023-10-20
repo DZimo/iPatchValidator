@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class IPatchWriter {
 
@@ -11,7 +14,11 @@ public class IPatchWriter {
 
     public IPatchWriter(String logName) {
         try {
-            FileWriter fwOb = new FileWriter(logName+".txt", false);
+            //FileWriter fwOb = new FileWriter(logName+".txt", false);
+            Path logPath = Paths.get(logName + ".txt");
+            Files.createDirectories(logPath.getParent());
+
+            FileWriter fwOb = new FileWriter(logPath.toString(), false);
             out = new PrintWriter(fwOb, false);
             out.flush();
         } catch (IOException e) {
