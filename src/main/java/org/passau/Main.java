@@ -276,16 +276,15 @@ public class Main implements Runnable {
         // >>>>>>>>>>>>>>> STEP 1 <<<<<<<<<<<<<<<
         // GENERATE REPORT AS XML
         XMLParsing xmlParsingInstance = new XMLParsing();
-        // FIRST REPORT XML
-        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_1.xml", PATH_TO_TEMPORARY_PACKAGE+"fail/"});
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
+        // FIRST REPORT XML
+        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_1.xml", PATH_TO_TEMPORARY_PACKAGE+"/fail/"});
         Main mainInstanceDynamicClassApass = new Main("/TemporaryClasses/SourceCode","LOGS/DynamicClassApass"); // Instance for the original code
         Thread t2 = new Thread(mainInstanceDynamicClassApass, "mainInstanceDynamicClassApass");
 
         // SECOND REPORT XML
 
         XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_2.xml", PATH_TO_TEMPORARY_PACKAGE+"/pass/"});
-        generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
         Main mainInstanceDynamicClassAfail = new Main("/TemporaryClasses/SourceCode","LOGS/DynamicClassAfail"); // Instance for the original code
         Thread t3 = new Thread(mainInstanceDynamicClassAfail, "mainInstanceDynamicClassAfail");
 
