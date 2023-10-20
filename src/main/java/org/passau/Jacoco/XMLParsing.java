@@ -94,8 +94,12 @@ public class XMLParsing {
                 .replace(File.separator, ".")
                 .replaceAll("^\\.|\\.$", "");  // Remove leading or trailing dots
         if (newPackage.endsWith(".")) {
-            newPackage = newPackage.substring(0, newPackage.length() - 1); // remove trailing dot
+            newPackage = newPackage.substring(0 , newPackage.length() - 1); // remove trailing dot
         }
+
+        /*if (newPackage != null) {
+            newPackage = newPackage.substring(newPackage.length() - 2, newPackage.length() - 1); // remove trailing dot
+        }*/
 
         // Iterate over each line of the source file
         for (String line : lines) {

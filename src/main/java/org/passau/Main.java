@@ -283,7 +283,7 @@ public class Main implements Runnable {
 
         // SECOND REPORT XML
 
-        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_2.xml"});
+        XMLParsing.main(new String[]{"/Coverage_Reports/coverage_report_1.xml"});
         generateAndSaveCoverageReports(INPUT_LOCATION_PATH);
         Main mainInstanceDynamicClassAfail = new Main("/TemporaryClasses/SourceCode","LOGS/DynamicClassAfail"); // Instance for the original code
         Thread t3 = new Thread(mainInstanceDynamicClassAfail, "mainInstanceDynamicClassAfail");
