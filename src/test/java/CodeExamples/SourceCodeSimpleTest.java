@@ -1,6 +1,6 @@
 package CodeExamples;
 import org.junit.jupiter.api.Test;
-import org.passau.CodeExamples.OriginalCode.SourceCodeSimple;
+import org.passau.CodeExamples.SourceCodeSimple;
 
 public class SourceCodeSimpleTest {
 
